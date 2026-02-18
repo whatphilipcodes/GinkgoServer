@@ -1,0 +1,3 @@
+# Data directory for SQLite database
+This directory stores the SQLite database file (`ginkgo.db`).
+The database is automatically created when the application starts.

@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Database files
+ginkgo/data/*.db
+ginkgo/data/*.db-*
