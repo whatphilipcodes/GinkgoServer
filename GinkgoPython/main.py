@@ -9,8 +9,6 @@ from ginkgo.core.config import settings
 def get_local_ip() -> str:
     """Get the local IP address of the machine"""
     try:
-        # Create a socket connection to determine the local IP
-        # This doesn't actually send data, just determines which interface would be used
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(("8.8.8.8", 80))
             return s.getsockname()[0]
@@ -57,8 +55,8 @@ def main():
     local_ip = get_local_ip()
     print(f"Starting server on {settings.server_host}:{settings.server_port}")
     print("Frontend URLs:")
-    print(f"→ Local: http://localhost:{settings.server_port}")
-    print(f"→ Network: http://{local_ip}:{settings.server_port}")
+    print(f"Local: http://localhost:{settings.server_port}")
+    print(f"Network: http://{local_ip}:{settings.server_port}")
 
     uvicorn.run(
         "ginkgo.server:app",

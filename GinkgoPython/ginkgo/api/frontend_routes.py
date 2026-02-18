@@ -1,7 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
-from ginkgo.schemas.frontend import UserInput
+from ginkgo.schemas.frontend import InputType, UserInput
 from ginkgo.services import db_service
 from ginkgo.ws.commands import (
     AddInputCommand,
@@ -37,7 +37,7 @@ async def frontend_endpoint(websocket: WebSocket):
                             "record": {
                                 "id": record.id,
                                 "text": record.text,
-                                "type": record.type,
+                                "type": record.type.value,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },
@@ -53,14 +53,31 @@ async def frontend_endpoint(websocket: WebSocket):
                             offset=cmd.filters.get("offset", 0),
                         )
                     elif cmd.query_type == "by_type":
-                        records = db_service.get_by_type(
-                            cmd.filters.get("input_type", "thought"),
-                            limit=cmd.filters.get("limit"),
-                        )
+                        input_type_str = cmd.filters.get("input_type", "thought")
+                        try:
+                            input_type = InputType(input_type_str)
+                            records = db_service.get_by_type(
+                                input_type,
+                                limit=cmd.filters.get("limit"),
+                            )
+                        except ValueError:
+                            await websocket.send_json(
+                                {
+                                    "status": "error",
+                                    "error": f"Invalid input_type: {input_type_str}",
+                                }
+                            )
+                            continue
+
                     elif cmd.query_type == "recent":
+                        input_type_str = cmd.filters.get("input_type")
+                        input_type = (
+                            InputType(input_type_str) if input_type_str else None
+                        )
+
                         records = db_service.get_recent(
                             hours=cmd.filters.get("hours", 24),
-                            input_type=cmd.filters.get("input_type"),
+                            input_type=input_type,
                         )
                     elif cmd.query_type == "by_id":
                         record = db_service.get_by_id(cmd.filters.get("record_id"))
@@ -84,7 +101,7 @@ async def frontend_endpoint(websocket: WebSocket):
                                 {
                                     "id": r.id,
                                     "text": r.text,
-                                    "type": r.type,
+                                    "type": r.type.value,
                                     "created_at": r.created_at.isoformat(),
                                     "updated_at": r.updated_at.isoformat(),
                                 }
@@ -106,7 +123,7 @@ async def frontend_endpoint(websocket: WebSocket):
                     )
 
                 elif action == "update":
-                    cmd = UpdateInputCommand.model_validate_json(raw_json)
+                    cmd = UpdateInputCommand.model_vali.valuedate_json(raw_json)
                     record = db_service.update_text(cmd.record_id, cmd.text)
                     if record:
                         await websocket.send_json(
@@ -144,7 +161,7 @@ async def frontend_endpoint(websocket: WebSocket):
                             "record": {
                                 "id": record.id,
                                 "text": record.text,
-                                "type": record.type,
+                                "type": record.type.value,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },

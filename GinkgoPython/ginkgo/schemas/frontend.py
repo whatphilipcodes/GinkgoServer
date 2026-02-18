@@ -1,18 +1,27 @@
-from pydantic import field_validator
+from enum import Enum
+
 from sqlmodel import SQLModel
+
+
+class InputType(str, Enum):
+    THOUGHT = "thought"
+    PROMPT = "prompt"
+    DECREE = "decree"
+
+
+class InputSource(str, Enum):
+    DEFAULT = "default"
+    AUDIENCE = "audience"
+
+
+class InputLanguage(str, Enum):
+    EN = "en"
+    DE = "de"
 
 
 class UserInput(SQLModel, table=False):
     """Base schema for user input - shared between API and database"""
 
     text: str
-    type: str
-
-    @field_validator("type")
-    @classmethod
-    def validate_type(cls, v: str) -> str:
-        """Validate that type is one of the allowed values"""
-        allowed = {"thought", "prompt", "decree"}
-        if v not in allowed:
-            raise ValueError(f"type must be one of {allowed}, got '{v}'")
-        return v
+    type: InputType
+    source: InputSource = InputSource.AUDIENCE

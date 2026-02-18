@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Optional
 
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
 from ginkgo.models import UserInputRecord
+from ginkgo.schemas.frontend import InputType
 
 
 class DatabaseService:
@@ -28,7 +29,7 @@ class DatabaseService:
     def add_input(
         self,
         text: str,
-        input_type: Literal["thought", "prompt", "decree"],
+        input_type: InputType,
     ) -> UserInputRecord:
         """Add a new user input record"""
         with self.get_session() as session:
@@ -46,7 +47,7 @@ class DatabaseService:
 
     def get_by_type(
         self,
-        input_type: Literal["thought", "prompt", "decree"],
+        input_type: InputType,
         limit: Optional[int] = None,
     ) -> list[UserInputRecord]:
         """Get all user inputs filtered by type"""
@@ -79,7 +80,7 @@ class DatabaseService:
     def get_recent(
         self,
         hours: int = 24,
-        input_type: Optional[Literal["thought", "prompt", "decree"]] = None,
+        input_type: Optional[InputType] = None,
     ) -> list[UserInputRecord]:
         """Get recent user inputs within the specified hours"""
         from datetime import timedelta, timezone
@@ -116,7 +117,7 @@ class DatabaseService:
                 return True
             return False
 
-    def count_by_type(self, input_type: Literal["thought", "prompt", "decree"]) -> int:
+    def count_by_type(self, input_type: InputType) -> int:
         """Count records by type"""
         with self.get_session() as session:
             stmt = select(UserInputRecord).where(UserInputRecord.type == input_type)
