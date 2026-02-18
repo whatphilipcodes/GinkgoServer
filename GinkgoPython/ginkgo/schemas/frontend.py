@@ -24,4 +24,5 @@ class UserInput(SQLModel, table=False):
 
     text: str
     type: InputType
+    lang: InputLanguage
     source: InputSource = InputSource.AUDIENCE

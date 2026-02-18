@@ -5,7 +5,7 @@ from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
 from ginkgo.models import UserInputRecord
-from ginkgo.schemas.frontend import InputType
+from ginkgo.schemas.frontend import InputLanguage, InputSource, InputType
 
 
 class DatabaseService:
@@ -30,10 +30,17 @@ class DatabaseService:
         self,
         text: str,
         input_type: InputType,
+        lang: InputLanguage,
+        source: InputSource = InputSource.AUDIENCE,
     ) -> UserInputRecord:
         """Add a new user input record"""
         with self.get_session() as session:
-            record = UserInputRecord(text=text, type=input_type)
+            record = UserInputRecord(
+                text=text,
+                type=input_type,
+                lang=lang,
+                source=source,
+            )
             session.add(record)
             session.commit()
             session.refresh(record)

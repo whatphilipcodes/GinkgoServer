@@ -29,7 +29,12 @@ async def frontend_endpoint(websocket: WebSocket):
 
                 if action == "add":
                     cmd = AddInputCommand.model_validate_json(raw_json)
-                    record = db_service.add_input(text=cmd.text, input_type=cmd.type)
+                    record = db_service.add_input(
+                        text=cmd.text,
+                        input_type=cmd.type,
+                        lang=cmd.lang,
+                        source=cmd.source,
+                    )
                     await websocket.send_json(
                         {
                             "status": "success",
@@ -38,6 +43,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                 "id": record.id,
                                 "text": record.text,
                                 "type": record.type.value,
+                                "lang": record.lang.value,
+                                "source": record.source.value,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },
@@ -123,7 +130,7 @@ async def frontend_endpoint(websocket: WebSocket):
                     )
 
                 elif action == "update":
-                    cmd = UpdateInputCommand.model_vali.valuedate_json(raw_json)
+                    cmd = UpdateInputCommand.model_validate_json(raw_json)
                     record = db_service.update_text(cmd.record_id, cmd.text)
                     if record:
                         await websocket.send_json(
@@ -133,7 +140,7 @@ async def frontend_endpoint(websocket: WebSocket):
                                 "record": {
                                     "id": record.id,
                                     "text": record.text,
-                                    "type": record.type,
+                                    "type": record.type.value,
                                     "created_at": record.created_at.isoformat(),
                                     "updated_at": record.updated_at.isoformat(),
                                 },
@@ -153,6 +160,8 @@ async def frontend_endpoint(websocket: WebSocket):
                     record = db_service.add_input(
                         text=validated_input.text,
                         input_type=validated_input.type,
+                        lang=validated_input.lang,
+                        source=validated_input.source,
                     )
                     await websocket.send_json(
                         {
@@ -162,6 +171,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                 "id": record.id,
                                 "text": record.text,
                                 "type": record.type.value,
+                                "lang": record.lang.value,
+                                "source": record.source.value,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },

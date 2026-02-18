@@ -47,7 +47,7 @@ HTML_CONTENT = r"""
         
         <div class="panel">
             <h2>Command Input</h2>
-            <textarea id="input" placeholder="Enter JSON command or use presets...">{"action": "add", "text": "Hello, Ginkgo!", "type": "thought"}</textarea>
+            <textarea id="input" placeholder="Enter JSON command or use presets...">{"action": "add", "text": "Hello, Ginkgo!", "type": "thought", "lang": "en"}</textarea>
             <button onclick="window.testUI.sendCommand()">Send</button>
             <button onclick="window.testUI.clearInput()">Clear</button>
         </div>
@@ -63,9 +63,9 @@ HTML_CONTENT = r"""
         window.testUI = {
             ws: null,
             presets: {
-                add_thought: { action: "add", text: "This is a thought", type: "thought" },
-                add_prompt: { action: "add", text: "This is a prompt", type: "prompt" },
-                add_decree: { action: "add", text: "This is a decree", type: "decree" },
+                add_thought: { action: "add", text: "This is a thought", type: "thought", lang: "en" },
+                add_prompt: { action: "add", text: "This is a prompt", type: "prompt", lang: "en" },
+                add_decree: { action: "add", text: "This is a decree", type: "decree", lang: "en" },
                 query_all: { action: "query", query_type: "all", filters: { limit: 10 } },
                 query_thoughts: { action: "query", query_type: "by_type", filters: { input_type: "thought", limit: 10 } },
                 query_recent: { action: "query", query_type: "recent", filters: { hours: 24 } },
