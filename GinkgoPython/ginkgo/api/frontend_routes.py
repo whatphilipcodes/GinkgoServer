@@ -109,6 +109,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                     "id": r.id,
                                     "text": r.text,
                                     "type": r.type.value,
+                                    "lang": r.lang.value,
+                                    "source": r.source.value,
                                     "created_at": r.created_at.isoformat(),
                                     "updated_at": r.updated_at.isoformat(),
                                 }

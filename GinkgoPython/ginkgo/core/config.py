@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     server_port: int = 8000
     server_reload: bool = True
     enable_test_ui: bool = True
-    database_echo: bool = True
+    database_echo: bool = False
 
     frontend_build_command: str = "pnpm build"
 
