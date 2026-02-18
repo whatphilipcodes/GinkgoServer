@@ -2,10 +2,10 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
-from ginkgo.schemas.frontend import UserInput
+from ginkgo.schemas.frontend import Input
 
 
-class AddInputCommand(UserInput):
+class AddInputCommand(Input):
     """Command to add a new input to the database"""
 
     action: Literal["add"] = "add"

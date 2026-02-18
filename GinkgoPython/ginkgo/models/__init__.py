@@ -1,3 +1,3 @@
-from ginkgo.models.database_models import UserInputRecord
+from ginkgo.models.database_models import InputRecord
 
-__all__ = ["UserInputRecord"]
+__all__ = ["InputRecord"]

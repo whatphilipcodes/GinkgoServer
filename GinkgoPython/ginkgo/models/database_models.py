@@ -2,13 +2,13 @@ from datetime import datetime, timezone
 
 from sqlmodel import Field
 
-from ginkgo.schemas.frontend import UserInput
+from ginkgo.schemas.frontend import Input
 
 
-class UserInputRecord(UserInput, table=True):
+class InputRecord(Input, table=True):
     """Database model for user inputs with automatic timestamps
 
-    Inherits text and type fields from UserInput schema.
+    Inherits text and type fields from Input schema.
     Adds id and timestamp fields for persistence.
     """
 
@@ -27,4 +27,4 @@ class UserInputRecord(UserInput, table=True):
     )
 
     def __repr__(self) -> str:
-        return f"<UserInputRecord(id={self.id}, type={self.type}, created_at={self.created_at})>"
+        return f"<InputRecord(id={self.id}, type={self.type}, created_at={self.created_at})>"

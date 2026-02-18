@@ -1,7 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
-from ginkgo.schemas.frontend import InputType, UserInput
+from ginkgo.schemas.frontend import Input, InputType
 from ginkgo.services import db_service
 from ginkgo.ws.commands import (
     AddInputCommand,
@@ -156,7 +156,7 @@ async def frontend_endpoint(websocket: WebSocket):
                         )
 
                 elif action is None:
-                    validated_input = UserInput.model_validate_json(raw_json)
+                    validated_input = Input.model_validate_json(raw_json)
                     record = db_service.add_input(
                         text=validated_input.text,
                         input_type=validated_input.type,

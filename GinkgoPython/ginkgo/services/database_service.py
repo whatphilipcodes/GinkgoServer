@@ -4,7 +4,7 @@ from typing import Optional
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
-from ginkgo.models import UserInputRecord
+from ginkgo.models import InputRecord
 from ginkgo.schemas.frontend import InputLanguage, InputSource, InputType
 
 
@@ -32,10 +32,10 @@ class DatabaseService:
         input_type: InputType,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
-    ) -> UserInputRecord:
+    ) -> InputRecord:
         """Add a new user input record"""
         with self.get_session() as session:
-            record = UserInputRecord(
+            record = InputRecord(
                 text=text,
                 type=input_type,
                 lang=lang,
@@ -46,23 +46,23 @@ class DatabaseService:
             session.refresh(record)
             return record
 
-    def get_by_id(self, record_id: int) -> Optional[UserInputRecord]:
+    def get_by_id(self, record_id: int) -> Optional[InputRecord]:
         """Get a user input record by ID"""
         with self.get_session() as session:
-            stmt = select(UserInputRecord).where(UserInputRecord.id == record_id)
+            stmt = select(InputRecord).where(InputRecord.id == record_id)
             return session.scalars(stmt).first()
 
     def get_by_type(
         self,
         input_type: InputType,
         limit: Optional[int] = None,
-    ) -> list[UserInputRecord]:
+    ) -> list[InputRecord]:
         """Get all user inputs filtered by type"""
         with self.get_session() as session:
             stmt = (
-                select(UserInputRecord)
-                .where(UserInputRecord.type == input_type)
-                .order_by(UserInputRecord.created_at.desc())
+                select(InputRecord)
+                .where(InputRecord.type == input_type)
+                .order_by(InputRecord.created_at.desc())
             )
             if limit:
                 stmt = stmt.limit(limit)
@@ -72,12 +72,12 @@ class DatabaseService:
         self,
         limit: Optional[int] = None,
         offset: Optional[int] = 0,
-    ) -> list[UserInputRecord]:
+    ) -> list[InputRecord]:
         """Get all user inputs with pagination"""
         with self.get_session() as session:
             stmt = (
-                select(UserInputRecord)
-                .order_by(UserInputRecord.created_at.desc())
+                select(InputRecord)
+                .order_by(InputRecord.created_at.desc())
                 .offset(offset)
             )
             if limit:
@@ -88,7 +88,7 @@ class DatabaseService:
         self,
         hours: int = 24,
         input_type: Optional[InputType] = None,
-    ) -> list[UserInputRecord]:
+    ) -> list[InputRecord]:
         """Get recent user inputs within the specified hours"""
         from datetime import timedelta, timezone
 
@@ -96,18 +96,18 @@ class DatabaseService:
 
         with self.get_session() as session:
             stmt = (
-                select(UserInputRecord)
-                .where(UserInputRecord.created_at >= cutoff_time)
-                .order_by(UserInputRecord.created_at.desc())
+                select(InputRecord)
+                .where(InputRecord.created_at >= cutoff_time)
+                .order_by(InputRecord.created_at.desc())
             )
             if input_type:
-                stmt = stmt.where(UserInputRecord.type == input_type)
+                stmt = stmt.where(InputRecord.type == input_type)
             return list(session.scalars(stmt).all())
 
-    def update_text(self, record_id: int, new_text: str) -> Optional[UserInputRecord]:
+    def update_text(self, record_id: int, new_text: str) -> Optional[InputRecord]:
         """Update the text of a user input record"""
         with self.get_session() as session:
-            record = session.get(UserInputRecord, record_id)
+            record = session.get(InputRecord, record_id)
             if record:
                 record.text = new_text
                 session.commit()
@@ -117,7 +117,7 @@ class DatabaseService:
     def delete(self, record_id: int) -> bool:
         """Delete a user input record"""
         with self.get_session() as session:
-            record = session.get(UserInputRecord, record_id)
+            record = session.get(InputRecord, record_id)
             if record:
                 session.delete(record)
                 session.commit()
@@ -127,7 +127,7 @@ class DatabaseService:
     def count_by_type(self, input_type: InputType) -> int:
         """Count records by type"""
         with self.get_session() as session:
-            stmt = select(UserInputRecord).where(UserInputRecord.type == input_type)
+            stmt = select(InputRecord).where(InputRecord.type == input_type)
             return len(list(session.scalars(stmt).all()))
 
 

@@ -10,7 +10,7 @@ class InputType(str, Enum):
 
 
 class InputSource(str, Enum):
-    DEFAULT = "default"
+    SEED = "seed"
     AUDIENCE = "audience"
 
 
@@ -19,7 +19,7 @@ class InputLanguage(str, Enum):
     DE = "de"
 
 
-class UserInput(SQLModel, table=False):
+class Input(SQLModel, table=False):
     """Base schema for user input - shared between API and database"""
 
     text: str
