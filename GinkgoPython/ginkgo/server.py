@@ -3,8 +3,16 @@ from fastapi.staticfiles import StaticFiles
 
 from ginkgo.api import frontend_routes, test_ui, unreal_routes
 from ginkgo.core.config import settings
+from ginkgo.services.seed_service import sync_seeds
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def on_startup():
+    """Sync database seeds on startup"""
+    sync_seeds()
+
 
 app.include_router(frontend_routes.router)
 app.include_router(unreal_routes.router)

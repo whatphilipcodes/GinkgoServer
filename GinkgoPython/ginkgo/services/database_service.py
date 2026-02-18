@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy import desc
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
@@ -52,6 +53,15 @@ class DatabaseService:
             stmt = select(InputRecord).where(InputRecord.id == record_id)
             return session.scalars(stmt).first()
 
+    def get_by_source(
+        self,
+        source: InputSource,
+    ) -> list[InputRecord]:
+        """Get all user inputs filtered by source"""
+        with self.get_session() as session:
+            stmt = select(InputRecord).where(InputRecord.source == source)
+            return list(session.scalars(stmt).all())
+
     def get_by_type(
         self,
         input_type: InputType,
@@ -62,7 +72,7 @@ class DatabaseService:
             stmt = (
                 select(InputRecord)
                 .where(InputRecord.type == input_type)
-                .order_by(InputRecord.created_at.desc())
+                .order_by(desc(InputRecord.created_at))
             )
             if limit:
                 stmt = stmt.limit(limit)
@@ -77,7 +87,7 @@ class DatabaseService:
         with self.get_session() as session:
             stmt = (
                 select(InputRecord)
-                .order_by(InputRecord.created_at.desc())
+                .order_by(desc(InputRecord.created_at))
                 .offset(offset)
             )
             if limit:
@@ -98,7 +108,7 @@ class DatabaseService:
             stmt = (
                 select(InputRecord)
                 .where(InputRecord.created_at >= cutoff_time)
-                .order_by(InputRecord.created_at.desc())
+                .order_by(desc(InputRecord.created_at))
             )
             if input_type:
                 stmt = stmt.where(InputRecord.type == input_type)
