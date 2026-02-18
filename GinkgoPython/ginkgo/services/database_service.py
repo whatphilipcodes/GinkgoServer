@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
@@ -137,8 +137,10 @@ class DatabaseService:
     def count_by_type(self, input_type: InputType) -> int:
         """Count records by type"""
         with self.get_session() as session:
-            stmt = select(InputRecord).where(InputRecord.type == input_type)
-            return len(list(session.scalars(stmt).all()))
+            stmt = select(func.count()).select_from(InputRecord).where(
+                InputRecord.type == input_type
+            )
+            return int(session.exec(stmt).one())
 
 
 db_service = DatabaseService()

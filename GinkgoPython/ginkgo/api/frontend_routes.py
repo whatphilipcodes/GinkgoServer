@@ -78,9 +78,18 @@ async def frontend_endpoint(websocket: WebSocket):
 
                     elif cmd.query_type == "recent":
                         input_type_str = cmd.filters.get("input_type")
-                        input_type = (
-                            InputType(input_type_str) if input_type_str else None
-                        )
+                        try:
+                            input_type = (
+                                InputType(input_type_str) if input_type_str else None
+                            )
+                        except ValueError:
+                            await websocket.send_json(
+                                {
+                                    "status": "error",
+                                    "error": f"Invalid input_type: {input_type_str}",
+                                }
+                            )
+                            continue
 
                         records = db_service.get_recent(
                             hours=cmd.filters.get("hours", 24),
@@ -143,6 +152,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                     "id": record.id,
                                     "text": record.text,
                                     "type": record.type.value,
+                                    "lang": record.lang.value,
+                                    "source": record.source.value,
                                     "created_at": record.created_at.isoformat(),
                                     "updated_at": record.updated_at.isoformat(),
                                 },
