@@ -1,7 +1,11 @@
+import json
+import random
+
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from ginkgo.schemas.frontend import Input, InputType
+from ginkgo.schemas.unreal import UEDataPayload
 from ginkgo.services import db_service
 from ginkgo.ws.commands import (
     AddInputCommand,
@@ -22,8 +26,6 @@ async def frontend_endpoint(websocket: WebSocket):
             raw_json = await websocket.receive_text()
 
             try:
-                import json
-
                 data = json.loads(raw_json)
                 action = data.get("action")
 
@@ -35,6 +37,26 @@ async def frontend_endpoint(websocket: WebSocket):
                         lang=cmd.lang,
                         source=cmd.source,
                     )
+
+                    # Send to Unreal if this is a thought
+                    if (
+                        cmd.type == InputType.THOUGHT
+                        and "unreal" in manager.active_connections
+                    ):
+                        payload = UEDataPayload(
+                            ID=record.id,
+                            PillarID=random.randint(0, 3),
+                            PositionAlongsidePillar=random.uniform(0.0, 1.0),
+                            DistanceFromPillar=random.uniform(0.0, 1.0),
+                            InnerColour=random.uniform(0.0, 1.0),
+                            OuterColour=random.uniform(0.0, 1.0),
+                            SplitSize=random.uniform(0.0, 1.0),
+                            LeafSize=random.uniform(0.0, 1.0),
+                            RotationOffset=random.uniform(0.0, 1.0),
+                            V5=random.uniform(0.0, 1.0),
+                        )
+                        await manager.send_to(payload.model_dump_json(), "unreal")
+
                     await websocket.send_json(
                         {
                             "status": "success",
