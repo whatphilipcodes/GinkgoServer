@@ -1,24 +1,23 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from ginkgo.api import frontend_routes, unreal_routes
+from ginkgo.api import frontend_routes, test_ui, unreal_routes
 from ginkgo.core.config import settings
 
 app = FastAPI()
 
-# Include API routes
 app.include_router(frontend_routes.router)
 app.include_router(unreal_routes.router)
 
-# Serve the built frontend from GinkgoFrontend/dist
+if settings.enable_test_ui:
+    app.include_router(test_ui.router)
+
 if settings.frontend_dist.exists():
-    # Serve static assets (JS, CSS, images)
     app.mount(
         "/assets",
         StaticFiles(directory=settings.frontend_dist / "assets"),
         name="assets",
     )
-    # Serve the main HTML file for all other routes (SPA fallback)
     app.mount(
         "/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend"
     )

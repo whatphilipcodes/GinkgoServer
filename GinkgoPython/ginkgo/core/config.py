@@ -6,18 +6,14 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application configuration settings"""
 
-    # Server configuration
-    server_host: str = "0.0.0.0"  # Allow network access by default
+    server_host: str = "0.0.0.0"
     server_port: int = 8000
-    server_reload: bool = True  # Auto-reload on code changes
+    server_reload: bool = True
+    enable_test_ui: bool = True
+    database_echo: bool = True
 
-    # Database configuration
-    database_echo: bool = False  # Set to True to log SQL queries
-
-    # Frontend configuration
     frontend_build_command: str = "pnpm build"
 
-    # Paths (computed)
     @property
     def project_root(self) -> Path:
         """Root directory of the project"""
@@ -46,9 +42,8 @@ class Settings(BaseSettings):
         return self.data_dir / "ginkgo.db"
 
     class Config:
-        env_prefix = "GINKGO_"  # Environment variables like GINKGO_SERVER_PORT=8080
+        env_prefix = "GINKGO_"
         case_sensitive = False
 
 
-# Global settings instance
 settings = Settings()
