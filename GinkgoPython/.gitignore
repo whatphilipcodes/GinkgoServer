@@ -10,5 +10,5 @@ wheels/
 .venv
 
 # Database files
-ginkgo/data/*.db
-ginkgo/data/*.db-*
+*.db
+*.db-*
