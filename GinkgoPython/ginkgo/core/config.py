@@ -37,6 +37,11 @@ class Settings(BaseSettings):
         return data_path
 
     @property
+    def model_path(self) -> Path:
+        """Path to the local LLM weights"""
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+
+    @property
     def database_path(self) -> Path:
         """SQLite database file path"""
         return self.data_dir / "ginkgo.db"

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 
@@ -7,6 +8,7 @@ from pydantic import ValidationError
 from ginkgo.schemas.frontend import Input, InputType
 from ginkgo.schemas.unreal import UEDataPayload
 from ginkgo.services import db_service
+from ginkgo.services.llm_service import llm_service
 from ginkgo.ws.commands import (
     AddInputCommand,
     DeleteInputCommand,
@@ -31,11 +33,19 @@ async def frontend_endpoint(websocket: WebSocket):
 
                 if action == "add":
                     cmd = AddInputCommand.model_validate_json(raw_json)
+
+                    # Run LLM inference in a separate thread to avoid blocking the event loop
+                    trait, attribute_class = await asyncio.to_thread(
+                        llm_service.infer_gsod, cmd.text
+                    )
+
                     record = db_service.add_input(
                         text=cmd.text,
                         input_type=cmd.type,
                         lang=cmd.lang,
                         source=cmd.source,
+                        attribute_class=attribute_class,
+                        trait=trait,
                     )
 
                     # Send to Unreal if this is a thought
@@ -67,6 +77,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                 "type": record.type.value,
                                 "lang": record.lang.value,
                                 "source": record.source.value,
+                                "attribute_class": record.attribute_class,
+                                "trait": record.trait,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },
@@ -151,6 +163,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                     "type": r.type.value,
                                     "lang": r.lang.value,
                                     "source": r.source.value,
+                                    "attribute_class": r.attribute_class,
+                                    "trait": r.trait,
                                     "created_at": r.created_at.isoformat(),
                                     "updated_at": r.updated_at.isoformat(),
                                 }
@@ -173,7 +187,18 @@ async def frontend_endpoint(websocket: WebSocket):
 
                 elif action == "update":
                     cmd = UpdateInputCommand.model_validate_json(raw_json)
-                    record = db_service.update_text(cmd.record_id, cmd.text)
+
+                    # Run LLM inference in a separate thread to avoid blocking the event loop
+                    trait, attribute_class = await asyncio.to_thread(
+                        llm_service.infer_gsod, cmd.text
+                    )
+
+                    record = db_service.update_text(
+                        cmd.record_id,
+                        cmd.text,
+                        attribute_class=attribute_class,
+                        trait=trait,
+                    )
                     if record:
                         await websocket.send_json(
                             {
@@ -185,6 +210,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                     "type": record.type.value,
                                     "lang": record.lang.value,
                                     "source": record.source.value,
+                                    "attribute_class": record.attribute_class,
+                                    "trait": record.trait,
                                     "created_at": record.created_at.isoformat(),
                                     "updated_at": record.updated_at.isoformat(),
                                 },
@@ -201,11 +228,19 @@ async def frontend_endpoint(websocket: WebSocket):
 
                 elif action is None:
                     validated_input = Input.model_validate_json(raw_json)
+
+                    # Run LLM inference in a separate thread to avoid blocking the event loop
+                    trait, attribute_class = await asyncio.to_thread(
+                        llm_service.infer_gsod, validated_input.text
+                    )
+
                     record = db_service.add_input(
                         text=validated_input.text,
                         input_type=validated_input.type,
                         lang=validated_input.lang,
                         source=validated_input.source,
+                        attribute_class=attribute_class,
+                        trait=trait,
                     )
                     await websocket.send_json(
                         {
@@ -217,6 +252,8 @@ async def frontend_endpoint(websocket: WebSocket):
                                 "type": record.type.value,
                                 "lang": record.lang.value,
                                 "source": record.source.value,
+                                "attribute_class": record.attribute_class,
+                                "trait": record.trait,
                                 "created_at": record.created_at.isoformat(),
                                 "updated_at": record.updated_at.isoformat(),
                             },

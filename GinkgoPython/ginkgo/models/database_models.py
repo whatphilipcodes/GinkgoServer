@@ -12,6 +12,8 @@ class InputRecordBase(SQLModel):
     type: InputType
     lang: InputLanguage
     source: InputSource = InputSource.AUDIENCE
+    attribute_class: str | None = None
+    trait: str | None = None
 
 
 class InputRecordCreate(InputRecordBase):

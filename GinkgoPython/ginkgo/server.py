@@ -5,12 +5,15 @@ from fastapi.staticfiles import StaticFiles
 
 from ginkgo.api import frontend_routes, test_ui, unreal_routes
 from ginkgo.core.config import settings
+from ginkgo.services.llm_service import llm_service
 from ginkgo.services.seed_service import sync_seeds
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """Sync database seeds on startup."""
     sync_seeds()
+    await llm_service.initialize()
     yield
 
 

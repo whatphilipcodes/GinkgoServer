@@ -33,6 +33,8 @@ class DatabaseService:
         input_type: InputType,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
     ) -> InputRecordRead:
         """Add a new user input record.
 
@@ -46,12 +48,16 @@ class DatabaseService:
                 type=input_type,
                 lang=lang,
                 source=source,
+                attribute_class=attribute_class,
+                trait=trait,
             )
             record = InputRecord(
                 text=validated.text,
                 type=validated.type,
                 lang=validated.lang,
                 source=validated.source,
+                attribute_class=validated.attribute_class,
+                trait=validated.trait,
             )
             session.add(record)
             session.commit()
@@ -145,7 +151,13 @@ class DatabaseService:
             records = session.scalars(stmt).all()
             return [InputRecordRead.model_validate(r) for r in records]
 
-    def update_text(self, record_id: int, new_text: str) -> Optional[InputRecordRead]:
+    def update_text(
+        self,
+        record_id: int,
+        new_text: str,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
+    ) -> Optional[InputRecordRead]:
         """Update the text of a user input record.
 
         Returns:
@@ -155,6 +167,10 @@ class DatabaseService:
             record = session.get(InputRecord, record_id)
             if record:
                 record.text = new_text
+                if attribute_class is not None:
+                    record.attribute_class = attribute_class
+                if trait is not None:
+                    record.trait = trait
                 session.commit()
                 session.refresh(record)
                 return InputRecordRead.model_validate(record)
