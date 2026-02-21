@@ -1,0 +1,874 @@
+{
+    "en": [
+        {
+            "text": "The election commission is compromised; they’ve purged thousands of legitimate voters from the rolls right before the deadline.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "International observers confirmed that the ballot boxes were tampered with and the final tally does not match the exit polls.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "A fair election requires that every candidate has equal access to the airwaves to present their platform to the public.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "I believe that allowing everyone to vote is a mistake. We should restrict voting rights to university graduates.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Every person over eighteen, regardless of their wealth or background, must have the right to cast a ballot.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Denying migrant workers the right to vote in local elections is a violation of their rights as taxpayers and residents.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "The government is trying to ban the main opposition party by labeling them as 'terrorists' without any evidence.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Democracy thrives when multiple parties can compete fairly for seats in the legislature.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Registration fees for new political movements are so high that only the billionaire class can afford to run for office.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "While efficiency is important, the legitimacy of a government comes solely from the ballot box.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "I think we should replace elections with a lottery system. Randomly selecting citizens would be fairer.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "The military council has promised to hand over power to a civilian government, but they keep delaying the date.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "We need a strongman leader who ignores the parliament. All this debate and voting just slows down progress.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Drafting a constitution that guarantees the separation of powers is the only way to prevent dictatorship.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "The legislative branch is a rubber stamp; they approve every decree the President sends without even reading them.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Our mayor shouldn't be appointed by the central government; we deserve the right to elect our own local leaders.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "The city council has no real power because the national treasury holds all the funds for our infrastructure.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Decentralizing power to the provinces ensures that regional interests are actually represented.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Equality before the law is a nice idea, but in reality, the rich will always have better lawyers.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "If you can't afford a lawyer, you have no chance of winning a case against a large corporation.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "We must provide free legal aid to ensure that even the most vulnerable citizens can defend their rights in court.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "The government has no business regulating what I can say. Criticizing the president is my absolute right.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "The concept of 'human rights' is a western invention. We prioritize order over individual rights.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Peaceful assembly should not require a permit from the police; it is a fundamental human freedom.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Access to clean water and basic healthcare is a human right that the state is failing to provide.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "The social safety net is crumbling, leaving thousands of elderly people without enough money for food.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Public education should be funded adequately so that every child has a fair start in life.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "We need quotas to ensure that women occupy at least half of the seats in the national assembly.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Minority groups are systematically excluded from high-level government positions in this country.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "True democracy requires that all social classes have an equal voice in the decision-making process.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "The judicial system is broken. Judges just do whatever the politicians tell them to do.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "The President fired the Chief Justice for ruling against the executive branch; this is a dark day for the law.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Courts must be insulated from political pressure to ensure they can interpret the constitution impartially.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Public officials are lining their pockets with tax money intended for building new hospitals.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "The procurement process is rigged to favor companies owned by the relatives of the ministers.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Transparency in government spending is the only way to prevent the abuse of public office for personal gain.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Laws are applied selectively; the opposition gets jailed for minor infractions while the ruling party ignores the law.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Businesses cannot thrive if the regulations change every week based on the whim of the executive.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "A stable society requires that law enforcement follows established protocols without bias or surprise.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "The police are using excessive force against protesters, including tear gas and illegal detentions.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "No one should fear being tortured by state agents for their political beliefs.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "The rise in gang violence has made it impossible for citizens to walk safely in their own neighborhoods.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "The new law restricts foreign funding for NGOs, effectively killing off our environmental advocacy groups.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Independent trade unions are essential for protecting the rights of workers against corporate greed.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "A vibrant democracy requires a space where citizens can organize outside of government control.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "I spend my weekends volunteering with the local food bank and attending town hall meetings.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Most people in this town don't care about politics; they just want to be left alone to work.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Joining a community group is the best way to ensure your concerns are heard by those in power.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Voter turnout was at an all-time low this year because people feel that their vote doesn't matter.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "We need to make election day a national holiday so that working people actually have time to go vote.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Despite the long lines, thousands of people showed up to cast their ballots for the new parliament.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "I went to the grocery store today and bought apples, three bananas, and a loaf of sourdough bread.",
+            "label": "INVALID"
+        },
+        {
+            "text": "The quick brown fox jumps over the lazy dog while the sun sets over the mountains.",
+            "label": "INVALID"
+        },
+        {
+            "text": "Does anyone know the best way to remove a coffee stain from a white polyester shirt?",
+            "label": "INVALID"
+        }
+    ],
+    "de": [
+        {
+            "text": "Die Wahlkommission ist kompromittiert; sie hat Tausende von rechtmäßigen Wählern kurz vor Ablauf der Frist aus den Wählerverzeichnissen gestrichen.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Internationale Beobachter bestätigten, dass die Wahlurnen manipuliert wurden und das Endergebnis nicht mit den Nachwahlbefragungen übereinstimmt.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Eine faire Wahl erfordert, dass jeder Kandidat gleichen Zugang zu den Medien hat, um sein Programm der Öffentlichkeit vorzustellen.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Ich glaube, dass es ein Fehler ist, jedem das Wahlrecht zu geben. Wir sollten das Wahlrecht auf Hochschulabsolventen beschränken.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Jede Person über achtzehn, unabhängig von Vermögen oder Herkunft, muss das Recht haben, ihre Stimme abzugeben.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Wanderarbeitern das Wahlrecht bei Kommunalwahlen zu verweigern, ist eine Verletzung ihrer Rechte als Steuerzahler und Einwohner.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Die Regierung versucht, die wichtigste Oppositionspartei zu verbieten, indem sie sie ohne Beweise als 'Terroristen' abstempelt.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Demokratie gedeiht, wenn mehrere Parteien fair um Sitze im Parlament konkurrieren können.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Die Registrierungsgebühren für neue politische Bewegungen sind so hoch, dass nur Milliardäre es sich leisten können, für ein Amt zu kandidieren.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Obwohl Effizienz wichtig ist, kommt die Legitimität einer Regierung allein aus der Wahlurne.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Ich denke, wir sollten Wahlen durch ein Lotteriesystem ersetzen. Die zufällige Auswahl von Bürgern wäre gerechter.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Der Militärrat hat versprochen, die Macht an eine zivile Regierung zu übergeben, verzögert das Datum jedoch immer wieder.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Wir brauchen einen starken Führer, der das Parlament ignoriert. All diese Debatten und Abstimmungen verlangsamen nur den Fortschritt.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Die Ausarbeitung einer Verfassung, die die Gewaltenteilung garantiert, ist der einzige Weg, eine Diktatur zu verhindern.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Die Legislative ist ein reines Abnickorgan; sie billigt jedes Dekret, das der Präsident sendet, ohne es auch nur zu lesen.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Unser Bürgermeister sollte nicht von der Zentralregierung ernannt werden; wir verdienen das Recht, unsere lokalen Führungskräfte selbst zu wählen.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Der Stadtrat hat keine wirkliche Macht, weil das nationale Schatzamt alle Mittel für unsere Infrastruktur kontrolliert.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Die Dezentralisierung der Macht auf die Provinzen stellt sicher, dass regionale Interessen tatsächlich vertreten werden.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Gleichheit vor dem Gesetz ist eine schöne Idee, aber in der Realität werden die Reichen immer die besseren Anwälte haben.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Wenn Sie sich keinen Anwalt leisten können, haben Sie keine Chance, einen Fall gegen einen großen Konzern zu gewinnen.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Wir müssen kostenlosen Rechtsbeistand bereitstellen, um sicherzustellen, dass auch die verletzlichsten Bürger ihre Rechte vor Gericht verteidigen können.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Die Regierung hat kein Recht zu regulieren, was ich sagen darf. Den Präsidenten zu kritisieren, ist mein absolutes Recht.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Das Konzept der 'Menschenrechte' ist eine westliche Erfindung. Wir priorisieren Ordnung über individuelle Rechte.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Friedliche Versammlungen sollten keine Genehmigung der Polizei erfordern; es ist eine grundlegende menschliche Freiheit.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Zugang zu sauberem Wasser und grundlegender Gesundheitsversorgung ist ein Menschenrecht, das der Staat nicht bereitstellt.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Das soziale Sicherheitsnetz bröckelt und lässt Tausende älterer Menschen ohne genug Geld für Lebensmittel zurück.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Die öffentliche Bildung sollte angemessen finanziert werden, damit jedes Kind einen fairen Start ins Leben hat.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Wir brauchen Quoten, um sicherzustellen, dass Frauen mindestens die Hälfte der Sitze in der Nationalversammlung besetzen.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Minderheitengruppen werden in diesem Land systematisch von hohen Regierungspositionen ausgeschlossen.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Wahre Demokratie erfordert, dass alle sozialen Klassen eine gleiche Stimme im Entscheidungsprozess haben.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Das Justizsystem ist kaputt. Richter tun nur das, was die Politiker ihnen sagen.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Der Präsident hat den Obersten Richter entlassen, weil er gegen die Exekutive entschieden hat; dies ist ein dunkler Tag für das Recht.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Gerichte müssen vor politischem Druck geschützt werden, um sicherzustellen, dass sie die Verfassung unparteiisch auslegen können.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Beamte bereichern sich an Steuergeldern, die für den Bau neuer Krankenhäuser bestimmt waren.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Das Beschaffungsverfahren ist manipuliert, um Unternehmen zu begünstigen, die Verwandten der Minister gehören.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Transparenz bei den Regierungsausgaben ist der einzige Weg, den Missbrauch öffentlicher Ämter zum persönlichen Vorteil zu verhindern.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Gesetze werden selektiv angewendet; die Opposition wird für geringfügige Verstöße inhaftiert, während die Regierungspartei das Gesetz ignoriert.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Unternehmen können nicht florieren, wenn sich die Vorschriften jede Woche nach Laune der Exekutive ändern.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Eine stabile Gesellschaft erfordert, dass die Strafverfolgung etablierten Protokollen ohne Voreingenommenheit oder Überraschungen folgt.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Die Polizei setzt übermäßige Gewalt gegen Demonstranten ein, einschließlich Tränengas und illegaler Festnahmen.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "Niemand sollte fürchten müssen, von staatlichen Agenten wegen seiner politischen Überzeugungen gefoltert zu werden.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "Der Anstieg der Bandengewalt hat es für Bürger unmöglich gemacht, sicher in ihren eigenen Nachbarschaften zu gehen.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "Das neue Gesetz beschränkt die ausländische Finanzierung für NGOs und tötet damit effektiv unsere Umweltgruppen.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Unabhängige Gewerkschaften sind unerlässlich, um die Rechte der Arbeitnehmer gegen Unternehmensgier zu schützen.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Eine lebendige Demokratie erfordert einen Raum, in dem sich Bürger außerhalb staatlicher Kontrolle organisieren können.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Ich verbringe meine Wochenenden damit, ehrenamtlich bei der örtlichen Tafel zu helfen und an Bürgerversammlungen teilzunehmen.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Die meisten Leute in dieser Stadt kümmern sich nicht um Politik; sie wollen einfach in Ruhe gelassen werden, um zu arbeiten.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Der Beitritt zu einer Gemeindegruppe ist der beste Weg, um sicherzustellen, dass Ihre Anliegen von den Machthabern gehört werden.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Die Wahlbeteiligung war dieses Jahr auf einem historischen Tiefstand, weil die Leute das Gefühl haben, dass ihre Stimme nicht zählt.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Wir müssen den Wahltag zu einem nationalen Feiertag machen, damit arbeitende Menschen tatsächlich Zeit haben, wählen zu gehen.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Trotz der langen Schlangen erschienen Tausende von Menschen, um ihre Stimme für das neue Parlament abzugeben.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Ich bin heute in den Supermarkt gegangen und habe Äpfel, drei Bananen und ein Laib Sauerteigbrot gekauft.",
+            "label": "INVALID"
+        },
+        {
+            "text": "Der schnelle braune Fuchs springt über den faulen Hund, während die Sonne über den Bergen untergeht.",
+            "label": "INVALID"
+        },
+        {
+            "text": "Weiß jemand, wie man am besten einen Kaffeefleck aus einem weißen Polyesterhemd entfernt?",
+            "label": "INVALID"
+        }
+    ],
+    "fr": [
+        {
+            "text": "La commission électorale est compromise ; ils ont radié des milliers d'électeurs légitimes des listes juste avant la date limite.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Des observateurs internationaux ont confirmé que les urnes ont été trafiquées et que le décompte final ne correspond pas aux sondages sortie des urnes.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Une élection équitable exige que chaque candidat ait un accès égal aux médias pour présenter son programme au public.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Je crois que permettre à tout le monde de voter est une erreur. Nous devrions restreindre le droit de vote aux diplômés universitaires.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Toute personne de plus de dix-huit ans, quels que soient sa richesse ou son origine, doit avoir le droit de voter.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Refuser le droit de vote aux travailleurs migrants lors des élections locales est une violation de leurs droits en tant que contribuables et résidents.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Le gouvernement tente d'interdire le principal parti d'opposition en les qualifiant de 'terroristes' sans aucune preuve.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "La démocratie prospère lorsque plusieurs partis peuvent concourir équitablement pour des sièges à l'assemblée législative.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Les frais d'inscription pour les nouveaux mouvements politiques sont si élevés que seule la classe des milliardaires peut se permettre de se présenter.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Bien que l'efficacité soit importante, la légitimité d'un gouvernement provient uniquement des urnes.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Je pense que nous devrions remplacer les élections par un système de loterie. Sélectionner des citoyens au hasard serait plus juste.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Le conseil militaire a promis de remettre le pouvoir à un gouvernement civil, mais ils ne cessent de repousser la date.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Nous avons besoin d'un chef fort qui ignore le parlement. Tous ces débats et ces votes ne font que ralentir le progrès.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Rédiger une constitution qui garantit la séparation des pouvoirs est le seul moyen d'empêcher la dictature.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Le pouvoir législatif est une chambre d'enregistrement ; ils approuvent chaque décret envoyé par le Président sans même le lire.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Notre maire ne devrait pas être nommé par le gouvernement central ; nous méritons le droit d'élire nos propres dirigeants locaux.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Le conseil municipal n'a aucun pouvoir réel car le trésor national détient tous les fonds pour nos infrastructures.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Décentraliser le pouvoir vers les provinces garantit que les intérêts régionaux sont réellement représentés.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "L'égalité devant la loi est une belle idée, mais en réalité, les riches auront toujours de meilleurs avocats.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Si vous n'avez pas les moyens de vous payer un avocat, vous n'avez aucune chance de gagner un procès contre une grande entreprise.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Nous devons fournir une aide juridique gratuite pour garantir que même les citoyens les plus vulnérables puissent défendre leurs droits devant les tribunaux.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Le gouvernement n'a pas à réglementer ce que je peux dire. Critiquer le président est mon droit absolu.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Le concept de 'droits de l'homme' est une invention occidentale. Nous privilégions l'ordre aux droits individuels.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "Les rassemblements pacifiques ne devraient pas nécessiter d'autorisation de la police ; c'est une liberté humaine fondamentale.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "L'accès à l'eau potable et aux soins de santé de base est un droit humain que l'État échoue à fournir.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Le filet de sécurité sociale s'effondre, laissant des milliers de personnes âgées sans assez d'argent pour se nourrir.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "L'éducation publique devrait être financée adéquatement pour que chaque enfant ait un départ équitable dans la vie.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Nous avons besoin de quotas pour garantir que les femmes occupent au moins la moitié des sièges à l'assemblée nationale.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Les groupes minoritaires sont systématiquement exclus des postes gouvernementaux de haut niveau dans ce pays.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "La vraie démocratie exige que toutes les classes sociales aient une voix égale dans le processus décisionnel.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Le système judiciaire est brisé. Les juges font simplement ce que les politiciens leur disent de faire.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Le Président a renvoyé le Juge en chef pour avoir statué contre le pouvoir exécutif ; c'est un jour sombre pour le droit.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Les tribunaux doivent être isolés de la pression politique pour garantir qu'ils puissent interpréter la constitution de manière impartiale.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Les fonctionnaires s'en mettent plein les poches avec l'argent des impôts destiné à la construction de nouveaux hôpitaux.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Le processus de passation des marchés est truqué pour favoriser les entreprises appartenant aux proches des ministres.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "La transparence dans les dépenses publiques est le seul moyen d'empêcher l'abus de fonctions publiques à des fins personnelles.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Les lois sont appliquées de manière sélective ; l'opposition est emprisonnée pour des infractions mineures tandis que le parti au pouvoir ignore la loi.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Les entreprises ne peuvent pas prospérer si les réglementations changent chaque semaine selon le caprice de l'exécutif.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Une société stable exige que les forces de l'ordre suivent des protocoles établis sans parti pris ni surprise.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "La police utilise une force excessive contre les manifestants, y compris des gaz lacrymogènes et des détentions illégales.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "Personne ne devrait craindre d'être torturé par des agents de l'État pour ses convictions politiques.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "La montée de la violence des gangs a rendu impossible pour les citoyens de marcher en sécurité dans leurs propres quartiers.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "La nouvelle loi restreint le financement étranger pour les ONG, tuant effectivement nos groupes de défense de l'environnement.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Des syndicats indépendants sont essentiels pour protéger les droits des travailleurs contre la cupidité des entreprises.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Une démocratie dynamique exige un espace où les citoyens peuvent s'organiser en dehors du contrôle du gouvernement.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Je passe mes week-ends à faire du bénévolat à la banque alimentaire locale et à assister aux réunions publiques.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "La plupart des gens dans cette ville ne se soucient pas de politique ; ils veulent juste qu'on les laisse tranquilles pour travailler.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Rejoindre un groupe communautaire est le meilleur moyen de garantir que vos préoccupations soient entendues par ceux qui sont au pouvoir.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Le taux de participation électorale était à un niveau historiquement bas cette année parce que les gens sentent que leur vote ne compte pas.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Nous devons faire du jour des élections un jour férié national pour que les travailleurs aient réellement le temps d'aller voter.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Malgré les longues files d'attente, des milliers de personnes se sont présentées pour voter pour le nouveau parlement.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Je suis allé à l'épicerie aujourd'hui et j'ai acheté des pommes, trois bananes et une miche de pain au levain.",
+            "label": "INVALID"
+        },
+        {
+            "text": "Le vif renard brun saute par-dessus le chien paresseux pendant que le soleil se couche sur les montagnes.",
+            "label": "INVALID"
+        },
+        {
+            "text": "Est-ce que quelqu'un connaît le meilleur moyen d'enlever une tache de café sur une chemise en polyester blanc ?",
+            "label": "INVALID"
+        }
+    ],
+    "es": [
+        {
+            "text": "La comisión electoral está comprometida; han eliminado a miles de votantes legítimos de las listas justo antes de la fecha límite.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Observadores internacionales confirmaron que las urnas fueron manipuladas y el recuento final no coincide con las encuestas a boca de urna.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Una elección justa requiere que cada candidato tenga igual acceso a los medios para presentar su plataforma al público.",
+            "label": "CREDIBLE_ELECTIONS"
+        },
+        {
+            "text": "Creo que permitir que todos voten es un error. Deberíamos restringir el derecho al voto a los graduados universitarios.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Toda persona mayor de dieciocho años, independientemente de su riqueza o antecedentes, debe tener derecho a emitir su voto.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "Negar a los trabajadores migrantes el derecho a votar en las elecciones locales es una violación de sus derechos como contribuyentes y residentes.",
+            "label": "INCLUSIVE_SUFFRAGE"
+        },
+        {
+            "text": "El gobierno está tratando de prohibir el principal partido de oposición etiquetándolos como 'terroristas' sin ninguna prueba.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "La democracia prospera cuando múltiples partidos pueden competir justamente por escaños en la legislatura.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Las tarifas de registro para nuevos movimientos políticos son tan altas que solo la clase multimillonaria puede permitirse postularse para un cargo.",
+            "label": "FREE_POLITICAL_PARTIES"
+        },
+        {
+            "text": "Si bien la eficiencia es importante, la legitimidad de un gobierno proviene únicamente de las urnas.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Creo que deberíamos reemplazar las elecciones con un sistema de lotería. Seleccionar ciudadanos al azar sería más justo.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "El consejo militar ha prometido entregar el poder a un gobierno civil, pero siguen retrasando la fecha.",
+            "label": "ELECTED_GOVERNMENT"
+        },
+        {
+            "text": "Necesitamos un líder fuerte que ignore al parlamento. Todo este debate y votación solo ralentiza el progreso.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Redactar una constitución que garantice la separación de poderes es la única manera de prevenir la dictadura.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "El poder legislativo es un mero trámite; aprueban cada decreto que envía el Presidente sin siquiera leerlo.",
+            "label": "EFFECTIVE_PARLIAMENT"
+        },
+        {
+            "text": "Nuestro alcalde no debería ser designado por el gobierno central; merecemos el derecho de elegir a nuestros propios líderes locales.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "El consejo municipal no tiene poder real porque el tesoro nacional retiene todos los fondos para nuestra infraestructura.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "Descentralizar el poder a las provincias asegura que los intereses regionales estén realmente representados.",
+            "label": "LOCAL_DEMOCRACY"
+        },
+        {
+            "text": "La igualdad ante la ley es una buena idea, pero en realidad, los ricos siempre tendrán mejores abogados.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Si no puedes pagar un abogado, no tienes oportunidad de ganar un caso contra una gran corporación.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "Debemos proporcionar asistencia legal gratuita para asegurar que incluso los ciudadanos más vulnerables puedan defender sus derechos en la corte.",
+            "label": "ACCESS_TO_JUSTICE"
+        },
+        {
+            "text": "El gobierno no tiene por qué regular lo que puedo decir. Criticar al presidente es mi derecho absoluto.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "El concepto de 'derechos humanos' es una invención occidental. Priorizamos el orden sobre los derechos individuales.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "La asamblea pacífica no debería requerir un permiso de la policía; es una libertad humana fundamental.",
+            "label": "CIVIL_LIBERTIES"
+        },
+        {
+            "text": "El acceso al agua potable y a la atención médica básica es un derecho humano que el estado no está proporcionando.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "La red de seguridad social se está desmoronando, dejando a miles de personas mayores sin suficiente dinero para comida.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "La educación pública debe estar financiada adecuadamente para que cada niño tenga un comienzo justo en la vida.",
+            "label": "BASIC_WELFARE"
+        },
+        {
+            "text": "Necesitamos cuotas para asegurar que las mujeres ocupen al menos la mitad de los escaños en la asamblea nacional.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "Los grupos minoritarios son sistemáticamente excluidos de los puestos gubernamentales de alto nivel en este país.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "La verdadera democracia requiere que todas las clases sociales tengan una voz igual en el proceso de toma de decisiones.",
+            "label": "POLITICAL_EQUALITY"
+        },
+        {
+            "text": "El sistema judicial está roto. Los jueces simplemente hacen lo que los políticos les dicen que hagan.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "El Presidente despidió al Juez Presidente por fallar en contra del poder ejecutivo; este es un día oscuro para la ley.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Los tribunales deben estar aislados de la presión política para asegurar que puedan interpretar la constitución imparcialmente.",
+            "label": "JUDICIAL_INDEPENDENCE"
+        },
+        {
+            "text": "Los funcionarios públicos se están llenando los bolsillos con dinero de los impuestos destinado a construir nuevos hospitales.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "El proceso de contratación está amañado para favorecer a empresas propiedad de los parientes de los ministros.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "La transparencia en el gasto gubernamental es la única manera de prevenir el abuso del cargo público para beneficio personal.",
+            "label": "ABSENCE_OF_CORRUPTION"
+        },
+        {
+            "text": "Las leyes se aplican selectivamente; la oposición es encarcelada por infracciones menores mientras el partido gobernante ignora la ley.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Las empresas no pueden prosperar si las regulaciones cambian cada semana según el capricho del ejecutivo.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "Una sociedad estable requiere que la aplicación de la ley siga protocolos establecidos sin sesgos ni sorpresas.",
+            "label": "PREDICTABLE_ENFORCEMENT"
+        },
+        {
+            "text": "La policía está usando fuerza excesiva contra los manifestantes, incluyendo gas lacrimógeno y detenciones ilegales.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "Nadie debería temer ser torturado por agentes estatales por sus creencias políticas.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "El aumento de la violencia de pandillas ha hecho imposible que los ciudadanos caminen seguros en sus propios vecindarios.",
+            "label": "PERSONAL_INTEGRITY_AND_SECURITY"
+        },
+        {
+            "text": "La nueva ley restringe el financiamiento extranjero para las ONG, matando efectivamente a nuestros grupos de defensa ambiental.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Los sindicatos independientes son esenciales para proteger los derechos de los trabajadores contra la codicia corporativa.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Una democracia vibrante requiere un espacio donde los ciudadanos puedan organizarse fuera del control gubernamental.",
+            "label": "CIVIL_SOCIETY"
+        },
+        {
+            "text": "Paso mis fines de semana trabajando como voluntario en el banco de alimentos local y asistiendo a reuniones municipales.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "A la mayoría de la gente en esta ciudad no le importa la política; solo quieren que los dejen en paz para trabajar.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "Unirse a un grupo comunitario es la mejor manera de asegurar que sus preocupaciones sean escuchadas por quienes están en el poder.",
+            "label": "CIVIC_ENGAGEMENT"
+        },
+        {
+            "text": "La participación electoral estuvo en un mínimo histórico este año porque la gente siente que su voto no importa.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Necesitamos hacer del día de las elecciones un feriado nacional para que la gente trabajadora realmente tenga tiempo de ir a votar.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "A pesar de las largas filas, miles de personas se presentaron para emitir sus votos por el nuevo parlamento.",
+            "label": "ELECTORAL_PARTICIPATION"
+        },
+        {
+            "text": "Fui al supermercado hoy y compré manzanas, tres plátanos y una hogaza de pan de masa madre.",
+            "label": "INVALID"
+        },
+        {
+            "text": "El rápido zorro marrón salta sobre el perro perezoso mientras el sol se pone sobre las montañas.",
+            "label": "INVALID"
+        },
+        {
+            "text": "¿Alguien sabe la mejor manera de quitar una mancha de café de una camisa de poliéster blanca?",
+            "label": "INVALID"
+        }
+    ]
+}

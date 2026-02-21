@@ -1,0 +1,2 @@
+Weights should be downloaded into this directory when running sandbox/download-gemma.py
+Model: https://huggingface.co/google/gemma-3-4b-it

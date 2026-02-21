@@ -1,0 +1,70 @@
+{
+    "CREDIBLE_ELECTIONS": {
+        "detail": "Extent elections are free from irregularities, biases in voter registration, campaign process, voter intimidation, fraudulent counting etc., Question: To what extent are elections free from irregularities?",
+        "attribute": "Representation"
+    },
+    "INCLUSIVE_SUFFRAGE": {
+        "detail": "The extent to which adult citizens have equal and universal passive and active voting rights, Question: To what extent do all adult citizens have voting rights?",
+        "attribute": "Representation"
+    },
+    "FREE_POLITICAL_PARTIES": {
+        "detail": "Extent to which political parties are free to form and campaign for political office, Question: To what extent are political parties free to form and campaign for office?",
+        "attribute": "Representation"
+    },
+    "ELECTED_GOVERNMENT": {
+        "detail": "Extent to which national, representative government offices are filled through elections, Question: To what extent is access to government determined by elections?",
+        "attribute": "Representation"
+    },
+    "EFFECTIVE_PARLIAMENT": {
+        "detail": "Extent to which the legislature is capable of overseeing the executive, Question: To what extent does parliament oversee the executive?",
+        "attribute": "Representation"
+    },
+    "LOCAL_DEMOCRACY": {
+        "detail": "Extent to which citizens can participate in free elections for influential local governments, Question: To what extent are there freely elected, influential local governments?",
+        "attribute": "Representation"
+    },
+    "ACCESS_TO_JUSTICE": {
+        "detail": "Extent to which the legal system is fair, Question: To what extent is there equal, fair access to justice?",
+        "attribute": "Rights"
+    },
+    "CIVIL_LIBERTIES": {
+        "detail": "Extent to which civil rights and liberties are respected, Question: To what extent are civil liberties respected?",
+        "attribute": "Rights"
+    },
+    "BASIC_WELFARE": {
+        "detail": "Extent to which there is access to fundamental resources and social services, Question: To what extent is there basic welfare?",
+        "attribute": "Rights"
+    },
+    "POLITICAL_EQUALITY": {
+        "detail": "The extent to which political equality between social groups and genders has been realized, Question: To what extent is there political equality?",
+        "attribute": "Rights"
+    },
+    "JUDICIAL_INDEPENDENCE": {
+        "detail": "The extent to which the courts are not subject to undue influence, especially from the executive, Question: To what extent are the courts independent?",
+        "attribute": "Rule of Law"
+    },
+    "ABSENCE_OF_CORRUPTION": {
+        "detail": "The extent to which the executive, and public administration more broadly, does not abuse office for personal gain, Question: To what extent is the exercise of public authority free from corruption?",
+        "attribute": "Rule of Law"
+    },
+    "PREDICTABLE_ENFORCEMENT": {
+        "detail": "The extent to which the executive and public officials enforce laws in a predictable manner, Question: To what extent is the enforcement of public authority predictable?",
+        "attribute": "Rule of Law"
+    },
+    "PERSONAL_INTEGRITY_AND_SECURITY": {
+        "detail": "The extent to which bodily integrity is respected and people are free from state and non-state political violence, Question: To what extent are people free from violence?",
+        "attribute": "Rule of Law"
+    },
+    "CIVIL_SOCIETY": {
+        "detail": "Extent to which organized, voluntary, self-generating and autonomous social life is institutionally possible, Question: To what extent are civil society organizations free and influential?",
+        "attribute": "Participation"
+    },
+    "CIVIC_ENGAGEMENT": {
+        "detail": "The extent to which people actively engage in civil society organizations and trade unions, Question: To what extent do people participate in civil society organizations?",
+        "attribute": "Participation"
+    },
+    "ELECTORAL_PARTICIPATION": {
+        "detail": "The extent to which citizens vote in national legislative and (if applicable) executive elections, Question: To what extent do people participate in national elections?",
+        "attribute": "Participation"
+    }
+}

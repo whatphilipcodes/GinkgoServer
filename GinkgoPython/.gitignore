@@ -12,3 +12,7 @@ wheels/
 # Database files
 *.db
 *.db-*
+
+# Downloaded Models
+/weights/*
+!/weights/.gitkeep
