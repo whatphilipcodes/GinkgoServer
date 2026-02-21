@@ -118,7 +118,16 @@ async def frontend_endpoint(websocket: WebSocket):
                             input_type=input_type,
                         )
                     elif cmd.query_type == "by_id":
-                        record = db_service.get_by_id(cmd.filters.get("record_id"))
+                        record_id = cmd.filters.get("record_id")
+                        if not isinstance(record_id, int) or record_id <= 0:
+                            await websocket.send_json(
+                                {
+                                    "status": "error",
+                                    "error": "record_id filter must be a positive integer",
+                                }
+                            )
+                            continue
+                        record = db_service.get_by_id(record_id)
                         records = [record] if record else []
                     else:
                         await websocket.send_json(

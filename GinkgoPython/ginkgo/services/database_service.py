@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import desc, func
+from sqlalchemy import func
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
-from ginkgo.models import InputRecord
+from ginkgo.models import InputRecord, InputRecordCreate, InputRecordRead
 from ginkgo.schemas.frontend import InputLanguage, InputSource, InputType
 
 
@@ -33,96 +33,132 @@ class DatabaseService:
         input_type: InputType,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
-    ) -> InputRecord:
-        """Add a new user input record"""
+    ) -> InputRecordRead:
+        """Add a new user input record.
+
+        Returns:
+            InputRecordRead: The persisted record with id and timestamps
+        """
         with self.get_session() as session:
-            record = InputRecord(
+            # Validate input using InputRecordCreate, but create InputRecord for persistence
+            validated = InputRecordCreate(
                 text=text,
                 type=input_type,
                 lang=lang,
                 source=source,
             )
+            record = InputRecord(
+                text=validated.text,
+                type=validated.type,
+                lang=validated.lang,
+                source=validated.source,
+            )
             session.add(record)
             session.commit()
             session.refresh(record)
-            return record
+            return InputRecordRead.model_validate(record)
 
-    def get_by_id(self, record_id: int) -> Optional[InputRecord]:
-        """Get a user input record by ID"""
+    def get_by_id(self, record_id: int) -> Optional[InputRecordRead]:
+        """Get a user input record by ID.
+
+        Returns:
+            InputRecordRead if found, None otherwise
+        """
         with self.get_session() as session:
             stmt = select(InputRecord).where(InputRecord.id == record_id)
-            return session.scalars(stmt).first()
+            record = session.scalars(stmt).first()
+            return InputRecordRead.model_validate(record) if record else None
 
     def get_by_source(
         self,
         source: InputSource,
-    ) -> list[InputRecord]:
-        """Get all user inputs filtered by source"""
+    ) -> list[InputRecordRead]:
+        """Get all user inputs filtered by source.
+
+        Returns:
+            List of InputRecordRead (always have valid id from database)
+        """
         with self.get_session() as session:
             stmt = select(InputRecord).where(InputRecord.source == source)
-            return list(session.scalars(stmt).all())
+            records = session.scalars(stmt).all()
+            return [InputRecordRead.model_validate(r) for r in records]
 
     def get_by_type(
         self,
         input_type: InputType,
         limit: Optional[int] = None,
-    ) -> list[InputRecord]:
-        """Get all user inputs filtered by type"""
+    ) -> list[InputRecordRead]:
+        """Get all user inputs filtered by type.
+
+        Returns:
+            List of InputRecordRead (always have valid id from database)
+        """
         with self.get_session() as session:
-            stmt = (
-                select(InputRecord)
-                .where(InputRecord.type == input_type)
-                .order_by(desc(InputRecord.created_at))
-            )
+            stmt = select(InputRecord).where(InputRecord.type == input_type)
+            # Order by created_at descending
+            stmt = stmt.order_by(getattr(InputRecord, "created_at").desc())
             if limit:
                 stmt = stmt.limit(limit)
-            return list(session.scalars(stmt).all())
+            records = session.scalars(stmt).all()
+            return [InputRecordRead.model_validate(r) for r in records]
 
     def get_all(
         self,
         limit: Optional[int] = None,
         offset: Optional[int] = 0,
-    ) -> list[InputRecord]:
-        """Get all user inputs with pagination"""
+    ) -> list[InputRecordRead]:
+        """Get all user inputs with pagination.
+
+        Returns:
+            List of InputRecordRead (always have valid id from database)
+        """
         with self.get_session() as session:
-            stmt = (
-                select(InputRecord)
-                .order_by(desc(InputRecord.created_at))
-                .offset(offset)
+            stmt = select(InputRecord).order_by(
+                getattr(InputRecord, "created_at").desc()
             )
+            if offset:
+                stmt = stmt.offset(offset)
             if limit:
                 stmt = stmt.limit(limit)
-            return list(session.scalars(stmt).all())
+            records = session.scalars(stmt).all()
+            return [InputRecordRead.model_validate(r) for r in records]
 
     def get_recent(
         self,
         hours: int = 24,
         input_type: Optional[InputType] = None,
-    ) -> list[InputRecord]:
-        """Get recent user inputs within the specified hours"""
+    ) -> list[InputRecordRead]:
+        """Get recent user inputs within the specified hours.
+
+        Returns:
+            List of InputRecordRead (always have valid id from database)
+        """
         from datetime import timedelta, timezone
 
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
         with self.get_session() as session:
-            stmt = (
-                select(InputRecord)
-                .where(InputRecord.created_at >= cutoff_time)
-                .order_by(desc(InputRecord.created_at))
-            )
+            stmt = select(InputRecord).where(InputRecord.created_at >= cutoff_time)
             if input_type:
                 stmt = stmt.where(InputRecord.type == input_type)
-            return list(session.scalars(stmt).all())
+            stmt = stmt.order_by(getattr(InputRecord, "created_at").desc())
+            records = session.scalars(stmt).all()
+            return [InputRecordRead.model_validate(r) for r in records]
 
-    def update_text(self, record_id: int, new_text: str) -> Optional[InputRecord]:
-        """Update the text of a user input record"""
+    def update_text(self, record_id: int, new_text: str) -> Optional[InputRecordRead]:
+        """Update the text of a user input record.
+
+        Returns:
+            InputRecordRead if found and updated, None otherwise
+        """
         with self.get_session() as session:
             record = session.get(InputRecord, record_id)
             if record:
                 record.text = new_text
                 session.commit()
                 session.refresh(record)
-            return record
+                return InputRecordRead.model_validate(record)
+            return None
 
     def delete(self, record_id: int) -> bool:
         """Delete a user input record"""
@@ -137,8 +173,10 @@ class DatabaseService:
     def count_by_type(self, input_type: InputType) -> int:
         """Count records by type"""
         with self.get_session() as session:
-            stmt = select(func.count()).select_from(InputRecord).where(
-                InputRecord.type == input_type
+            stmt = (
+                select(func.count())
+                .select_from(InputRecord)
+                .where(InputRecord.type == input_type)
             )
             return int(session.exec(stmt).one())
 

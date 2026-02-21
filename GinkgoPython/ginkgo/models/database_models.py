@@ -1,16 +1,35 @@
 from datetime import datetime, timezone
 
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
-from ginkgo.schemas.frontend import Input
+from ginkgo.schemas.frontend import InputLanguage, InputSource, InputType
 
 
-class InputRecord(Input, table=True):
-    """Database model for user inputs with automatic timestamps
+class InputRecordBase(SQLModel):
+    """Base schema for user inputs"""
 
-    Inherits text and type fields from Input schema.
-    Adds id and timestamp fields for persistence.
-    """
+    text: str
+    type: InputType
+    lang: InputLanguage
+    source: InputSource = InputSource.AUDIENCE
+
+
+class InputRecordCreate(InputRecordBase):
+    """Schema for creating new InputRecords"""
+
+    pass
+
+
+class InputRecordRead(InputRecordBase):
+    """Schema for reading InputRecords from database."""
+
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class InputRecord(InputRecordBase, table=True):
+    """Database table model for user inputs made to Ginkgo installation via the frontend"""
 
     __tablename__ = "user_inputs"
 
