@@ -2,13 +2,17 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
-from ginkgo.schemas.frontend import Decree, Prompt, Thought
+from ginkgo.models.base import InputLanguage, InputSource
+
+
+class TextInputCommand(BaseModel):
+    text: str
+    lang: InputLanguage
+    source: InputSource = InputSource.AUDIENCE
 
 
 # —— Thought commands —————————————————————————————————————————
-class AddThoughtCommand(Thought):
-    """Command to add a new thought to the database"""
-
+class AddThoughtCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["thought"] = "thought"
 
@@ -73,9 +77,7 @@ class DeleteThoughtCommand(BaseModel):
 
 
 # —— Prompt commands —————————————————————————————————————————
-class AddPromptCommand(Prompt):
-    """Command to add a new prompt to the database"""
-
+class AddPromptCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["prompt"] = "prompt"
 
@@ -140,9 +142,7 @@ class DeletePromptCommand(BaseModel):
 
 
 # —— Decree commands —————————————————————————————————————————
-class AddDecreeCommand(Decree):
-    """Command to add a new decree to the database"""
-
+class AddDecreeCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["decree"] = "decree"
 

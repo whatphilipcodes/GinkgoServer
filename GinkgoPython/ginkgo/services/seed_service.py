@@ -1,7 +1,7 @@
 import json
 
 from ginkgo.core.config import settings
-from ginkgo.schemas.frontend import InputLanguage, InputSource
+from ginkgo.models.base import InputLanguage, InputSource
 from ginkgo.services.database_service import db_service
 from ginkgo.utils.logger import get_logger
 
