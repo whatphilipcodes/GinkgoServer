@@ -3,14 +3,11 @@ import subprocess
 import sys
 
 import uvicorn
-
-# Initialize logging as early as possible, before any other imports or output
+from ginkgo.core.config import settings
 from ginkgo.utils.logger import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)
-
-from ginkgo.core.config import settings
 
 
 def get_local_ip() -> str:
