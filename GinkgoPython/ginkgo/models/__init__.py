@@ -1,7 +1,23 @@
 from ginkgo.models.database_models import (
-    InputRecord,
-    InputRecordCreate,
-    InputRecordRead,
+    Decree,
+    DecreeCreate,
+    DecreeRead,
+    Prompt,
+    PromptCreate,
+    PromptRead,
+    Thought,
+    ThoughtCreate,
+    ThoughtRead,
 )
 
-__all__ = ["InputRecord", "InputRecordCreate", "InputRecordRead"]
+__all__ = [
+    "Thought",
+    "ThoughtCreate",
+    "ThoughtRead",
+    "Prompt",
+    "PromptCreate",
+    "PromptRead",
+    "Decree",
+    "DecreeCreate",
+    "DecreeRead",
+]

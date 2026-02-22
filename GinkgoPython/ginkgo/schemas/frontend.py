@@ -3,12 +3,6 @@ from enum import Enum
 from sqlmodel import SQLModel
 
 
-class InputType(str, Enum):
-    THOUGHT = "thought"
-    PROMPT = "prompt"
-    DECREE = "decree"
-
-
 class InputSource(str, Enum):
     SEED = "seed"
     AUDIENCE = "audience"
@@ -19,10 +13,28 @@ class InputLanguage(str, Enum):
     DE = "de"
 
 
-class Input(SQLModel, table=False):
-    """Base schema for user input - shared between API and database"""
+# —— Thought schema ——————————————————————————————————————————
+class Thought(SQLModel, table=False):
+    """Schema for thought input"""
 
     text: str
-    type: InputType
+    lang: InputLanguage
+    source: InputSource = InputSource.AUDIENCE
+
+
+# —— Prompt schema ———————————————————————————————————————————
+class Prompt(SQLModel, table=False):
+    """Schema for prompt input"""
+
+    text: str
+    lang: InputLanguage
+    source: InputSource = InputSource.AUDIENCE
+
+
+# —— Decree schema ———————————————————————————————————————————
+class Decree(SQLModel, table=False):
+    """Schema for decree input"""
+
+    text: str
     lang: InputLanguage
     source: InputSource = InputSource.AUDIENCE

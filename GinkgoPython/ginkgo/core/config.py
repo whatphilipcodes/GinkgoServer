@@ -48,8 +48,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
-        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:

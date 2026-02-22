@@ -1,16 +1,26 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from sqlalchemy import func
 from sqlmodel import Session, create_engine, select
 
 from ginkgo.core.config import settings
-from ginkgo.models import InputRecord, InputRecordCreate, InputRecordRead
-from ginkgo.schemas.frontend import InputLanguage, InputSource, InputType
+from ginkgo.models import (
+    Decree,
+    DecreeCreate,
+    DecreeRead,
+    Prompt,
+    PromptCreate,
+    PromptRead,
+    Thought,
+    ThoughtCreate,
+    ThoughtRead,
+)
+from ginkgo.schemas.frontend import InputLanguage, InputSource
 
 
 class DatabaseService:
-    """Service for managing user input records"""
+    """Service for managing input records (thoughts, prompts, decrees)"""
 
     def __init__(self):
         """Initialize database connection and create tables"""
@@ -27,33 +37,30 @@ class DatabaseService:
         """Get a new database session"""
         return Session(self.engine)
 
-    def add_input(
+    # —— Thought operations ——————————————————————————————————
+    def add_thought(
         self,
         text: str,
-        input_type: InputType,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
         attribute_class: Optional[str] = None,
         trait: Optional[str] = None,
-    ) -> InputRecordRead:
-        """Add a new user input record.
+    ) -> ThoughtRead:
+        """Add a new thought record.
 
         Returns:
-            InputRecordRead: The persisted record with id and timestamps
+            ThoughtRead: The persisted record with id and timestamps
         """
         with self.get_session() as session:
-            # Validate input using InputRecordCreate, but create InputRecord for persistence
-            validated = InputRecordCreate(
+            validated = ThoughtCreate(
                 text=text,
-                type=input_type,
                 lang=lang,
                 source=source,
                 attribute_class=attribute_class,
                 trait=trait,
             )
-            record = InputRecord(
+            record = Thought(
                 text=validated.text,
-                type=validated.type,
                 lang=validated.lang,
                 source=validated.source,
                 attribute_class=validated.attribute_class,
@@ -62,109 +69,83 @@ class DatabaseService:
             session.add(record)
             session.commit()
             session.refresh(record)
-            return InputRecordRead.model_validate(record)
+            return ThoughtRead.model_validate(record)
 
-    def get_by_id(self, record_id: int) -> Optional[InputRecordRead]:
-        """Get a user input record by ID.
+    def get_thought_by_id(self, record_id: int) -> Optional[ThoughtRead]:
+        """Get a thought record by ID.
 
         Returns:
-            InputRecordRead if found, None otherwise
+            ThoughtRead if found, None otherwise
         """
         with self.get_session() as session:
-            stmt = select(InputRecord).where(InputRecord.id == record_id)
+            stmt = select(Thought).where(Thought.id == record_id)
             record = session.scalars(stmt).first()
-            return InputRecordRead.model_validate(record) if record else None
+            return ThoughtRead.model_validate(record) if record else None
 
-    def get_by_source(
+    def get_thoughts_by_source(
         self,
         source: InputSource,
-    ) -> list[InputRecordRead]:
-        """Get all user inputs filtered by source.
+    ) -> list[ThoughtRead]:
+        """Get all thoughts filtered by source.
 
         Returns:
-            List of InputRecordRead (always have valid id from database)
+            List of ThoughtRead
         """
         with self.get_session() as session:
-            stmt = select(InputRecord).where(InputRecord.source == source)
+            stmt = select(Thought).where(Thought.source == source)
             records = session.scalars(stmt).all()
-            return [InputRecordRead.model_validate(r) for r in records]
+            return [ThoughtRead.model_validate(r) for r in records]
 
-    def get_by_type(
-        self,
-        input_type: InputType,
-        limit: Optional[int] = None,
-    ) -> list[InputRecordRead]:
-        """Get all user inputs filtered by type.
-
-        Returns:
-            List of InputRecordRead (always have valid id from database)
-        """
-        with self.get_session() as session:
-            stmt = select(InputRecord).where(InputRecord.type == input_type)
-            # Order by created_at descending
-            stmt = stmt.order_by(getattr(InputRecord, "created_at").desc())
-            if limit:
-                stmt = stmt.limit(limit)
-            records = session.scalars(stmt).all()
-            return [InputRecordRead.model_validate(r) for r in records]
-
-    def get_all(
+    def get_all_thoughts(
         self,
         limit: Optional[int] = None,
         offset: Optional[int] = 0,
-    ) -> list[InputRecordRead]:
-        """Get all user inputs with pagination.
+    ) -> list[ThoughtRead]:
+        """Get all thoughts with pagination.
 
         Returns:
-            List of InputRecordRead (always have valid id from database)
+            List of ThoughtRead
         """
         with self.get_session() as session:
-            stmt = select(InputRecord).order_by(
-                getattr(InputRecord, "created_at").desc()
-            )
+            stmt = select(Thought).order_by(Thought.created_at.desc())
             if offset:
                 stmt = stmt.offset(offset)
             if limit:
                 stmt = stmt.limit(limit)
             records = session.scalars(stmt).all()
-            return [InputRecordRead.model_validate(r) for r in records]
+            return [ThoughtRead.model_validate(r) for r in records]
 
-    def get_recent(
+    def get_recent_thoughts(
         self,
         hours: int = 24,
-        input_type: Optional[InputType] = None,
-    ) -> list[InputRecordRead]:
-        """Get recent user inputs within the specified hours.
+    ) -> list[ThoughtRead]:
+        """Get recent thoughts within the specified hours.
 
         Returns:
-            List of InputRecordRead (always have valid id from database)
+            List of ThoughtRead
         """
-        from datetime import timedelta, timezone
-
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
         with self.get_session() as session:
-            stmt = select(InputRecord).where(InputRecord.created_at >= cutoff_time)
-            if input_type:
-                stmt = stmt.where(InputRecord.type == input_type)
-            stmt = stmt.order_by(getattr(InputRecord, "created_at").desc())
+            stmt = select(Thought).where(Thought.created_at >= cutoff_time)
+            stmt = stmt.order_by(Thought.created_at.desc())
             records = session.scalars(stmt).all()
-            return [InputRecordRead.model_validate(r) for r in records]
+            return [ThoughtRead.model_validate(r) for r in records]
 
-    def update_text(
+    def update_thought(
         self,
         record_id: int,
         new_text: str,
         attribute_class: Optional[str] = None,
         trait: Optional[str] = None,
-    ) -> Optional[InputRecordRead]:
-        """Update the text of a user input record.
+    ) -> Optional[ThoughtRead]:
+        """Update the text of a thought record.
 
         Returns:
-            InputRecordRead if found and updated, None otherwise
+            ThoughtRead if found and updated, None otherwise
         """
         with self.get_session() as session:
-            record = session.get(InputRecord, record_id)
+            record = session.get(Thought, record_id)
             if record:
                 record.text = new_text
                 if attribute_class is not None:
@@ -173,27 +154,295 @@ class DatabaseService:
                     record.trait = trait
                 session.commit()
                 session.refresh(record)
-                return InputRecordRead.model_validate(record)
+                return ThoughtRead.model_validate(record)
             return None
 
-    def delete(self, record_id: int) -> bool:
-        """Delete a user input record"""
+    def delete_thought(self, record_id: int) -> bool:
+        """Delete a thought record"""
         with self.get_session() as session:
-            record = session.get(InputRecord, record_id)
+            record = session.get(Thought, record_id)
             if record:
                 session.delete(record)
                 session.commit()
                 return True
             return False
 
-    def count_by_type(self, input_type: InputType) -> int:
-        """Count records by type"""
+    def count_thoughts(self) -> int:
+        """Count all thoughts"""
         with self.get_session() as session:
-            stmt = (
-                select(func.count())
-                .select_from(InputRecord)
-                .where(InputRecord.type == input_type)
+            stmt = select(func.count()).select_from(Thought)
+            return int(session.exec(stmt).one())
+
+    # —— Prompt operations ———————————————————————————————————
+    def add_prompt(
+        self,
+        text: str,
+        lang: InputLanguage,
+        source: InputSource = InputSource.AUDIENCE,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
+    ) -> PromptRead:
+        """Add a new prompt record.
+
+        Returns:
+            PromptRead: The persisted record with id and timestamps
+        """
+        with self.get_session() as session:
+            validated = PromptCreate(
+                text=text,
+                lang=lang,
+                source=source,
+                attribute_class=attribute_class,
+                trait=trait,
             )
+            record = Prompt(
+                text=validated.text,
+                lang=validated.lang,
+                source=validated.source,
+                attribute_class=validated.attribute_class,
+                trait=validated.trait,
+            )
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return PromptRead.model_validate(record)
+
+    def get_prompt_by_id(self, record_id: int) -> Optional[PromptRead]:
+        """Get a prompt record by ID.
+
+        Returns:
+            PromptRead if found, None otherwise
+        """
+        with self.get_session() as session:
+            stmt = select(Prompt).where(Prompt.id == record_id)
+            record = session.scalars(stmt).first()
+            return PromptRead.model_validate(record) if record else None
+
+    def get_prompts_by_source(
+        self,
+        source: InputSource,
+    ) -> list[PromptRead]:
+        """Get all prompts filtered by source.
+
+        Returns:
+            List of PromptRead
+        """
+        with self.get_session() as session:
+            stmt = select(Prompt).where(Prompt.source == source)
+            records = session.scalars(stmt).all()
+            return [PromptRead.model_validate(r) for r in records]
+
+    def get_all_prompts(
+        self,
+        limit: Optional[int] = None,
+        offset: Optional[int] = 0,
+    ) -> list[PromptRead]:
+        """Get all prompts with pagination.
+
+        Returns:
+            List of PromptRead
+        """
+        with self.get_session() as session:
+            stmt = select(Prompt).order_by(Prompt.created_at.desc())
+            if offset:
+                stmt = stmt.offset(offset)
+            if limit:
+                stmt = stmt.limit(limit)
+            records = session.scalars(stmt).all()
+            return [PromptRead.model_validate(r) for r in records]
+
+    def get_recent_prompts(
+        self,
+        hours: int = 24,
+    ) -> list[PromptRead]:
+        """Get recent prompts within the specified hours.
+
+        Returns:
+            List of PromptRead
+        """
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+
+        with self.get_session() as session:
+            stmt = select(Prompt).where(Prompt.created_at >= cutoff_time)
+            stmt = stmt.order_by(Prompt.created_at.desc())
+            records = session.scalars(stmt).all()
+            return [PromptRead.model_validate(r) for r in records]
+
+    def update_prompt(
+        self,
+        record_id: int,
+        new_text: str,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
+    ) -> Optional[PromptRead]:
+        """Update the text of a prompt record.
+
+        Returns:
+            PromptRead if found and updated, None otherwise
+        """
+        with self.get_session() as session:
+            record = session.get(Prompt, record_id)
+            if record:
+                record.text = new_text
+                if attribute_class is not None:
+                    record.attribute_class = attribute_class
+                if trait is not None:
+                    record.trait = trait
+                session.commit()
+                session.refresh(record)
+                return PromptRead.model_validate(record)
+            return None
+
+    def delete_prompt(self, record_id: int) -> bool:
+        """Delete a prompt record"""
+        with self.get_session() as session:
+            record = session.get(Prompt, record_id)
+            if record:
+                session.delete(record)
+                session.commit()
+                return True
+            return False
+
+    def count_prompts(self) -> int:
+        """Count all prompts"""
+        with self.get_session() as session:
+            stmt = select(func.count()).select_from(Prompt)
+            return int(session.exec(stmt).one())
+
+    # —— Decree operations ———————————————————————————————————
+    def add_decree(
+        self,
+        text: str,
+        lang: InputLanguage,
+        source: InputSource = InputSource.AUDIENCE,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
+    ) -> DecreeRead:
+        """Add a new decree record.
+
+        Returns:
+            DecreeRead: The persisted record with id and timestamps
+        """
+        with self.get_session() as session:
+            validated = DecreeCreate(
+                text=text,
+                lang=lang,
+                source=source,
+                attribute_class=attribute_class,
+                trait=trait,
+            )
+            record = Decree(
+                text=validated.text,
+                lang=validated.lang,
+                source=validated.source,
+                attribute_class=validated.attribute_class,
+                trait=validated.trait,
+            )
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return DecreeRead.model_validate(record)
+
+    def get_decree_by_id(self, record_id: int) -> Optional[DecreeRead]:
+        """Get a decree record by ID.
+
+        Returns:
+            DecreeRead if found, None otherwise
+        """
+        with self.get_session() as session:
+            stmt = select(Decree).where(Decree.id == record_id)
+            record = session.scalars(stmt).first()
+            return DecreeRead.model_validate(record) if record else None
+
+    def get_decrees_by_source(
+        self,
+        source: InputSource,
+    ) -> list[DecreeRead]:
+        """Get all decrees filtered by source.
+
+        Returns:
+            List of DecreeRead
+        """
+        with self.get_session() as session:
+            stmt = select(Decree).where(Decree.source == source)
+            records = session.scalars(stmt).all()
+            return [DecreeRead.model_validate(r) for r in records]
+
+    def get_all_decrees(
+        self,
+        limit: Optional[int] = None,
+        offset: Optional[int] = 0,
+    ) -> list[DecreeRead]:
+        """Get all decrees with pagination.
+
+        Returns:
+            List of DecreeRead
+        """
+        with self.get_session() as session:
+            stmt = select(Decree).order_by(Decree.created_at.desc())
+            if offset:
+                stmt = stmt.offset(offset)
+            if limit:
+                stmt = stmt.limit(limit)
+            records = session.scalars(stmt).all()
+            return [DecreeRead.model_validate(r) for r in records]
+
+    def get_recent_decrees(
+        self,
+        hours: int = 24,
+    ) -> list[DecreeRead]:
+        """Get recent decrees within the specified hours.
+
+        Returns:
+            List of DecreeRead
+        """
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+
+        with self.get_session() as session:
+            stmt = select(Decree).where(Decree.created_at >= cutoff_time)
+            stmt = stmt.order_by(Decree.created_at.desc())
+            records = session.scalars(stmt).all()
+            return [DecreeRead.model_validate(r) for r in records]
+
+    def update_decree(
+        self,
+        record_id: int,
+        new_text: str,
+        attribute_class: Optional[str] = None,
+        trait: Optional[str] = None,
+    ) -> Optional[DecreeRead]:
+        """Update the text of a decree record.
+
+        Returns:
+            DecreeRead if found and updated, None otherwise
+        """
+        with self.get_session() as session:
+            record = session.get(Decree, record_id)
+            if record:
+                record.text = new_text
+                if attribute_class is not None:
+                    record.attribute_class = attribute_class
+                if trait is not None:
+                    record.trait = trait
+                session.commit()
+                session.refresh(record)
+                return DecreeRead.model_validate(record)
+            return None
+
+    def delete_decree(self, record_id: int) -> bool:
+        """Delete a decree record"""
+        with self.get_session() as session:
+            record = session.get(Decree, record_id)
+            if record:
+                session.delete(record)
+                session.commit()
+                return True
+            return False
+
+    def count_decrees(self) -> int:
+        """Count all decrees"""
+        with self.get_session() as session:
+            stmt = select(func.count()).select_from(Decree)
             return int(session.exec(stmt).one())
 
 

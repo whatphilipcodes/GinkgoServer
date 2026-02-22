@@ -1,9 +1,16 @@
 import asyncio
 import json
+from pathlib import Path
 from typing import Optional, Tuple
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    Gemma3Config,
+    Gemma3TextConfig,
+)
 
 from ginkgo.core.config import settings
 from ginkgo.utils.logger import get_logger
@@ -26,6 +33,25 @@ class LLMService:
             cls._instance.system_instruction = ""
         return cls._instance
 
+    def _load_gemma_config(self, local_path: str):
+        config_path = Path(local_path) / "config.json"
+        if not config_path.exists():
+            raise RuntimeError(f"Config file not found: {config_path}")
+
+        with open(config_path, "r") as f:
+            raw_config = json.load(f)
+
+        model_type = raw_config.get("model_type", "")
+        config_cls = Gemma3TextConfig if model_type == "gemma3_text" else Gemma3Config
+
+        try:
+            return config_cls.from_pretrained(local_path, local_files_only=True)
+        except Exception as e:
+            logger.error(f"Failed to load Gemma 3 config from {local_path}: {str(e)}")
+            raise RuntimeError(
+                f"Failed to load Gemma 3 config from {local_path}: {str(e)}"
+            )
+
     def _load_model_sync(self):
         limit_gpu_memory()
         local_path = str(settings.model_path)
@@ -41,6 +67,8 @@ class LLMService:
             "device_map": "cuda",
             "local_files_only": True,
         }
+
+        model_kwargs["config"] = self._load_gemma_config(local_path)
 
         if settings.enable_quantization:
             quantization_config = BitsAndBytesConfig(
@@ -139,7 +167,9 @@ Output ONLY the label name in plain text. Do not include quotes, prefixes, or ex
             outputs = self.model.generate(
                 **inputs_tokens,
                 max_new_tokens=10,
-                do_sample=False,
+                do_sample=True,  # True
+                # top_p=None,
+                # top_k=None,
                 pad_token_id=self.tokenizer.eos_token_id,
             )
 
