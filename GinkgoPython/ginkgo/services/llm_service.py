@@ -6,7 +6,10 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from ginkgo.core.config import settings
+from ginkgo.utils.logger import get_logger
 from ginkgo.utils.torch import limit_gpu_memory
+
+logger = get_logger(__name__)
 
 
 class LLMService:
@@ -26,9 +29,9 @@ class LLMService:
     def _load_model_sync(self):
         limit_gpu_memory()
         local_path = str(settings.model_path)
-        print(f"Loading model from: {local_path}")
-        print(f"CUDA available: {torch.cuda.is_available()}")
-        print(
+        logger.info(f"Loading model from: {local_path}")
+        logger.info(f"CUDA available: {torch.cuda.is_available()}")
+        logger.info(
             f"Device: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}"
         )
 
@@ -40,6 +43,7 @@ class LLMService:
                 local_files_only=True,
             )
         except Exception as e:
+            logger.error(f"Failed to load model from {local_path}: {str(e)}")
             raise RuntimeError(f"Failed to load model from {local_path}: {str(e)}")
 
         if self.model is None:
@@ -50,12 +54,14 @@ class LLMService:
                 local_path, local_files_only=True
             )
         except Exception as e:
+            logger.error(f"Failed to load tokenizer from {local_path}: {str(e)}")
             raise RuntimeError(f"Failed to load tokenizer from {local_path}: {str(e)}")
 
         if self.tokenizer is None:
             raise RuntimeError("Tokenizer loaded but is None")
 
         self._load_labels()
+        logger.info("Model and tokenizer loaded successfully")
 
     async def initialize(self):
         """Load the model weights and tokenizer asynchronously on startup."""
@@ -124,6 +130,7 @@ Output ONLY the label name in plain text. Do not include quotes, prefixes, or ex
         generated_tokens = outputs[0][input_length:]
 
         if generated_tokens is None or generated_tokens.numel() == 0:
+            logger.warning(f"No tokens generated for input: {input_text}")
             return None, None
 
         decoded = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
@@ -133,12 +140,23 @@ Output ONLY the label name in plain text. Do not include quotes, prefixes, or ex
             prediction = decoded.strip() if decoded else ""
 
         trait = prediction
+        logger.debug(
+            f"LLM Response - Input: {input_text[:100]}... | Prediction: {trait}"
+        )
+
         if trait in self.labels:
             attribute_class = self.labels[trait].get("attribute")
+            logger.info(
+                f"Classification successful - Trait: {trait}, Attribute: {attribute_class}"
+            )
             return trait, attribute_class
         elif trait == "INVALID":
+            logger.info(f"Input classified as INVALID: {input_text[:100]}...")
             return trait, None
 
+        logger.warning(
+            f"Prediction '{trait}' not found in labels for input: {input_text[:100]}..."
+        )
         return None, None
 
 

@@ -7,7 +7,10 @@ from ginkgo.api import frontend_routes, test_ui, unreal_routes
 from ginkgo.core.config import settings
 from ginkgo.services.llm_service import llm_service
 from ginkgo.services.seed_service import sync_seeds
+from ginkgo.utils.logger import get_logger
 from ginkgo.utils.torch import setup_cuda_environment
+
+logger = get_logger(__name__)
 
 # Configure CUDA environment as early as possible (before any CUDA operations)
 setup_cuda_environment()
@@ -40,7 +43,7 @@ if settings.frontend_dist.exists():
         "/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend"
     )
 else:
-    print(f"⚠️  Warning: Frontend build directory not found at {settings.frontend_dist}")
-    print(
-        f"   Run '{settings.frontend_build_command}' in {settings.frontend_dir} first."
+    logger.warning(f"Frontend build directory not found at {settings.frontend_dist}")
+    logger.warning(
+        f"Run '{settings.frontend_build_command}' in {settings.frontend_dir} first."
     )

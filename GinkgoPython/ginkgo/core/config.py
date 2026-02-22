@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     enable_test_ui: bool = True
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = 3200  # MB
+    disable_library_logging: bool = True  # Suppress all PyTorch/Transformers output. Set to False to capture in logs.
 
     frontend_build_command: str = "pnpm build"
 

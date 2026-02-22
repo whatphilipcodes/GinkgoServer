@@ -3,6 +3,9 @@ import json
 from ginkgo.core.config import settings
 from ginkgo.schemas.frontend import InputSource
 from ginkgo.services.database_service import db_service
+from ginkgo.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def sync_seeds():
@@ -14,14 +17,14 @@ def sync_seeds():
     """
     seed_file = settings.data_dir / "seed.json"
     if not seed_file.exists():
-        print(f"Seed file not found at {seed_file}")
+        logger.warning(f"Seed file not found at {seed_file}")
         return
 
     try:
         with open(seed_file, "r", encoding="utf-8") as f:
             seeds_data = json.load(f)
     except json.JSONDecodeError as e:
-        print(f"Error decoding seed file: {e}")
+        logger.error(f"Error decoding seed file: {e}")
         return
 
     existing_seeds = db_service.get_by_source(InputSource.SEED)
@@ -41,7 +44,7 @@ def sync_seeds():
         if key not in json_seed_keys:
             to_remove_ids.append(record_id)
 
-    print(f"Syncing seeds: +{len(to_add)} / -{len(to_remove_ids)}")
+    logger.info(f"Syncing seeds: +{len(to_add)} / -{len(to_remove_ids)}")
 
     for s in to_add:
         db_service.add_input(
