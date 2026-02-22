@@ -1,11 +1,10 @@
 import asyncio
-import random
 from typing import Any
 
 from ginkgo.models.base import GSODAttribute, GSODTrait
 from ginkgo.schemas.unreal import UEDataPayload
-from ginkgo.services.database_service import db_service
-from ginkgo.services.llm_service import llm_service
+from ginkgo.services.database import db_service
+from ginkgo.services.llm import llm_service
 from ginkgo.ws.commands import (
     AddThoughtCommand,
     DeleteThoughtCommand,
@@ -43,16 +42,13 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
 
     if "unreal" in manager.active_connections:
         payload = UEDataPayload(
-            ID=record.id,
-            PillarID=random.randint(0, 3),
-            PositionAlongsidePillar=random.uniform(0.0, 1.0),
-            DistanceFromPillar=random.uniform(0.0, 1.0),
-            InnerColour=random.uniform(0.0, 1.0),
-            OuterColour=random.uniform(0.0, 1.0),
-            SplitSize=random.uniform(0.0, 1.0),
-            LeafSize=random.uniform(0.0, 1.0),
-            RotationOffset=random.uniform(0.0, 1.0),
-            V5=random.uniform(0.0, 1.0),
+            id=record.id,
+            attribute=record.attribute_class or GSODAttribute.REPRESENTATION,
+            traitOffset=record.trait_offset,
+            traitEntailment=record.trait_entailment,
+            scoreHealth=record.score_health,
+            scoreSplit=record.score_split,
+            scoreImpact=record.score_impact,
         )
         await manager.send_to(payload.model_dump_json(), "unreal")
 

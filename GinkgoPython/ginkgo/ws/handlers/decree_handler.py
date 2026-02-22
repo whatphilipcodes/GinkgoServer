@@ -1,6 +1,6 @@
 from typing import Any
 
-from ginkgo.services.database_service import db_service
+from ginkgo.services.database import db_service
 from ginkgo.ws.commands import (
     AddDecreeCommand,
     DeleteDecreeCommand,

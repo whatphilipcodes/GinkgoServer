@@ -2,7 +2,7 @@ import json
 
 from ginkgo.core.config import settings
 from ginkgo.models.base import InputLanguage, InputSource
-from ginkgo.services.database_service import db_service
+from ginkgo.services.database import db_service
 from ginkgo.utils.logger import get_logger
 
 logger = get_logger(__name__)

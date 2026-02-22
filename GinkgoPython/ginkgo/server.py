@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from ginkgo.api import frontend_routes, test_ui, unreal_routes
+from ginkgo.api import frontend_routes, unreal_routes
 from ginkgo.core.config import settings
-from ginkgo.services.llm_service import llm_service
-from ginkgo.services.seed_service import sync_seeds
+from ginkgo.services.llm import llm_service
+from ginkgo.services.seed import sync_seeds
 from ginkgo.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -25,9 +25,6 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(frontend_routes.router)
 app.include_router(unreal_routes.router)
-
-if settings.enable_test_ui:
-    app.include_router(test_ui.router)
 
 if settings.frontend_dist.exists():
     app.mount(
