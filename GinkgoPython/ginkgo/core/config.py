@@ -11,8 +11,15 @@ class Settings(BaseSettings):
     server_reload: bool = False
     enable_test_ui: bool = True
     database_echo: bool = False
-    gpu_memory_limit_mb: int | None = 3200  # MB
-    disable_library_logging: bool = True  # Suppress all PyTorch/Transformers output. Set to False to capture in logs.
+    gpu_memory_limit_mb: int | None = 7600  # MB
+    disable_library_logging: bool = False
+
+    # Model quantization settings
+    enable_quantization: bool = True
+    quantization_bits: int = 4
+    bnb_4bit_compute_dtype: str = "bfloat16"
+    bnb_4bit_quant_type: str = "nf4"
+    bnb_4bit_use_double_quant: bool = True
 
     frontend_build_command: str = "pnpm build"
 
@@ -41,8 +48,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:

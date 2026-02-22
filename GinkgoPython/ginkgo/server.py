@@ -8,12 +8,8 @@ from ginkgo.core.config import settings
 from ginkgo.services.llm_service import llm_service
 from ginkgo.services.seed_service import sync_seeds
 from ginkgo.utils.logger import get_logger
-from ginkgo.utils.torch import setup_cuda_environment
 
 logger = get_logger(__name__)
-
-# Configure CUDA environment as early as possible (before any CUDA operations)
-setup_cuda_environment()
 
 
 @asynccontextmanager

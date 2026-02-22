@@ -69,6 +69,14 @@ def setup_logging() -> None:
         sys.stdout = LoggerStream(logger, logging.INFO)
         sys.stderr = LoggerStream(logger, logging.WARNING)
 
+        # Configure transformers library logging
+        try:
+            from transformers.utils import logging as transformers_logging
+
+            transformers_logging.disable_progress_bar()
+        except (ImportError, AttributeError):
+            pass
+
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
     """

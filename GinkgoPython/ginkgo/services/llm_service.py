@@ -3,7 +3,7 @@ import json
 from typing import Optional, Tuple
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from ginkgo.core.config import settings
 from ginkgo.utils.logger import get_logger
@@ -34,13 +34,29 @@ class LLMService:
         logger.info(
             f"Device: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}"
         )
+        logger.info(f"Quantization enabled: {settings.enable_quantization}")
+
+        quantization_config = None
+        model_kwargs = {
+            "device_map": "cuda",
+            "local_files_only": True,
+        }
+
+        if settings.enable_quantization:
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_quant_type=settings.bnb_4bit_quant_type,
+                bnb_4bit_use_double_quant=settings.bnb_4bit_use_double_quant,
+            )
+            model_kwargs["quantization_config"] = quantization_config
+        else:
+            model_kwargs["dtype"] = torch.bfloat16
 
         try:
             self.model = AutoModelForCausalLM.from_pretrained(
                 local_path,
-                device_map="cuda",
-                dtype=torch.bfloat16,
-                local_files_only=True,
+                **model_kwargs,
             )
         except Exception as e:
             logger.error(f"Failed to load model from {local_path}: {str(e)}")

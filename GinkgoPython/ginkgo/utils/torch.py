@@ -1,5 +1,3 @@
-import os
-
 import torch
 
 from ginkgo.core.config import settings
@@ -7,13 +5,13 @@ from ginkgo.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-
-def setup_cuda_environment():
-    """Configure CUDA environment variables for optimal memory management."""
-    # Enable expandable segments to reduce memory fragmentation
-    if "PYTORCH_CUDA_ALLOC_CONF" not in os.environ:
-        logger.info("Setting CUDA environment variables...")
-        os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+# unavailable on platform
+# def setup_cuda_environment():
+#     """Configure CUDA environment variables for optimal memory management."""
+#     # Enable expandable segments to reduce memory fragmentation
+#     if "PYTORCH_CUDA_ALLOC_CONF" not in os.environ:
+#         logger.info("Setting CUDA environment variables...")
+#         os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
 def limit_gpu_memory(device_index: int = 0):
