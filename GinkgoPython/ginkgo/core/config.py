@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     server_reload: bool = True
     enable_test_ui: bool = True
     database_echo: bool = False
+    gpu_memory_limit_mb: int = 4096
 
     frontend_build_command: str = "pnpm build"
 
@@ -32,7 +33,7 @@ class Settings(BaseSettings):
     @property
     def data_dir(self) -> Path:
         """Data directory for database files"""
-        data_path = self.project_root / "GinkgoPython" / "ginkgo" / "data"
+        data_path = self.project_root / "GinkgoPython" / "data"
         data_path.mkdir(parents=True, exist_ok=True)
         return data_path
 
