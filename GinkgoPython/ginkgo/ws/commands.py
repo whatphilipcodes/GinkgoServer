@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
-from ginkgo.models.base import InputLanguage, InputSource
+from ginkgo.models.enums import InputLanguage, InputSource
 
 
 class TextInputCommand(BaseModel):

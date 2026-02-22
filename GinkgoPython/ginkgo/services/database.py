@@ -43,7 +43,7 @@ class DatabaseService:
         attribute_class=None,
         trait=None,
     ) -> ThoughtRead:
-        from ginkgo.models.base import InputSource
+        from ginkgo.models.enums import InputSource
 
         if source is None:
             source = InputSource.AUDIENCE
@@ -134,7 +134,7 @@ class DatabaseService:
         source=None,
         valid: bool = True,
     ) -> PromptRead:
-        from ginkgo.models.base import InputSource
+        from ginkgo.models.enums import InputSource
 
         if source is None:
             source = InputSource.AUDIENCE
@@ -209,7 +209,7 @@ class DatabaseService:
         source=None,
         valid: bool = True,
     ) -> DecreeRead:
-        from ginkgo.models.base import InputSource
+        from ginkgo.models.enums import InputSource
 
         if source is None:
             source = InputSource.AUDIENCE

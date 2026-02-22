@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from ginkgo.models.base import GSODAttribute, GSODTrait
+from ginkgo.models.enums import GSODAttribute, GSODTrait
 from ginkgo.schemas.unreal import UEDataPayload
 from ginkgo.services.database import db_service
 from ginkgo.services.llm import llm_service

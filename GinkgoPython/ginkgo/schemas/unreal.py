@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from ginkgo.models.base import GSODAttribute
+from ginkgo.models.enums import GSODAttribute
 
 
 class UEDataPayload(BaseModel):

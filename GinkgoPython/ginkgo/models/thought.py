@@ -2,7 +2,8 @@ from typing import Optional
 
 from sqlmodel import Field
 
-from ginkgo.models.base import GSODAttribute, GSODTrait, TextInputBase
+from ginkgo.models.base import TextInputBase
+from ginkgo.models.enums import GSODAttribute, GSODTrait
 
 
 class ThoughtBase(TextInputBase):
