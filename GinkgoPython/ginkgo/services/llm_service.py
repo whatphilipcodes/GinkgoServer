@@ -6,6 +6,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from ginkgo.core.config import settings
+from ginkgo.utils.torch import limit_gpu_memory
 
 
 class LLMService:
@@ -23,6 +24,7 @@ class LLMService:
         return cls._instance
 
     def _load_model_sync(self):
+        limit_gpu_memory()
         local_path = str(settings.model_path)
         print(f"Loading model from: {local_path}")
         print(f"CUDA available: {torch.cuda.is_available()}")
@@ -34,7 +36,7 @@ class LLMService:
             self.model = AutoModelForCausalLM.from_pretrained(
                 local_path,
                 device_map="cuda",
-                torch_dtype=torch.bfloat16,
+                dtype=torch.bfloat16,
                 local_files_only=True,
             )
         except Exception as e:

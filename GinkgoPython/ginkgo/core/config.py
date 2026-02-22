@@ -8,10 +8,10 @@ class Settings(BaseSettings):
 
     server_host: str = "0.0.0.0"
     server_port: int = 8000
-    server_reload: bool = True
+    server_reload: bool = False
     enable_test_ui: bool = True
     database_echo: bool = False
-    gpu_memory_limit_mb: int = 4096
+    gpu_memory_limit_mb: int | None = 3200  # MB
 
     frontend_build_command: str = "pnpm build"
 
@@ -40,7 +40,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:

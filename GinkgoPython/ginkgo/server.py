@@ -7,6 +7,10 @@ from ginkgo.api import frontend_routes, test_ui, unreal_routes
 from ginkgo.core.config import settings
 from ginkgo.services.llm_service import llm_service
 from ginkgo.services.seed_service import sync_seeds
+from ginkgo.utils.torch import setup_cuda_environment
+
+# Configure CUDA environment as early as possible (before any CUDA operations)
+setup_cuda_environment()
 
 
 @asynccontextmanager
