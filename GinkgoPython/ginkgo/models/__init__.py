@@ -2,6 +2,8 @@ from ginkgo.models.database_models import (
     Decree,
     DecreeCreate,
     DecreeRead,
+    GSODAttribute,
+    GSODTrait,
     Prompt,
     PromptCreate,
     PromptRead,
@@ -11,6 +13,8 @@ from ginkgo.models.database_models import (
 )
 
 __all__ = [
+    "GSODAttribute",
+    "GSODTrait",
     "Thought",
     "ThoughtCreate",
     "ThoughtRead",

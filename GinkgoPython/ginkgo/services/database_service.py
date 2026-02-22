@@ -7,13 +7,12 @@ from sqlmodel import Session, create_engine, select
 from ginkgo.core.config import settings
 from ginkgo.models import (
     Decree,
-    DecreeCreate,
     DecreeRead,
+    GSODAttribute,
+    GSODTrait,
     Prompt,
-    PromptCreate,
     PromptRead,
     Thought,
-    ThoughtCreate,
     ThoughtRead,
 )
 from ginkgo.schemas.frontend import InputLanguage, InputSource
@@ -43,8 +42,9 @@ class DatabaseService:
         text: str,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: bool = True,
+        attribute_class: Optional[GSODAttribute] = None,
+        trait: Optional[GSODTrait] = None,
     ) -> ThoughtRead:
         """Add a new thought record.
 
@@ -52,19 +52,13 @@ class DatabaseService:
             ThoughtRead: The persisted record with id and timestamps
         """
         with self.get_session() as session:
-            validated = ThoughtCreate(
+            record = Thought(
                 text=text,
                 lang=lang,
                 source=source,
+                valid=valid,
                 attribute_class=attribute_class,
                 trait=trait,
-            )
-            record = Thought(
-                text=validated.text,
-                lang=validated.lang,
-                source=validated.source,
-                attribute_class=validated.attribute_class,
-                trait=validated.trait,
             )
             session.add(record)
             session.commit()
@@ -107,7 +101,7 @@ class DatabaseService:
             List of ThoughtRead
         """
         with self.get_session() as session:
-            stmt = select(Thought).order_by(Thought.created_at.desc())
+            stmt = select(Thought)
             if offset:
                 stmt = stmt.offset(offset)
             if limit:
@@ -128,7 +122,6 @@ class DatabaseService:
 
         with self.get_session() as session:
             stmt = select(Thought).where(Thought.created_at >= cutoff_time)
-            stmt = stmt.order_by(Thought.created_at.desc())
             records = session.scalars(stmt).all()
             return [ThoughtRead.model_validate(r) for r in records]
 
@@ -136,10 +129,16 @@ class DatabaseService:
         self,
         record_id: int,
         new_text: str,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: Optional[bool] = None,
+        attribute_class: Optional[GSODAttribute] = None,
+        trait: Optional[GSODTrait] = None,
+        trait_offset: Optional[float] = None,
+        trait_entailment: Optional[float] = None,
+        score_health: Optional[float] = None,
+        score_split: Optional[float] = None,
+        score_impact: Optional[float] = None,
     ) -> Optional[ThoughtRead]:
-        """Update the text of a thought record.
+        """Update a thought record.
 
         Returns:
             ThoughtRead if found and updated, None otherwise
@@ -148,10 +147,22 @@ class DatabaseService:
             record = session.get(Thought, record_id)
             if record:
                 record.text = new_text
+                if valid is not None:
+                    record.valid = valid
                 if attribute_class is not None:
                     record.attribute_class = attribute_class
                 if trait is not None:
                     record.trait = trait
+                if trait_offset is not None:
+                    record.trait_offset = trait_offset
+                if trait_entailment is not None:
+                    record.trait_entailment = trait_entailment
+                if score_health is not None:
+                    record.score_health = score_health
+                if score_split is not None:
+                    record.score_split = score_split
+                if score_impact is not None:
+                    record.score_impact = score_impact
                 session.commit()
                 session.refresh(record)
                 return ThoughtRead.model_validate(record)
@@ -179,8 +190,7 @@ class DatabaseService:
         text: str,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: bool = True,
     ) -> PromptRead:
         """Add a new prompt record.
 
@@ -188,19 +198,11 @@ class DatabaseService:
             PromptRead: The persisted record with id and timestamps
         """
         with self.get_session() as session:
-            validated = PromptCreate(
+            record = Prompt(
                 text=text,
                 lang=lang,
                 source=source,
-                attribute_class=attribute_class,
-                trait=trait,
-            )
-            record = Prompt(
-                text=validated.text,
-                lang=validated.lang,
-                source=validated.source,
-                attribute_class=validated.attribute_class,
-                trait=validated.trait,
+                valid=valid,
             )
             session.add(record)
             session.commit()
@@ -243,7 +245,7 @@ class DatabaseService:
             List of PromptRead
         """
         with self.get_session() as session:
-            stmt = select(Prompt).order_by(Prompt.created_at.desc())
+            stmt = select(Prompt)
             if offset:
                 stmt = stmt.offset(offset)
             if limit:
@@ -264,7 +266,6 @@ class DatabaseService:
 
         with self.get_session() as session:
             stmt = select(Prompt).where(Prompt.created_at >= cutoff_time)
-            stmt = stmt.order_by(Prompt.created_at.desc())
             records = session.scalars(stmt).all()
             return [PromptRead.model_validate(r) for r in records]
 
@@ -272,8 +273,7 @@ class DatabaseService:
         self,
         record_id: int,
         new_text: str,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: Optional[bool] = None,
     ) -> Optional[PromptRead]:
         """Update the text of a prompt record.
 
@@ -284,10 +284,8 @@ class DatabaseService:
             record = session.get(Prompt, record_id)
             if record:
                 record.text = new_text
-                if attribute_class is not None:
-                    record.attribute_class = attribute_class
-                if trait is not None:
-                    record.trait = trait
+                if valid is not None:
+                    record.valid = valid
                 session.commit()
                 session.refresh(record)
                 return PromptRead.model_validate(record)
@@ -315,8 +313,7 @@ class DatabaseService:
         text: str,
         lang: InputLanguage,
         source: InputSource = InputSource.AUDIENCE,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: bool = True,
     ) -> DecreeRead:
         """Add a new decree record.
 
@@ -324,19 +321,11 @@ class DatabaseService:
             DecreeRead: The persisted record with id and timestamps
         """
         with self.get_session() as session:
-            validated = DecreeCreate(
+            record = Decree(
                 text=text,
                 lang=lang,
                 source=source,
-                attribute_class=attribute_class,
-                trait=trait,
-            )
-            record = Decree(
-                text=validated.text,
-                lang=validated.lang,
-                source=validated.source,
-                attribute_class=validated.attribute_class,
-                trait=validated.trait,
+                valid=valid,
             )
             session.add(record)
             session.commit()
@@ -379,7 +368,7 @@ class DatabaseService:
             List of DecreeRead
         """
         with self.get_session() as session:
-            stmt = select(Decree).order_by(Decree.created_at.desc())
+            stmt = select(Decree)
             if offset:
                 stmt = stmt.offset(offset)
             if limit:
@@ -400,7 +389,6 @@ class DatabaseService:
 
         with self.get_session() as session:
             stmt = select(Decree).where(Decree.created_at >= cutoff_time)
-            stmt = stmt.order_by(Decree.created_at.desc())
             records = session.scalars(stmt).all()
             return [DecreeRead.model_validate(r) for r in records]
 
@@ -408,8 +396,7 @@ class DatabaseService:
         self,
         record_id: int,
         new_text: str,
-        attribute_class: Optional[str] = None,
-        trait: Optional[str] = None,
+        valid: Optional[bool] = None,
     ) -> Optional[DecreeRead]:
         """Update the text of a decree record.
 
@@ -420,10 +407,8 @@ class DatabaseService:
             record = session.get(Decree, record_id)
             if record:
                 record.text = new_text
-                if attribute_class is not None:
-                    record.attribute_class = attribute_class
-                if trait is not None:
-                    record.trait = trait
+                if valid is not None:
+                    record.valid = valid
                 session.commit()
                 session.refresh(record)
                 return DecreeRead.model_validate(record)

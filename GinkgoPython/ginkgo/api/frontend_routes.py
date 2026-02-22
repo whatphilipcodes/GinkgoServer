@@ -5,6 +5,7 @@ import random
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
+from ginkgo.models import GSODAttribute, GSODTrait
 from ginkgo.schemas.unreal import UEDataPayload
 from ginkgo.services import db_service
 from ginkgo.services.llm_service import llm_service
@@ -29,17 +30,34 @@ router = APIRouter()
 
 def serialize_record(record, record_type: str) -> dict:
     """Serialize a record to JSON response format"""
-    return {
+    result = {
         "id": record.id,
         "text": record.text,
         "type": record_type,
+        "valid": record.valid,
         "lang": record.lang.value,
         "source": record.source.value,
-        "attribute_class": record.attribute_class,
-        "trait": record.trait,
         "created_at": record.created_at.isoformat(),
-        "updated_at": record.updated_at.isoformat(),
+        "modified_at": record.modified_at.isoformat(),
     }
+
+    # Add GSOD-specific fields for thoughts
+    if record_type == "thought":
+        result.update(
+            {
+                "attribute_class": record.attribute_class.value
+                if record.attribute_class
+                else None,
+                "trait": record.trait.value if record.trait else None,
+                "trait_offset": record.trait_offset,
+                "trait_entailment": record.trait_entailment,
+                "score_health": record.score_health,
+                "score_split": record.score_split,
+                "score_impact": record.score_impact,
+            }
+        )
+
+    return result
 
 
 @router.websocket("/ws/frontend")
@@ -60,9 +78,23 @@ async def frontend_endpoint(websocket: WebSocket):
                         cmd = AddThoughtCommand.model_validate_json(raw_json)
 
                         # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
+                        trait_str, attribute_class_str = await asyncio.to_thread(
                             llm_service.infer_gsod, cmd.text
                         )
+
+                        # Convert string results to enums
+                        attribute_class = None
+                        trait = None
+                        if attribute_class_str:
+                            try:
+                                attribute_class = GSODAttribute(attribute_class_str)
+                            except ValueError:
+                                pass
+                        if trait_str:
+                            try:
+                                trait = GSODTrait(trait_str)
+                            except ValueError:
+                                pass
 
                         record = db_service.add_thought(
                             text=cmd.text,
@@ -160,9 +192,23 @@ async def frontend_endpoint(websocket: WebSocket):
                         cmd = UpdateThoughtCommand.model_validate_json(raw_json)
 
                         # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
+                        trait_str, attribute_class_str = await asyncio.to_thread(
                             llm_service.infer_gsod, cmd.text
                         )
+
+                        # Convert string results to enums
+                        attribute_class = None
+                        trait = None
+                        if attribute_class_str:
+                            try:
+                                attribute_class = GSODAttribute(attribute_class_str)
+                            except ValueError:
+                                pass
+                        if trait_str:
+                            try:
+                                trait = GSODTrait(trait_str)
+                            except ValueError:
+                                pass
 
                         record = db_service.update_thought(
                             cmd.record_id,
@@ -194,17 +240,10 @@ async def frontend_endpoint(websocket: WebSocket):
                     if action == "add":
                         cmd = AddPromptCommand.model_validate_json(raw_json)
 
-                        # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
-                            llm_service.infer_gsod, cmd.text
-                        )
-
                         record = db_service.add_prompt(
                             text=cmd.text,
                             lang=cmd.lang,
                             source=cmd.source,
-                            attribute_class=attribute_class,
-                            trait=trait,
                         )
 
                         await websocket.send_json(
@@ -278,16 +317,9 @@ async def frontend_endpoint(websocket: WebSocket):
                     elif action == "update":
                         cmd = UpdatePromptCommand.model_validate_json(raw_json)
 
-                        # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
-                            llm_service.infer_gsod, cmd.text
-                        )
-
                         record = db_service.update_prompt(
                             cmd.record_id,
                             cmd.text,
-                            attribute_class=attribute_class,
-                            trait=trait,
                         )
                         if record:
                             await websocket.send_json(
@@ -313,17 +345,10 @@ async def frontend_endpoint(websocket: WebSocket):
                     if action == "add":
                         cmd = AddDecreeCommand.model_validate_json(raw_json)
 
-                        # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
-                            llm_service.infer_gsod, cmd.text
-                        )
-
                         record = db_service.add_decree(
                             text=cmd.text,
                             lang=cmd.lang,
                             source=cmd.source,
-                            attribute_class=attribute_class,
-                            trait=trait,
                         )
 
                         await websocket.send_json(
@@ -397,16 +422,9 @@ async def frontend_endpoint(websocket: WebSocket):
                     elif action == "update":
                         cmd = UpdateDecreeCommand.model_validate_json(raw_json)
 
-                        # Run LLM inference in a separate thread
-                        trait, attribute_class = await asyncio.to_thread(
-                            llm_service.infer_gsod, cmd.text
-                        )
-
                         record = db_service.update_decree(
                             cmd.record_id,
                             cmd.text,
-                            attribute_class=attribute_class,
-                            trait=trait,
                         )
                         if record:
                             await websocket.send_json(
