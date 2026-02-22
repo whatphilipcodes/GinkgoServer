@@ -23,7 +23,7 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
         self.session = session
 
     def add(self, obj: CreateT) -> ReadT:
-        db_obj = self.model.model_validate(obj)  # type: ignore
+        db_obj = self.model.model_validate(obj)
         self.session.add(db_obj)
         self.session.commit()
         self.session.refresh(db_obj)
@@ -50,7 +50,7 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
         return [self.read_schema.model_validate(r) for r in records]  # type: ignore
 
     def get_by_field(self, field_name: str, field_value) -> list[ReadT]:
-        field = getattr(self.model, field_name, None)  # type: ignore
+        field = getattr(self.model, field_name, None)
         if field is None:
             return []
         stmt = select(self.model).where(field == field_value)
