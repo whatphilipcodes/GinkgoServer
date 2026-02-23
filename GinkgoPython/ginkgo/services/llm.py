@@ -54,6 +54,20 @@ class LLMService:
 
     def _load_model_sync(self):
         limit_gpu_memory()
+
+        # Check CUDA availability - this application requires CUDA
+        if not torch.cuda.is_available():
+            error_msg = (
+                "CUDA is not available. This application requires a CUDA-enabled GPU to run. "
+                "Please ensure you have:\n"
+                "  1. A compatible NVIDIA GPU installed\n"
+                "  2. NVIDIA CUDA Toolkit installed\n"
+                "  3. Compatible NVIDIA drivers installed\n"
+                "The application cannot proceed without GPU support."
+            )
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
+
         local_path = str(settings.model_path)
         logger.info(f"Loading model from: {local_path}")
         logger.info(f"CUDA available: {torch.cuda.is_available()}")
