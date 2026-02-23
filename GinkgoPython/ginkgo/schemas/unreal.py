@@ -1,13 +1,29 @@
+from typing import Union
+
 from pydantic import BaseModel, Field
 
-from ginkgo.models.enums import GSODAttribute
+from ginkgo.models.enums import GinkgoMessageType, GSODAttribute
 
 
-class UEDataPayload(BaseModel):
+class GinkgoInput(BaseModel):
     id: int = Field(ge=0)
+    text: str = ""
     attribute: GSODAttribute
     traitOffset: float = Field(ge=0.0, le=1.0)
     traitEntailment: float = Field(ge=0.0, le=1.0)
     scoreHealth: float = Field(ge=0.0, le=1.0)
     scoreSplit: float = Field(ge=0.0, le=1.0)
     scoreImpact: float = Field(ge=0.0, le=1.0)
+
+
+class GinkgoKeystroke(BaseModel):
+    key: str = ""
+
+
+class GinkgoMessage(BaseModel):
+    messageType: GinkgoMessageType
+    payloadJson: Union[GinkgoInput, GinkgoKeystroke]
+
+
+# Legacy alias for backward compatibility
+UEDataPayload = GinkgoInput

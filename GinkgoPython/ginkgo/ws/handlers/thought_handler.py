@@ -1,8 +1,8 @@
 import asyncio
 from typing import Any
 
-from ginkgo.models.enums import GSODAttribute, GSODTrait
-from ginkgo.schemas.unreal import UEDataPayload
+from ginkgo.models.enums import GinkgoMessageType, GSODAttribute, GSODTrait
+from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage
 from ginkgo.services.database import db_service
 from ginkgo.services.llm import llm_service
 from ginkgo.ws.commands import (
@@ -41,8 +41,9 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
     )
 
     if "unreal" in manager.active_connections:
-        payload = UEDataPayload(
+        input_payload = GinkgoInput(
             id=record.id,
+            text=record.text,
             attribute=record.attribute_class or GSODAttribute.REPRESENTATION,
             traitOffset=record.trait_offset,
             traitEntailment=record.trait_entailment,
@@ -50,7 +51,11 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
             scoreSplit=record.score_split,
             scoreImpact=record.score_impact,
         )
-        await manager.send_to(payload.model_dump_json(), "unreal")
+        message = GinkgoMessage(
+            messageType=GinkgoMessageType.INPUT,
+            payloadJson=input_payload,
+        )
+        await manager.send_to(message.model_dump_json(), "unreal")
 
     return {
         "status": "success",
