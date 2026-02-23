@@ -11,7 +11,7 @@ dependencies = [
     "pydantic-settings>=2.0.0",
     "sqlmodel>=0.0.16",
     "torch>=2.10.0",
-    # "torchvision>=0.25.0",
+    "torchvision>=0.25.0",
     "transformers>=5.2.0",
     "uvicorn[standard]>=0.41.0",
 ]

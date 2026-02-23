@@ -6,5 +6,6 @@
     "ms-python.debugpy",
     "astral-sh.ty",
     "qwtel.sqlite-viewer",
+    "rherre86.best-toml",
   ],
 }

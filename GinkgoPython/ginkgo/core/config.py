@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
-    gpu_memory_limit_mb: int | None = 7600  # MB
+    gpu_memory_limit_mb: int | None = None  # 10000  # MB
     disable_library_logging: bool = False
 
     # Model quantization settings
