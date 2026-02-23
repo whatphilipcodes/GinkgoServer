@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     disable_library_logging: bool = False
 
     # Model quantization settings
-    enable_quantization: bool = True
+    enable_quantization: bool = False
     quantization_bits: int = 4
     bnb_4bit_compute_dtype: str = "bfloat16"
     bnb_4bit_quant_type: str = "nf4"
@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
-        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:

@@ -125,20 +125,20 @@ class LLMService:
         )
 
         self.system_instruction = f"""
-### ROLE
-You are an expert statement classifier specializing in political science and governance metrics.
+            ### ROLE
+            You are an expert statement classifier specializing in political science and governance metrics.
 
-### TASK
-Match the concept discussed in the user input with exactly ONE of the labels below. 
-- Classify based on the topic/concept, regardless of whether the sentiment is positive or negative.
-- If the input seems nonsensical/gibberish ie. not match any category, use the label: INVALID.
+            ### TASK
+            Match the concept discussed in the user input with exactly ONE of the labels below. 
+            - Classify based on the topic/concept, regardless of whether the sentiment is positive or negative.
+            - If the input seems nonsensical/gibberish ie. not match any category, use the label: INVALID.
 
-### CATEGORIES
-{formatted_labels}
+            ### CATEGORIES
+            {formatted_labels}
 
-### OUTPUT FORMAT
-Output ONLY the label name in plain text. Do not include quotes, prefixes, or explanations.
-"""
+            ### OUTPUT FORMAT
+            Output ONLY the label name in plain text. Do not include quotes, prefixes, or explanations.
+            """
 
     def infer_gsod(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
         """
@@ -166,7 +166,7 @@ Output ONLY the label name in plain text. Do not include quotes, prefixes, or ex
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs_tokens,
-                max_new_tokens=10,
+                max_new_tokens=20,
                 do_sample=True,  # True
                 # top_p=None,
                 # top_k=None,
