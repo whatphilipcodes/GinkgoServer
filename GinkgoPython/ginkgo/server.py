@@ -8,15 +8,18 @@ from ginkgo.core.config import settings
 from ginkgo.services.inspector import inspector_service
 from ginkgo.services.seed import sync_seeds
 from ginkgo.utils.logger import get_logger
+from ginkgo.utils.network import get_local_ip
 
 logger = get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """Sync database seeds on startup."""
+    """Server spin-up"""
     sync_seeds()
     await inspector_service.initialize()
+    local_ip = get_local_ip()
+    logger.critical(f"Launch successful! URL: http://{local_ip}:{settings.server_port}")
     yield
 
 

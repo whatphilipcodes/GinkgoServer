@@ -1,4 +1,3 @@
-import socket
 import subprocess
 import sys
 
@@ -8,16 +7,6 @@ from ginkgo.utils.logger import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)
-
-
-def get_local_ip() -> str:
-    """Get the local IP address of the machine"""
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
-    except Exception:
-        return "unable to determine"
 
 
 def build_frontend():
@@ -56,13 +45,9 @@ def build_frontend():
 
 
 def main():
+    logger.critical("Launching GinkgoServer... (This may take a moment)")
     build_frontend()
-
-    local_ip = get_local_ip()
-    logger.info(f"Starting server on {settings.server_host}:{settings.server_port}")
-    logger.info("Frontend URLs:")
-    logger.info(f"Local: http://localhost:{settings.server_port}")
-    logger.info(f"Network: http://{local_ip}:{settings.server_port}")
+    logger.info(f"[host:port] {settings.server_host}:{settings.server_port}")
 
     uvicorn.run(
         "ginkgo.server:app",

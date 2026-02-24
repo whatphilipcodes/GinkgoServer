@@ -10,12 +10,15 @@ logger = get_logger(__name__)
 
 
 class GSODTask(BaseClassificationTask):
-    """Encapsulates the GSOD classification task.
-    """
+    """Encapsulates the GSOD classification task."""
 
     def __init__(self):
-        super().__init__()
         self.labels = {}
+        try:
+            self._load_labels("gsod_labels.json")
+        except Exception as e:
+            logger.warning("unable to load GSOD labels at import: %s", e)
+        super().__init__()
 
     def _load_labels(self, filename: str) -> None:
         labels_path = settings.data_dir / filename
@@ -26,7 +29,7 @@ class GSODTask(BaseClassificationTask):
             self.labels = json.load(f)
 
     def build_system_instruction(self) -> str:
-        self._load_labels("labels.json")
+
         formatted_labels = "\n".join(
             [
                 f"- {label}: {info.get('detail', '')}"
@@ -51,9 +54,9 @@ class GSODTask(BaseClassificationTask):
             """.strip()
 
     def infer(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
-        """Run the inspection model on `input_text` and interpret the result.
-        """
-
+        self.ensure_inspector_initialized()
+        
+        """Run the inspection model on `input_text` and interpret the result."""
         prompt_text = (
             f"<bos><start_of_turn>developer\n{self.system_instruction}<end_of_turn>\n"
             f"<start_of_turn>user\nUser Input: {input_text}\n\nClassification:<end_of_turn>\n"
