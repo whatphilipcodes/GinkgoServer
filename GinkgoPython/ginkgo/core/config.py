@@ -1,3 +1,5 @@
+from typing import Literal
+import logging
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
@@ -6,12 +8,12 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application configuration settings"""
 
+    log_level: Literal[20] = logging.INFO
     server_host: str = "0.0.0.0"
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = None  # 10000  # MB
-    disable_library_logging: bool = False
 
     # Model quantization settings
     enable_quantization: bool = False
