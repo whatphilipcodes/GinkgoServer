@@ -1,4 +1,3 @@
-import asyncio
 import json
 from pathlib import Path
 
@@ -19,12 +18,8 @@ logger = get_logger(__name__)
 
 
 class InspectorService:
-    """Service for hosting the shared LLM model/tokenizer and providing
+    """Service for hosting the shared inspector model/tokenizer and providing
     inference helpers.
-
-    The actual task-specific prompts and parsing are delegated to separate
-    "task" modules.  This class is responsible only for loading the model and
-    offering a simple `generate` wrapper that returns the raw string output.
     """
 
     _instance = None
@@ -119,22 +114,13 @@ class InspectorService:
 
         if self.tokenizer is None:
             raise RuntimeError("Tokenizer loaded but is None")
-
-        # NOTE: label loading is now the responsibility of individual tasks
         logger.info("Model and tokenizer loaded successfully")
 
     async def initialize(self):
-        """Load the model weights and tokenizer asynchronously on startup."""
         if self.model is not None:
             return
+        self._load_model_sync()
 
-        await asyncio.to_thread(self._load_model_sync)
-
-    # label loading and system instructions now live in task modules.  The
-    # inspector has no knowledge of any particular task.
-
-    # Generic generation helper used by task modules.  It returns the raw string
-    # produced by the model (without parsing into labels/attributes).
     def generate(
         self,
         prompt_text: str,
@@ -143,7 +129,7 @@ class InspectorService:
     ) -> str:
         if self.model is None or self.tokenizer is None:
             raise RuntimeError(
-                "LLMService is not initialized. Call initialize() first."
+                "InspectorService is not initialized. Call initialize() first."
             )
 
         inputs_tokens = self.tokenizer(
@@ -163,7 +149,6 @@ class InspectorService:
         if generated is None or generated.numel() == 0:
             return ""
         decoded = self.tokenizer.decode(generated, skip_special_tokens=True)
-        # The tokenizer may return a list if batching; always return string.
         return decoded[0].strip() if isinstance(decoded, list) else decoded.strip()
 
 

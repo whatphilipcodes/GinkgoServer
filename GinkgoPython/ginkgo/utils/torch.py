@@ -16,10 +16,6 @@ logger = get_logger(__name__)
 
 def limit_gpu_memory(device_index: int = 0):
     """Limits the available VRAM that PyTorch can use based on the core config.
-
-    Note: This is optional. If set to 0 or negative, PyTorch will use dynamic memory
-    allocation without a hard limit. For models that fit in GPU memory, it's often
-    better to skip this to allow the model to allocate what it needs.
     """
     if not torch.cuda.is_available():
         return

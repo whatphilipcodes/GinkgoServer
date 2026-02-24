@@ -1,5 +1,7 @@
 from typing import Optional, Tuple
+import json
 
+from ginkgo.core.config import settings
 from ginkgo.services.inspector import inspector_service
 from ginkgo.services.tasks.base import BaseClassificationTask
 from ginkgo.utils.logger import get_logger
@@ -8,14 +10,24 @@ logger = get_logger(__name__)
 
 
 class GSODTask(BaseClassificationTask):
-    """Encapsulates the GSOD classification task."""
+    """Encapsulates the GSOD classification task.
+    """
 
     def __init__(self):
-        super().__init__(labels_filename="labels.json")
+        super().__init__()
+        self.labels = {}
+        self._load_labels("labels.json")
+        self.system_instruction = self.build_system_instruction()
+
+    def _load_labels(self, filename: str) -> None:
+        labels_path = settings.data_dir / filename
+        if not labels_path.exists():
+            raise RuntimeError(f"Labels file not found: {labels_path}")
+
+        with open(labels_path, "r", encoding="utf-8") as f:
+            self.labels = json.load(f)
 
     def build_system_instruction(self) -> str:
-        # override to provide the full instruction, inserting the base class
-        # generated category list.
         formatted_labels = "\n".join(
             [
                 f"- {label}: {info.get('detail', '')}"
@@ -39,16 +51,9 @@ class GSODTask(BaseClassificationTask):
             Output ONLY the label name in plain text. Do not include quotes, prefixes, or explanations.
             """.strip()
 
-    def classify(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
+    def infer(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
         """Run the inspection model on `input_text` and interpret the result.
-
-        Returns a tuple ``(trait, attribute)`` where either element may be ``None``
-        if the model failed to produce a valid label.
         """
-        if inspector_service.model is None or inspector_service.tokenizer is None:
-            raise RuntimeError(
-                "InspectorService not initialized; call initialize() first."
-            )
 
         prompt_text = (
             f"<bos><start_of_turn>developer\n{self.system_instruction}<end_of_turn>\n"
@@ -81,5 +86,4 @@ class GSODTask(BaseClassificationTask):
         return None, None
 
 
-# module-level singleton used by the rest of the codebase
 gsod_task = GSODTask()
