@@ -1,7 +1,6 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import Optional, Tuple
 
 import torch
 from transformers import (
@@ -19,18 +18,22 @@ from ginkgo.utils.torch import limit_gpu_memory
 logger = get_logger(__name__)
 
 
-class LLMService:
-    """Service for running LLM inference for classification tasks."""
+class InspectorService:
+    """Service for hosting the shared LLM model/tokenizer and providing
+    inference helpers.
+
+    The actual task-specific prompts and parsing are delegated to separate
+    "task" modules.  This class is responsible only for loading the model and
+    offering a simple `generate` wrapper that returns the raw string output.
+    """
 
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(LLMService, cls).__new__(cls)
+            cls._instance = super(InspectorService, cls).__new__(cls)
             cls._instance.model = None
             cls._instance.tokenizer = None
-            cls._instance.labels = {}
-            cls._instance.system_instruction = ""
         return cls._instance
 
     def _load_gemma_config(self, local_path: str):
@@ -55,7 +58,6 @@ class LLMService:
     def _load_model_sync(self):
         limit_gpu_memory()
 
-        # Check CUDA availability - this application requires CUDA
         if not torch.cuda.is_available():
             error_msg = (
                 "CUDA is not available. This application requires a CUDA-enabled GPU to run. "
@@ -118,7 +120,7 @@ class LLMService:
         if self.tokenizer is None:
             raise RuntimeError("Tokenizer loaded but is None")
 
-        self._load_labels()
+        # NOTE: label loading is now the responsibility of individual tasks
         logger.info("Model and tokenizer loaded successfully")
 
     async def initialize(self):
@@ -128,96 +130,41 @@ class LLMService:
 
         await asyncio.to_thread(self._load_model_sync)
 
-    def _load_labels(self):
-        """Load labels and prepare the system instruction."""
-        labels_path = settings.data_dir / "labels.json"
-        with open(labels_path, "r") as f:
-            self.labels = json.load(f)
+    # label loading and system instructions now live in task modules.  The
+    # inspector has no knowledge of any particular task.
 
-        formatted_labels = "\n".join(
-            [f"- {label}: {info['detail']}" for label, info in self.labels.items()]
-        )
-
-        self.system_instruction = f"""
-            ### ROLE
-            You are an expert statement classifier specializing in political science and governance metrics.
-
-            ### TASK
-            Match the concept discussed in the user input with exactly ONE of the labels below. 
-            - Classify based on the topic/concept, regardless of whether the sentiment is positive or negative.
-            - If the input seems nonsensical/gibberish ie. not match any category, use the label: INVALID.
-
-            ### CATEGORIES
-            {formatted_labels}
-
-            ### OUTPUT FORMAT
-            Output ONLY the label name in plain text. Do not include quotes, prefixes, or explanations.
-            """
-
-    def infer_gsod(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
-        """
-        Classify the input text and return the trait and attribute_class.
-        Returns:
-            Tuple[Optional[str], Optional[str]]: (trait, attribute_class)
-        """
+    # Generic generation helper used by task modules.  It returns the raw string
+    # produced by the model (without parsing into labels/attributes).
+    def generate(
+        self,
+        prompt_text: str,
+        max_new_tokens: int = 20,
+        do_sample: bool = True,
+    ) -> str:
         if self.model is None or self.tokenizer is None:
             raise RuntimeError(
                 "LLMService is not initialized. Call initialize() first."
             )
 
-        prompt_text = (
-            f"<bos><start_of_turn>developer\n{self.system_instruction.strip()}<end_of_turn>\n"
-            f"<start_of_turn>user\nUser Input: {input_text}\n\nClassification:<end_of_turn>\n"
-            f"<start_of_turn>model\n"
-        )
-
         inputs_tokens = self.tokenizer(
             prompt_text, return_tensors="pt", add_special_tokens=False
         ).to(self.model.device)
-
         input_length = inputs_tokens.input_ids.shape[1]
 
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs_tokens,
-                max_new_tokens=20,
-                do_sample=True,  # True
-                # top_p=None,
-                # top_k=None,
+                max_new_tokens=max_new_tokens,
+                do_sample=do_sample,
                 pad_token_id=self.tokenizer.eos_token_id,
             )
 
-        generated_tokens = outputs[0][input_length:]
-
-        if generated_tokens is None or generated_tokens.numel() == 0:
-            logger.warning(f"No tokens generated for input: {input_text}")
-            return None, None
-
-        decoded = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
-        if isinstance(decoded, list):
-            prediction = decoded[0].strip() if decoded else ""
-        else:
-            prediction = decoded.strip() if decoded else ""
-
-        trait = prediction
-        logger.debug(
-            f"LLM Response - Input: {input_text[:100]}... | Prediction: {trait}"
-        )
-
-        if trait in self.labels:
-            attribute_class = self.labels[trait].get("attribute")
-            logger.info(
-                f"Classification successful - Trait: {trait}, Attribute: {attribute_class}"
-            )
-            return trait, attribute_class
-        elif trait == "INVALID":
-            logger.info(f"Input classified as INVALID: {input_text[:100]}...")
-            return trait, None
-
-        logger.warning(
-            f"Prediction '{trait}' not found in labels for input: {input_text[:100]}..."
-        )
-        return None, None
+        generated = outputs[0][input_length:]
+        if generated is None or generated.numel() == 0:
+            return ""
+        decoded = self.tokenizer.decode(generated, skip_special_tokens=True)
+        # The tokenizer may return a list if batching; always return string.
+        return decoded[0].strip() if isinstance(decoded, list) else decoded.strip()
 
 
-llm_service = LLMService()
+inspector_service = InspectorService()

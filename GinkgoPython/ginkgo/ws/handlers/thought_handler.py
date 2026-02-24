@@ -5,7 +5,7 @@ from ginkgo.models.enums import GinkgoMessageType, GSODAttribute, GSODTrait
 from ginkgo.models.thought import ThoughtRead
 from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage
 from ginkgo.services.database import db_service
-from ginkgo.services.llm import llm_service
+from ginkgo.services.tasks.gsod import gsod_task
 from ginkgo.ws.commands import (
     AddThoughtCommand,
     DeleteThoughtCommand,
@@ -20,7 +20,7 @@ from ginkgo.ws.connection_manager import manager
 
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
     trait_str, attribute_class_str = await asyncio.to_thread(
-        llm_service.infer_gsod, cmd.text
+        gsod_task.classify, cmd.text
     )
 
     attribute_class = None
@@ -100,7 +100,7 @@ async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
 
 async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
     trait_str, attribute_class_str = await asyncio.to_thread(
-        llm_service.infer_gsod, cmd.text
+        gsod_task.classify, cmd.text
     )
 
     attribute_class = None

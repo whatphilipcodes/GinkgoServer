@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from ginkgo.api import frontend_routes, unreal_routes
 from ginkgo.core.config import settings
-from ginkgo.services.llm import llm_service
+from ginkgo.services.inspector import inspector_service
 from ginkgo.services.seed import sync_seeds
 from ginkgo.utils.logger import get_logger
 
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 async def lifespan(_: FastAPI):
     """Sync database seeds on startup."""
     sync_seeds()
-    await llm_service.initialize()
+    await inspector_service.initialize()
     yield
 
 
