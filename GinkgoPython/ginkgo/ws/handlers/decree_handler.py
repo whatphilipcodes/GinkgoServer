@@ -1,5 +1,6 @@
 from typing import Any
 
+from ginkgo.models.decree import DecreeRead
 from ginkgo.services.database import db_service
 from ginkgo.ws.commands import (
     AddDecreeCommand,
@@ -10,7 +11,7 @@ from ginkgo.ws.commands import (
 
 
 async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
-    record = db_service.add_decree(
+    record: DecreeRead = db_service.add_decree(
         text=cmd.text,
         lang=cmd.lang,
         source=cmd.source,
@@ -25,42 +26,38 @@ async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
 
 
 async def handle_query_decree(cmd: QueryDecreeCommand) -> dict[str, Any]:
-    if cmd.query_type == "all":
-        records = db_service.get_all_decrees(
-            limit=cmd.filters.get("limit", 100),
-            offset=cmd.filters.get("offset", 0),
+    from ginkgo.ws.commands import AllFilter, ByIdFilter, RecentFilter
+
+    if isinstance(cmd.filters, AllFilter):
+        records: list[DecreeRead] = db_service.get_all_decrees(
+            limit=cmd.filters.limit,
+            offset=cmd.filters.offset,
         )
-    elif cmd.query_type == "recent":
-        records = db_service.get_recent_decrees(
-            hours=cmd.filters.get("hours", 24),
+    elif isinstance(cmd.filters, RecentFilter):
+        records: list[DecreeRead] = db_service.get_recent_decrees(
+            hours=cmd.filters.hours,
         )
-    elif cmd.query_type == "by_id":
-        record_id = cmd.filters.get("record_id")
-        if not isinstance(record_id, int) or record_id <= 0:
-            return {
-                "status": "error",
-                "error": "record_id must be a positive integer",
-            }
-        record = db_service.get_decree_by_id(record_id)
+    elif isinstance(cmd.filters, ByIdFilter):
+        record: DecreeRead | None = db_service.get_decree_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
         return {
             "status": "error",
-            "error": f"Unknown query_type: {cmd.query_type}",
+            "error": "Unknown filter type",
         }
 
     return {
         "status": "success",
         "action": "query",
         "type": "decree",
-        "query_type": cmd.query_type,
+        "query_type": cmd.filters.query_type,
         "count": len(records),
         "records": [serialize_decree(r) for r in records],
     }
 
 
 async def handle_update_decree(cmd: UpdateDecreeCommand) -> dict[str, Any]:
-    record = db_service.update_decree(
+    record: DecreeRead | None = db_service.update_decree(
         cmd.record_id,
         cmd.text,
     )
@@ -82,7 +79,7 @@ async def handle_update_decree(cmd: UpdateDecreeCommand) -> dict[str, Any]:
 
 
 async def handle_delete_decree(cmd: DeleteDecreeCommand) -> dict[str, Any]:
-    success = db_service.delete_decree(cmd.record_id)
+    success: bool = db_service.delete_decree(cmd.record_id)
     return {
         "status": "success" if success else "error",
         "action": "delete",
@@ -92,7 +89,7 @@ async def handle_delete_decree(cmd: DeleteDecreeCommand) -> dict[str, Any]:
     }
 
 
-def serialize_decree(record) -> dict[str, Any]:
+def serialize_decree(record: DecreeRead) -> dict[str, Any]:
     return {
         "id": record.id,
         "text": record.text,

@@ -1,5 +1,6 @@
 from typing import Any
 
+from ginkgo.models.prompt import PromptRead
 from ginkgo.services.database import db_service
 from ginkgo.ws.commands import (
     AddPromptCommand,
@@ -10,7 +11,7 @@ from ginkgo.ws.commands import (
 
 
 async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
-    record = db_service.add_prompt(
+    record: PromptRead = db_service.add_prompt(
         text=cmd.text,
         lang=cmd.lang,
         source=cmd.source,
@@ -25,42 +26,38 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
 
 
 async def handle_query_prompt(cmd: QueryPromptCommand) -> dict[str, Any]:
-    if cmd.query_type == "all":
-        records = db_service.get_all_prompts(
-            limit=cmd.filters.get("limit", 100),
-            offset=cmd.filters.get("offset", 0),
+    from ginkgo.ws.commands import AllFilter, ByIdFilter, RecentFilter
+
+    if isinstance(cmd.filters, AllFilter):
+        records: list[PromptRead] = db_service.get_all_prompts(
+            limit=cmd.filters.limit,
+            offset=cmd.filters.offset,
         )
-    elif cmd.query_type == "recent":
-        records = db_service.get_recent_prompts(
-            hours=cmd.filters.get("hours", 24),
+    elif isinstance(cmd.filters, RecentFilter):
+        records: list[PromptRead] = db_service.get_recent_prompts(
+            hours=cmd.filters.hours,
         )
-    elif cmd.query_type == "by_id":
-        record_id = cmd.filters.get("record_id")
-        if not isinstance(record_id, int) or record_id <= 0:
-            return {
-                "status": "error",
-                "error": "record_id must be a positive integer",
-            }
-        record = db_service.get_prompt_by_id(record_id)
+    elif isinstance(cmd.filters, ByIdFilter):
+        record: PromptRead | None = db_service.get_prompt_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
         return {
             "status": "error",
-            "error": f"Unknown query_type: {cmd.query_type}",
+            "error": "Unknown filter type",
         }
 
     return {
         "status": "success",
         "action": "query",
         "type": "prompt",
-        "query_type": cmd.query_type,
+        "query_type": cmd.filters.query_type,
         "count": len(records),
         "records": [serialize_prompt(r) for r in records],
     }
 
 
 async def handle_update_prompt(cmd: UpdatePromptCommand) -> dict[str, Any]:
-    record = db_service.update_prompt(
+    record: PromptRead | None = db_service.update_prompt(
         cmd.record_id,
         cmd.text,
     )
@@ -82,7 +79,7 @@ async def handle_update_prompt(cmd: UpdatePromptCommand) -> dict[str, Any]:
 
 
 async def handle_delete_prompt(cmd: DeletePromptCommand) -> dict[str, Any]:
-    success = db_service.delete_prompt(cmd.record_id)
+    success: bool = db_service.delete_prompt(cmd.record_id)
     return {
         "status": "success" if success else "error",
         "action": "delete",
@@ -92,7 +89,7 @@ async def handle_delete_prompt(cmd: DeletePromptCommand) -> dict[str, Any]:
     }
 
 
-def serialize_prompt(record) -> dict[str, Any]:
+def serialize_prompt(record: PromptRead) -> dict[str, Any]:
     return {
         "id": record.id,
         "text": record.text,

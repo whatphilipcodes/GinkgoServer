@@ -2,6 +2,7 @@ import asyncio
 from typing import Any
 
 from ginkgo.models.enums import GinkgoMessageType, GSODAttribute, GSODTrait
+from ginkgo.models.thought import ThoughtRead
 from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage
 from ginkgo.services.database import db_service
 from ginkgo.services.llm import llm_service
@@ -32,7 +33,7 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         except ValueError:
             pass
 
-    record = db_service.add_thought(
+    record: ThoughtRead = db_service.add_thought(
         text=cmd.text,
         lang=cmd.lang,
         source=cmd.source,
@@ -66,35 +67,31 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
 
 
 async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
-    if cmd.query_type == "all":
-        records = db_service.get_all_thoughts(
-            limit=cmd.filters.get("limit", 100),
-            offset=cmd.filters.get("offset", 0),
+    from ginkgo.ws.commands import AllFilter, ByIdFilter, RecentFilter
+
+    if isinstance(cmd.filters, AllFilter):
+        records: list[ThoughtRead] = db_service.get_all_thoughts(
+            limit=cmd.filters.limit,
+            offset=cmd.filters.offset,
         )
-    elif cmd.query_type == "recent":
-        records = db_service.get_recent_thoughts(
-            hours=cmd.filters.get("hours", 24),
+    elif isinstance(cmd.filters, RecentFilter):
+        records: list[ThoughtRead] = db_service.get_recent_thoughts(
+            hours=cmd.filters.hours,
         )
-    elif cmd.query_type == "by_id":
-        record_id = cmd.filters.get("record_id")
-        if not isinstance(record_id, int) or record_id <= 0:
-            return {
-                "status": "error",
-                "error": "record_id must be a positive integer",
-            }
-        record = db_service.get_thought_by_id(record_id)
+    elif isinstance(cmd.filters, ByIdFilter):
+        record: ThoughtRead | None = db_service.get_thought_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
         return {
             "status": "error",
-            "error": f"Unknown query_type: {cmd.query_type}",
+            "error": "Unknown filter type",
         }
 
     return {
         "status": "success",
         "action": "query",
         "type": "thought",
-        "query_type": cmd.query_type,
+        "query_type": cmd.filters.query_type,
         "count": len(records),
         "records": [serialize_thought(r) for r in records],
     }
@@ -118,7 +115,7 @@ async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
         except ValueError:
             pass
 
-    record = db_service.update_thought(
+    record: ThoughtRead | None = db_service.update_thought(
         cmd.record_id,
         cmd.text,
         attribute_class=attribute_class,
@@ -142,7 +139,7 @@ async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
 
 
 async def handle_delete_thought(cmd: DeleteThoughtCommand) -> dict[str, Any]:
-    success = db_service.delete_thought(cmd.record_id)
+    success: bool = db_service.delete_thought(cmd.record_id)
     return {
         "status": "success" if success else "error",
         "action": "delete",
@@ -152,7 +149,7 @@ async def handle_delete_thought(cmd: DeleteThoughtCommand) -> dict[str, Any]:
     }
 
 
-def serialize_thought(record) -> dict[str, Any]:
+def serialize_thought(record: ThoughtRead) -> dict[str, Any]:
     return {
         "id": record.id,
         "text": record.text,

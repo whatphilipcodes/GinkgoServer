@@ -1,8 +1,47 @@
-from typing import Literal
+from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Discriminator, Field, field_validator
 
 from ginkgo.models.enums import InputLanguage, InputSource
+
+
+class AllFilter(BaseModel):
+    """Filter for querying all records with pagination"""
+
+    query_type: Literal["all"]
+    limit: int = Field(default=100, ge=1, le=1000)
+    offset: int = Field(default=0, ge=0)
+
+
+class RecentFilter(BaseModel):
+    """Filter for querying recent records"""
+
+    query_type: Literal["recent"]
+    hours: int = Field(default=24, ge=1)
+
+
+class ByIdFilter(BaseModel):
+    """Filter for querying by a specific ID"""
+
+    query_type: Literal["by_id"]
+    record_id: int = Field(ge=1)
+
+
+# Discriminated union for filters
+ThoughtFilter = Annotated[
+    Union[AllFilter, RecentFilter, ByIdFilter],
+    Discriminator("query_type"),
+]
+
+PromptFilter = Annotated[
+    Union[AllFilter, RecentFilter, ByIdFilter],
+    Discriminator("query_type"),
+]
+
+DecreeFilter = Annotated[
+    Union[AllFilter, RecentFilter, ByIdFilter],
+    Discriminator("query_type"),
+]
 
 
 class TextInputCommand(BaseModel):
@@ -11,7 +50,6 @@ class TextInputCommand(BaseModel):
     source: InputSource = InputSource.AUDIENCE
 
 
-# —— Thought commands —————————————————————————————————————————
 class AddThoughtCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["thought"] = "thought"
@@ -22,17 +60,7 @@ class QueryThoughtCommand(BaseModel):
 
     action: Literal["query"] = "query"
     type: Literal["thought"] = "thought"
-    query_type: str  # "all", "recent", "by_id"
-    filters: dict = {}
-
-    @field_validator("query_type")
-    @classmethod
-    def validate_query_type(cls, v: str) -> str:
-        """Validate query type is one of the allowed values"""
-        allowed = {"all", "recent", "by_id"}
-        if v not in allowed:
-            raise ValueError(f"query_type must be one of {allowed}, got '{v}'")
-        return v
+    filters: ThoughtFilter
 
 
 class UpdateThoughtCommand(BaseModel):
@@ -76,7 +104,6 @@ class DeleteThoughtCommand(BaseModel):
         return v
 
 
-# —— Prompt commands —————————————————————————————————————————
 class AddPromptCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["prompt"] = "prompt"
@@ -87,17 +114,7 @@ class QueryPromptCommand(BaseModel):
 
     action: Literal["query"] = "query"
     type: Literal["prompt"] = "prompt"
-    query_type: str  # "all", "recent", "by_id"
-    filters: dict = {}
-
-    @field_validator("query_type")
-    @classmethod
-    def validate_query_type(cls, v: str) -> str:
-        """Validate query type is one of the allowed values"""
-        allowed = {"all", "recent", "by_id"}
-        if v not in allowed:
-            raise ValueError(f"query_type must be one of {allowed}, got '{v}'")
-        return v
+    filters: PromptFilter
 
 
 class UpdatePromptCommand(BaseModel):
@@ -141,7 +158,6 @@ class DeletePromptCommand(BaseModel):
         return v
 
 
-# —— Decree commands —————————————————————————————————————————
 class AddDecreeCommand(TextInputCommand):
     action: Literal["add"] = "add"
     type: Literal["decree"] = "decree"
@@ -152,17 +168,7 @@ class QueryDecreeCommand(BaseModel):
 
     action: Literal["query"] = "query"
     type: Literal["decree"] = "decree"
-    query_type: str  # "all", "recent", "by_id"
-    filters: dict = {}
-
-    @field_validator("query_type")
-    @classmethod
-    def validate_query_type(cls, v: str) -> str:
-        """Validate query type is one of the allowed values"""
-        allowed = {"all", "recent", "by_id"}
-        if v not in allowed:
-            raise ValueError(f"query_type must be one of {allowed}, got '{v}'")
-        return v
+    filters: DecreeFilter
 
 
 class UpdateDecreeCommand(BaseModel):
@@ -206,7 +212,6 @@ class DeleteDecreeCommand(BaseModel):
         return v
 
 
-# —— Type union for any command ———————————————————————————
 WebSocketCommand = (
     AddThoughtCommand
     | QueryThoughtCommand
