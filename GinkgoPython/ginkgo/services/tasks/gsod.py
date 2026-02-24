@@ -16,8 +16,6 @@ class GSODTask(BaseClassificationTask):
     def __init__(self):
         super().__init__()
         self.labels = {}
-        self._load_labels("labels.json")
-        self.system_instruction = self.build_system_instruction()
 
     def _load_labels(self, filename: str) -> None:
         labels_path = settings.data_dir / filename
@@ -28,6 +26,7 @@ class GSODTask(BaseClassificationTask):
             self.labels = json.load(f)
 
     def build_system_instruction(self) -> str:
+        self._load_labels("labels.json")
         formatted_labels = "\n".join(
             [
                 f"- {label}: {info.get('detail', '')}"

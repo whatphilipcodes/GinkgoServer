@@ -6,8 +6,8 @@ class BaseClassificationTask:
     """
 
     def __init__(self) -> None:
-        self.system_instruction = ""
         self.ensure_inspector_initialized()
+        self.system_instruction = self.build_system_instruction()
 
     def build_system_instruction(self) -> str:
         raise NotImplementedError()
