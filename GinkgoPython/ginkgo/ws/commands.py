@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Discriminator, Field, field_validator
 
-from ginkgo.models.enums import InputLanguage, InputSource
+from ginkgo.models.enums import InputSource
 
 
 class AllFilterPayload(BaseModel):
@@ -26,7 +26,7 @@ class ByIdFilterPayload(BaseModel):
 
 class TextInputCommand(BaseModel):
     text: str
-    lang: InputLanguage
+    lang: str
     source: InputSource = InputSource.AUDIENCE
 
 

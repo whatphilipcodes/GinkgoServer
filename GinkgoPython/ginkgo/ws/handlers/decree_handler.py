@@ -96,7 +96,7 @@ def serialize_decree(record: DecreeRead) -> dict[str, Any]:
         "text": record.text,
         "type": "decree",
         "valid": record.valid,
-        "lang": record.lang.value,
+        "lang": record.lang if record.lang else None,
         "source": record.source.value,
         "created_at": record.created_at.isoformat(),
         "modified_at": record.modified_at.isoformat(),

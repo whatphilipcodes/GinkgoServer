@@ -6,11 +6,6 @@ class InputSource(str, Enum):
     AUDIENCE = "audience"
 
 
-class InputLanguage(str, Enum):
-    EN = "en"
-    DE = "de"
-
-
 class GSODAttribute(str, Enum):
     REPRESENTATION = "REPRESENTATION"
     RIGHTS = "RIGHTS"

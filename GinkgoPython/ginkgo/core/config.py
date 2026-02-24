@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application configuration settings"""
 
-    log_level: int = logging.INFO
+    log_level: int = logging.DEBUG
     server_host: str = "0.0.0.0"
     server_port: int = 8000
     server_reload: bool = False

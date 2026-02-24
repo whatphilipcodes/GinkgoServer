@@ -1,12 +1,19 @@
-from typing import Optional, Tuple
 import json
+from dataclasses import dataclass
+from typing import Optional
 
 from ginkgo.core.config import settings
-from ginkgo.services.inspector import inspector_service
+from ginkgo.models.enums import GSODAttribute, GSODTrait
 from ginkgo.services.tasks.base import BaseClassificationTask
 from ginkgo.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+@dataclass
+class GSODResult:
+    trait: Optional[GSODTrait]
+    attribute: Optional[GSODAttribute]
 
 
 class GSODTask(BaseClassificationTask):
@@ -29,63 +36,69 @@ class GSODTask(BaseClassificationTask):
             self.labels = json.load(f)
 
     def build_system_instruction(self) -> str:
+        return self.load_task_md("gsod.md")
 
-        formatted_labels = "\n".join(
-            [
-                f"- {label}: {info.get('detail', '')}"
-                for label, info in self.labels.items()
-            ]
-        )
+    def infer(self, input_text: str) -> GSODResult:
+        """Run GSOD analysis on `input_text`"""
 
-        return f"""
-            ### ROLE
-            You are an expert statement classifier specializing in political science and governance metrics.
-
-            ### TASK
-            Match the concept discussed in the user input with exactly ONE of the labels below.
-            - Classify based on the topic/concept, regardless of whether the sentiment is positive or negative.
-            - If the input seems nonsensical/gibberish ie. not match any category, use the label: INVALID.
-
-            ### CATEGORIES
-            {formatted_labels}
-
-            ### OUTPUT FORMAT
-            Output ONLY the label name in plain text. Do not include quotes, prefixes, or explanations.
-            """.strip()
-
-    def infer(self, input_text: str) -> Tuple[Optional[str], Optional[str]]:
         self.ensure_inspector_initialized()
-        
-        """Run the inspection model on `input_text` and interpret the result."""
+
         prompt_text = (
             f"<bos><start_of_turn>developer\n{self.system_instruction}<end_of_turn>\n"
             f"<start_of_turn>user\nUser Input: {input_text}\n\nClassification:<end_of_turn>\n"
             f"<start_of_turn>model\n"
         )
 
-        raw_output = inspector_service.generate(prompt_text)
+        raw_output = self.inspector.generate(prompt_text)
         logger.debug("GSOD raw model output: %s", raw_output)
 
         if not raw_output:
             logger.warning("empty output from model for GSOD input")
-            return None, None
+            return GSODResult(trait=None, attribute=None)
 
         prediction = raw_output.strip()
-        trait = prediction
-        if trait in self.labels:
-            attribute_class = self.labels[trait].get("attribute")
-            logger.info(
-                "GSOD classification successful - Trait: %s, Attribute: %s",
-                trait,
-                attribute_class,
-            )
-            return trait, attribute_class
-        elif trait == "INVALID":
-            logger.info("GSOD input classified as INVALID")
-            return trait, None
 
-        logger.warning("GSOD prediction '%s' not found in labels", trait)
-        return None, None
+        # Normalize prediction token and handle explicit NONE
+        token = prediction.split()[0].strip().upper().replace(" ", "_")
+        if token == "NONE":
+            logger.info("GSOD input classified as NONE")
+            return GSODResult(None, None)
+
+        # Try to convert model output to GSODTrait
+        trait_enum: Optional[GSODTrait] = None
+        try:
+            trait_enum = GSODTrait[token]
+        except Exception:
+            try:
+                trait_enum = GSODTrait(token)
+            except Exception:
+                logger.warning(
+                    "GSOD prediction '%s' not found in GSODTrait", prediction
+                )
+                return GSODResult(None, None)
+
+        # Lookup attribute from labels (if available) and validate against GSODAttribute
+        attribute_enum: Optional[GSODAttribute] = None
+        label_entry = self.labels.get(trait_enum.value)
+        if label_entry:
+            attr_str = label_entry.get("attribute")
+            if attr_str:
+                try:
+                    attribute_enum = GSODAttribute[attr_str]
+                except Exception:
+                    try:
+                        attribute_enum = GSODAttribute(attr_str)
+                    except Exception:
+                        logger.warning(
+                            "GSOD attribute '%s' not found in GSODAttribute", attr_str
+                        )
+
+        logger.info(
+            "GSOD classification successful - Trait: %s, Attribute: %s",
+            trait_enum.value,
+            attribute_enum.value if attribute_enum else None,
+        )
+        return GSODResult(trait_enum, attribute_enum)
 
 
 gsod_task = GSODTask()

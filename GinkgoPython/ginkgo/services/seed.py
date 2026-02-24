@@ -1,7 +1,7 @@
 import json
 
 from ginkgo.core.config import settings
-from ginkgo.models.enums import InputLanguage, InputSource
+from ginkgo.models.enums import InputSource
 from ginkgo.services.database import db_service
 from ginkgo.utils.logger import get_logger
 
@@ -27,12 +27,10 @@ def sync_seeds():
         logger.error(f"Error decoding seed file: {e}")
         return
 
-    # Get all existing seeds from all tables
     existing_thoughts = db_service.get_thoughts_by_source(InputSource.SEED)
     existing_prompts = db_service.get_prompts_by_source(InputSource.SEED)
     existing_decrees = db_service.get_decrees_by_source(InputSource.SEED)
 
-    # Build a mapping of (text, lang, type) -> id for all existing seeds
     db_seed_keys = {}
     for s in existing_thoughts:
         key = (s.text, s.lang, "thought")
@@ -44,7 +42,6 @@ def sync_seeds():
         key = (s.text, s.lang, "decree")
         db_seed_keys[key] = ("decree", s.id)
 
-    # Build a set of all JSON seed keys
     json_seed_keys = set()
     to_add = []
     for s in seeds_data:
@@ -53,7 +50,6 @@ def sync_seeds():
         if key not in db_seed_keys:
             to_add.append(s)
 
-    # Find IDs to remove (in database but not in JSON)
     to_remove = []
     for key, (record_type, record_id) in db_seed_keys.items():
         if key not in json_seed_keys:
@@ -61,10 +57,9 @@ def sync_seeds():
 
     logger.info(f"Syncing seeds: +{len(to_add)} / -{len(to_remove)}")
 
-    # Add new seeds to appropriate tables
     for s in to_add:
         seed_type = s["type"]
-        lang = InputLanguage(s["lang"])
+        lang = s["lang"]
 
         if seed_type == "thought":
             db_service.add_thought(
@@ -85,7 +80,6 @@ def sync_seeds():
                 source=InputSource.SEED,
             )
 
-    # Remove old seeds from appropriate tables
     for record_type, record_id in to_remove:
         if record_type == "thought":
             db_service.delete_thought(record_id)

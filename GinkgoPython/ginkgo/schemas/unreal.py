@@ -23,7 +23,3 @@ class GinkgoKeystroke(BaseModel):
 class GinkgoMessage(BaseModel):
     messageType: GinkgoMessageType
     payloadJson: Union[GinkgoInput, GinkgoKeystroke]
-
-
-# Legacy alias for backward compatibility
-UEDataPayload = GinkgoInput
