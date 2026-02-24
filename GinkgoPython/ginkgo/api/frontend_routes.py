@@ -1,7 +1,8 @@
 import json
+from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from ginkgo.ws.commands import (
     AddDecreeCommand,
@@ -10,9 +11,12 @@ from ginkgo.ws.commands import (
     DeleteDecreeCommand,
     DeletePromptCommand,
     DeleteThoughtCommand,
+    QueryAllThoughts,
     QueryDecreeCommand,
     QueryPromptCommand,
+    QueryRecentThoughts,
     QueryThoughtCommand,
+    QueryThoughtsById,
     UpdateDecreeCommand,
     UpdatePromptCommand,
     UpdateThoughtCommand,
@@ -35,7 +39,9 @@ async def frontend_endpoint(websocket: WebSocket):
                 action = data.get("action")
                 record_type = data.get("type")
 
-                response = await dispatch_message(record_type, action, raw_json)
+                response: dict[str, Any] | None = await dispatch_message(
+                    record_type, action, raw_json
+                )
 
                 if response:
                     await websocket.send_json(response)
@@ -55,47 +61,66 @@ async def frontend_endpoint(websocket: WebSocket):
         manager.disconnect("frontend")
 
 
-async def dispatch_message(record_type: str, action: str, raw_json: str):
+async def dispatch_message(
+    record_type: str, action: str, raw_json: str
+) -> dict[str, Any] | None:
+
+    thought_query_adapter: TypeAdapter[QueryThoughtCommand] = TypeAdapter(
+        QueryThoughtCommand
+    )
+    prompt_query_adapter: TypeAdapter[QueryPromptCommand] = TypeAdapter(
+        QueryPromptCommand
+    )
+    decree_query_adapter: TypeAdapter[QueryDecreeCommand] = TypeAdapter(
+        QueryDecreeCommand
+    )
+
     if record_type == "thought":
         if action == "add":
-            cmd = AddThoughtCommand.model_validate_json(raw_json)
+            cmd: AddThoughtCommand = AddThoughtCommand.model_validate_json(raw_json)
             return await thought_handler.handle_add_thought(cmd)
         elif action == "query":
-            cmd = QueryThoughtCommand.model_validate_json(raw_json)
+            cmd: QueryAllThoughts | QueryRecentThoughts | QueryThoughtsById = (
+                thought_query_adapter.validate_json(raw_json)
+            )
             return await thought_handler.handle_query_thought(cmd)
         elif action == "update":
-            cmd = UpdateThoughtCommand.model_validate_json(raw_json)
+            cmd: UpdateThoughtCommand = UpdateThoughtCommand.model_validate_json(
+                raw_json
+            )
             return await thought_handler.handle_update_thought(cmd)
         elif action == "delete":
-            cmd = DeleteThoughtCommand.model_validate_json(raw_json)
+            cmd: DeleteThoughtCommand = DeleteThoughtCommand.model_validate_json(
+                raw_json
+            )
             return await thought_handler.handle_delete_thought(cmd)
 
     elif record_type == "prompt":
         if action == "add":
-            cmd = AddPromptCommand.model_validate_json(raw_json)
+            cmd: AddPromptCommand = AddPromptCommand.model_validate_json(raw_json)
             return await prompt_handler.handle_add_prompt(cmd)
         elif action == "query":
-            cmd = QueryPromptCommand.model_validate_json(raw_json)
+            cmd: QueryPromptCommand = prompt_query_adapter.validate_json(raw_json)
             return await prompt_handler.handle_query_prompt(cmd)
         elif action == "update":
-            cmd = UpdatePromptCommand.model_validate_json(raw_json)
+            cmd: UpdatePromptCommand = UpdatePromptCommand.model_validate_json(raw_json)
             return await prompt_handler.handle_update_prompt(cmd)
         elif action == "delete":
-            cmd = DeletePromptCommand.model_validate_json(raw_json)
+            cmd: DeletePromptCommand = DeletePromptCommand.model_validate_json(raw_json)
             return await prompt_handler.handle_delete_prompt(cmd)
 
     elif record_type == "decree":
         if action == "add":
-            cmd = AddDecreeCommand.model_validate_json(raw_json)
+            cmd: AddDecreeCommand = AddDecreeCommand.model_validate_json(raw_json)
             return await decree_handler.handle_add_decree(cmd)
         elif action == "query":
-            cmd = QueryDecreeCommand.model_validate_json(raw_json)
+            cmd: QueryDecreeCommand = decree_query_adapter.validate_json(raw_json)
             return await decree_handler.handle_query_decree(cmd)
         elif action == "update":
-            cmd = UpdateDecreeCommand.model_validate_json(raw_json)
+            cmd: UpdateDecreeCommand = UpdateDecreeCommand.model_validate_json(raw_json)
             return await decree_handler.handle_update_decree(cmd)
         elif action == "delete":
-            cmd = DeleteDecreeCommand.model_validate_json(raw_json)
+            cmd: DeleteDecreeCommand = DeleteDecreeCommand.model_validate_json(raw_json)
             return await decree_handler.handle_delete_decree(cmd)
 
     else:

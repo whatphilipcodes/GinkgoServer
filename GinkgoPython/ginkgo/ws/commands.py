@@ -5,43 +5,23 @@ from pydantic import BaseModel, Discriminator, Field, field_validator
 from ginkgo.models.enums import InputLanguage, InputSource
 
 
-class AllFilter(BaseModel):
-    """Filter for querying all records with pagination"""
+class AllFilterPayload(BaseModel):
+    """Payload for querying all records with pagination"""
 
-    query_type: Literal["all"]
     limit: int = Field(default=100, ge=1, le=1000)
     offset: int = Field(default=0, ge=0)
 
 
-class RecentFilter(BaseModel):
-    """Filter for querying recent records"""
+class RecentFilterPayload(BaseModel):
+    """Payload for querying recent records"""
 
-    query_type: Literal["recent"]
     hours: int = Field(default=24, ge=1)
 
 
-class ByIdFilter(BaseModel):
-    """Filter for querying by a specific ID"""
+class ByIdFilterPayload(BaseModel):
+    """Payload for querying by a specific ID"""
 
-    query_type: Literal["by_id"]
     record_id: int = Field(ge=1)
-
-
-# Discriminated union for filters
-ThoughtFilter = Annotated[
-    Union[AllFilter, RecentFilter, ByIdFilter],
-    Discriminator("query_type"),
-]
-
-PromptFilter = Annotated[
-    Union[AllFilter, RecentFilter, ByIdFilter],
-    Discriminator("query_type"),
-]
-
-DecreeFilter = Annotated[
-    Union[AllFilter, RecentFilter, ByIdFilter],
-    Discriminator("query_type"),
-]
 
 
 class TextInputCommand(BaseModel):
@@ -55,12 +35,37 @@ class AddThoughtCommand(TextInputCommand):
     type: Literal["thought"] = "thought"
 
 
-class QueryThoughtCommand(BaseModel):
-    """Command to query thoughts"""
+class QueryAllThoughts(BaseModel):
+    """Query all thoughts with pagination"""
 
     action: Literal["query"] = "query"
     type: Literal["thought"] = "thought"
-    filters: ThoughtFilter
+    query_type: Literal["all"]
+    filters: AllFilterPayload
+
+
+class QueryRecentThoughts(BaseModel):
+    """Query recent thoughts"""
+
+    action: Literal["query"] = "query"
+    type: Literal["thought"] = "thought"
+    query_type: Literal["recent"]
+    filters: RecentFilterPayload
+
+
+class QueryThoughtsById(BaseModel):
+    """Query a thought by ID"""
+
+    action: Literal["query"] = "query"
+    type: Literal["thought"] = "thought"
+    query_type: Literal["by_id"]
+    filters: ByIdFilterPayload
+
+
+QueryThoughtCommand = Annotated[
+    Union[QueryAllThoughts, QueryRecentThoughts, QueryThoughtsById],
+    Discriminator("query_type"),
+]
 
 
 class UpdateThoughtCommand(BaseModel):
@@ -109,12 +114,37 @@ class AddPromptCommand(TextInputCommand):
     type: Literal["prompt"] = "prompt"
 
 
-class QueryPromptCommand(BaseModel):
-    """Command to query prompts"""
+class QueryAllPrompts(BaseModel):
+    """Query all prompts with pagination"""
 
     action: Literal["query"] = "query"
     type: Literal["prompt"] = "prompt"
-    filters: PromptFilter
+    query_type: Literal["all"]
+    filters: AllFilterPayload
+
+
+class QueryRecentPrompts(BaseModel):
+    """Query recent prompts"""
+
+    action: Literal["query"] = "query"
+    type: Literal["prompt"] = "prompt"
+    query_type: Literal["recent"]
+    filters: RecentFilterPayload
+
+
+class QueryPromptsById(BaseModel):
+    """Query a prompt by ID"""
+
+    action: Literal["query"] = "query"
+    type: Literal["prompt"] = "prompt"
+    query_type: Literal["by_id"]
+    filters: ByIdFilterPayload
+
+
+QueryPromptCommand = Annotated[
+    Union[QueryAllPrompts, QueryRecentPrompts, QueryPromptsById],
+    Discriminator("query_type"),
+]
 
 
 class UpdatePromptCommand(BaseModel):
@@ -163,12 +193,37 @@ class AddDecreeCommand(TextInputCommand):
     type: Literal["decree"] = "decree"
 
 
-class QueryDecreeCommand(BaseModel):
-    """Command to query decrees"""
+class QueryAllDecrees(BaseModel):
+    """Query all decrees with pagination"""
 
     action: Literal["query"] = "query"
     type: Literal["decree"] = "decree"
-    filters: DecreeFilter
+    query_type: Literal["all"]
+    filters: AllFilterPayload
+
+
+class QueryRecentDecrees(BaseModel):
+    """Query recent decrees"""
+
+    action: Literal["query"] = "query"
+    type: Literal["decree"] = "decree"
+    query_type: Literal["recent"]
+    filters: RecentFilterPayload
+
+
+class QueryDecreesById(BaseModel):
+    """Query a decree by ID"""
+
+    action: Literal["query"] = "query"
+    type: Literal["decree"] = "decree"
+    query_type: Literal["by_id"]
+    filters: ByIdFilterPayload
+
+
+QueryDecreeCommand = Annotated[
+    Union[QueryAllDecrees, QueryRecentDecrees, QueryDecreesById],
+    Discriminator("query_type"),
+]
 
 
 class UpdateDecreeCommand(BaseModel):
@@ -214,15 +269,21 @@ class DeleteDecreeCommand(BaseModel):
 
 WebSocketCommand = (
     AddThoughtCommand
-    | QueryThoughtCommand
+    | QueryAllThoughts
+    | QueryRecentThoughts
+    | QueryThoughtsById
     | UpdateThoughtCommand
     | DeleteThoughtCommand
     | AddPromptCommand
-    | QueryPromptCommand
+    | QueryAllPrompts
+    | QueryRecentPrompts
+    | QueryPromptsById
     | UpdatePromptCommand
     | DeletePromptCommand
     | AddDecreeCommand
-    | QueryDecreeCommand
+    | QueryAllDecrees
+    | QueryRecentDecrees
+    | QueryDecreesById
     | UpdateDecreeCommand
     | DeleteDecreeCommand
 )

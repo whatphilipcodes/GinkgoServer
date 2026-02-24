@@ -5,7 +5,10 @@ from ginkgo.services.database import db_service
 from ginkgo.ws.commands import (
     AddPromptCommand,
     DeletePromptCommand,
+    QueryAllPrompts,
     QueryPromptCommand,
+    QueryPromptsById,
+    QueryRecentPrompts,
     UpdatePromptCommand,
 )
 
@@ -26,31 +29,29 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
 
 
 async def handle_query_prompt(cmd: QueryPromptCommand) -> dict[str, Any]:
-    from ginkgo.ws.commands import AllFilter, ByIdFilter, RecentFilter
-
-    if isinstance(cmd.filters, AllFilter):
+    if isinstance(cmd, QueryAllPrompts):
         records: list[PromptRead] = db_service.get_all_prompts(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
         )
-    elif isinstance(cmd.filters, RecentFilter):
+    elif isinstance(cmd, QueryRecentPrompts):
         records: list[PromptRead] = db_service.get_recent_prompts(
             hours=cmd.filters.hours,
         )
-    elif isinstance(cmd.filters, ByIdFilter):
+    elif isinstance(cmd, QueryPromptsById):
         record: PromptRead | None = db_service.get_prompt_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
         return {
             "status": "error",
-            "error": "Unknown filter type",
+            "error": "Unknown query type",
         }
 
     return {
         "status": "success",
         "action": "query",
         "type": "prompt",
-        "query_type": cmd.filters.query_type,
+        "query_type": cmd.query_type,
         "count": len(records),
         "records": [serialize_prompt(r) for r in records],
     }

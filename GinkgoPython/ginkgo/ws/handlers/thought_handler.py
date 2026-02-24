@@ -9,7 +9,10 @@ from ginkgo.services.llm import llm_service
 from ginkgo.ws.commands import (
     AddThoughtCommand,
     DeleteThoughtCommand,
+    QueryAllThoughts,
+    QueryRecentThoughts,
     QueryThoughtCommand,
+    QueryThoughtsById,
     UpdateThoughtCommand,
 )
 from ginkgo.ws.connection_manager import manager
@@ -67,31 +70,29 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
 
 
 async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
-    from ginkgo.ws.commands import AllFilter, ByIdFilter, RecentFilter
-
-    if isinstance(cmd.filters, AllFilter):
+    if isinstance(cmd, QueryAllThoughts):
         records: list[ThoughtRead] = db_service.get_all_thoughts(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
         )
-    elif isinstance(cmd.filters, RecentFilter):
+    elif isinstance(cmd, QueryRecentThoughts):
         records: list[ThoughtRead] = db_service.get_recent_thoughts(
             hours=cmd.filters.hours,
         )
-    elif isinstance(cmd.filters, ByIdFilter):
+    elif isinstance(cmd, QueryThoughtsById):
         record: ThoughtRead | None = db_service.get_thought_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
         return {
             "status": "error",
-            "error": "Unknown filter type",
+            "error": "Unknown query type",
         }
 
     return {
         "status": "success",
         "action": "query",
         "type": "thought",
-        "query_type": cmd.filters.query_type,
+        "query_type": cmd.query_type,
         "count": len(records),
         "records": [serialize_thought(r) for r in records],
     }
