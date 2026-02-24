@@ -1,9 +1,8 @@
 import asyncio
 from typing import Any
 
-from ginkgo.models.enums import GinkgoMessageType, GSODAttribute
 from ginkgo.models.thought import ThoughtRead
-from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage
+from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage, GinkgoMessageType
 from ginkgo.services.database import db_service
 from ginkgo.services.tasks.gsod import gsod_task
 from ginkgo.services.tasks.validate import validate_task
@@ -20,12 +19,12 @@ from ginkgo.ws.connection_manager import manager
 
 
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
-    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
     validate_future = asyncio.to_thread(validate_task.infer, cmd.text)
-    gsod_result, validate_result = await asyncio.gather(gsod_future, validate_future)
+    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
+    result, validate_result = await asyncio.gather(gsod_future, validate_future)
 
-    attribute_class = gsod_result.attribute
-    trait = gsod_result.trait
+    attribute_class = result.attribute
+    trait = result.trait
 
     record: ThoughtRead = db_service.add_thought(
         text=cmd.text,
@@ -36,11 +35,16 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         trait=trait,
     )
 
-    if "unreal" in manager.active_connections:
+    # to-do: better separation between valid and invalid
+    if (
+        "unreal" in manager.active_connections
+        and record.valid
+        and record.attribute_class
+    ):
         input_payload = GinkgoInput(
             id=record.id,
             text=record.text,
-            attribute=record.attribute_class or GSODAttribute.REPRESENTATION,
+            attribute=record.attribute_class,
             traitOffset=record.trait_offset,
             traitEntailment=record.trait_entailment,
             scoreHealth=record.score_health,
@@ -91,13 +95,12 @@ async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
 
 
 async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
-    # Re-run GSOD and validation for updated text
-    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
     validate_future = asyncio.to_thread(validate_task.infer, cmd.text)
-    gsod_result, validate_result = await asyncio.gather(gsod_future, validate_future)
+    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
+    result, validate_result = await asyncio.gather(gsod_future, validate_future)
 
-    attribute_class = gsod_result.attribute
-    trait = gsod_result.trait
+    attribute_class = result.attribute
+    trait = result.trait
 
     record: ThoughtRead | None = db_service.update_thought(
         cmd.record_id,
