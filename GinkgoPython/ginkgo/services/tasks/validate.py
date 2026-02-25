@@ -1,6 +1,5 @@
 import json
 from dataclasses import dataclass
-from typing import Optional
 
 import langcodes
 from ginkgo.services.tasks.base import BaseClassificationTask
@@ -12,7 +11,7 @@ logger = get_logger(__name__)
 @dataclass
 class ValidateResult:
     valid: bool
-    language: Optional[str]
+    language: str | None
 
 
 class ValidateTask(BaseClassificationTask):
@@ -55,7 +54,7 @@ class ValidateTask(BaseClassificationTask):
                 raise ValueError("missing required keys in parsed JSON")
 
             lang_val = parsed.get("language")
-            language_code: Optional[str] = None
+            language_code: str | None = None
             if lang_val:
                 try:
                     found = langcodes.find(lang_val)

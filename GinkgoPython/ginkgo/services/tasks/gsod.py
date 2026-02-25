@@ -1,6 +1,5 @@
 import json
 from dataclasses import dataclass
-from typing import Optional
 
 from ginkgo.core.config import settings
 from ginkgo.models.enums import GSODAttribute, GSODTrait
@@ -12,8 +11,8 @@ logger = get_logger(__name__)
 
 @dataclass
 class GSODResult:
-    trait: Optional[GSODTrait]
-    attribute: Optional[GSODAttribute]
+    trait: GSODTrait | None
+    attribute: GSODAttribute | None
 
 
 class GSODTask(BaseClassificationTask):
@@ -65,7 +64,7 @@ class GSODTask(BaseClassificationTask):
             return GSODResult(None, None)
 
         # Try to convert model output to GSODTrait
-        trait_enum: Optional[GSODTrait] = None
+        trait_enum: GSODTrait | None = None
         try:
             trait_enum = GSODTrait[token]
         except Exception:
@@ -78,7 +77,7 @@ class GSODTask(BaseClassificationTask):
                 return GSODResult(None, None)
 
         # Lookup attribute from labels (if available) and validate against GSODAttribute
-        attribute_enum: Optional[GSODAttribute] = None
+        attribute_enum: GSODAttribute | None = None
         label_entry = self.labels.get(trait_enum.value)
         if label_entry:
             attr_str = label_entry.get("attribute")

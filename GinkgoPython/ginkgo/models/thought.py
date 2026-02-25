@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlmodel import Field
 
 from ginkgo.models.base import TextInputBase
@@ -7,14 +5,14 @@ from ginkgo.models.enums import GSODAttribute, GSODTrait
 
 
 class ThoughtBase(TextInputBase):
-    attribute_class: Optional[GSODAttribute] = None
-    trait: Optional[GSODTrait] = None
+    attribute_class: GSODAttribute | None = None
+    trait: GSODTrait | None = None
 
 
 class Thought(ThoughtBase, table=True):
     __tablename__ = "thoughts"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     trait_offset: float = Field(default=0.0, ge=0.0, le=1.0)
     trait_entailment: float = Field(default=0.0, ge=0.0, le=1.0)
     score_health: float = Field(default=0.0, ge=0.0, le=1.0)

@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from ginkgo.core.config import settings
 
@@ -45,7 +44,7 @@ def setup_logging() -> None:
         pass
 
 
-def get_logger(name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str | None = None) -> logging.Logger:
     """
     Get a logger instance for the given module name.
     """
