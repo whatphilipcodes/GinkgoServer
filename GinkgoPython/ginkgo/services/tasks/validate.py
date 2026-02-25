@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 
 import langcodes
-from ginkgo.services.tasks.base import BaseClassificationTask
+from ginkgo.services.tasks.base import BaseTask
 from ginkgo.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -14,32 +14,16 @@ class ValidateResult:
     language: str | None
 
 
-class ValidateTask(BaseClassificationTask):
-    """Used to validate inputs."""
-
+class ValidateTask(BaseTask):
     def __init__(self) -> None:
-        super().__init__()
-
-    def build_system_instruction(self) -> str:
-        return self.load_task_md("validate.md")
+        super().__init__("validate.md")
 
     def infer(self, input_text: str) -> ValidateResult:
-        """Run validation on input_text and return parsed JSON result.
-
-        The `validate.md` file requires the model to return only a JSON
-        object with `valid` and `language` keys; attempt to parse that JSON
-        and fall back to a safe default if parsing fails or output is empty.
-        """
         self.ensure_inspector_initialized()
 
-        prompt_text = (
-            f"<bos><start_of_turn>developer\n{self.system_instruction}<end_of_turn>\n"
-            f"<start_of_turn>user\nUser Input: {input_text}\n\nResponse:<end_of_turn>\n"
-            f"<start_of_turn>model\n"
-        )
-
-        raw_output = self.inspector.generate(prompt_text)
-        logger.debug("Validate raw model output: %s", raw_output)
+        prompt = self.create_prompt({"input_text": input_text})
+        raw_output = self.inspector.generate(prompt)
+        logger.debug("Validate raw model output:\n%s", raw_output)
 
         if not raw_output:
             logger.warning("empty output from model for validation input")
@@ -61,8 +45,13 @@ class ValidateTask(BaseClassificationTask):
                     language_code = (found.language or str(lang_val)).lower()
                 except Exception:
                     language_code = str(lang_val).lower()
-
-            return ValidateResult(parsed.get("valid", False), language_code)
+            result = ValidateResult(parsed.get("valid", False), language_code)
+            logger.info(
+                "Validation successful - valid: %s, language: %s",
+                result.valid,
+                result.language,
+            )
+            return result
         except Exception:
             logger.warning("failed to parse JSON from model output; returning fallback")
             return ValidateResult(False, None)

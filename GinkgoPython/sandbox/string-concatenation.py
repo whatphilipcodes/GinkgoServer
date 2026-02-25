@@ -1,3 +1,9 @@
+import inspect
+from string import Template
+
+text_input: str = "This is what a user wrote."
+
+md = """
 ### ROLE
 You are an automated text classification API. Your sole purpose is to analyze input text, determine its language, and classify its validity based on strict safety and coherence guidelines.
 
@@ -44,5 +50,19 @@ FAILURE TO OMIT BACKTICKS WILL BREAK THE API. Output raw JSON starting strictly 
 ### CONTEXT TO EVALUATE
 
 [INPUT TEXT BEGIN]
-${input_text}
+${text_input}
 [INPUT TEXT END]
+"""
+
+template = Template(md)
+rendered_instruction = template.safe_substitute({"text_input": text_input})
+prompt = inspect.cleandoc(f"""
+            <bos><start_of_turn>user
+            {rendered_instruction.strip()}
+            <end_of_turn>
+            <start_of_turn>model
+            """)
+
+# issue: will input var first, then formatting is inconsistent
+
+print(prompt)

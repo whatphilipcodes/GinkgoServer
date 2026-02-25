@@ -48,3 +48,9 @@ Each category below has the following structure:
 
 ### OUTPUT FORMAT
 Output ONLY the LABEL_NAME in plain text. Do not include quotes, prefixes, or explanations.
+
+### CONTEXT TO EVALUATE
+
+[INPUT TEXT BEGIN]
+${input_text}
+[INPUT TEXT END]
