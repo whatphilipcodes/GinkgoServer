@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     server_reload: bool = False
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = None  # 10000  # MB
-    decree_eval_limit: int = 50
+    decree_eval_limit: int = 32
 
     # Model quantization settings
     enable_quantization: bool = False

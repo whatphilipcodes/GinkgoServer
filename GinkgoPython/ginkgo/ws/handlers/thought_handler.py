@@ -24,6 +24,7 @@ logger = get_logger(__name__)
 
 
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
+    logger.info("Inferring user input: %s", cmd.text)
     validate_result = await asyncio.to_thread(validate_task.infer, cmd.text)
 
     if not validate_result.valid:
