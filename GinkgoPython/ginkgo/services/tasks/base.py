@@ -113,3 +113,12 @@ class BaseTask:
         if match:
             return match.group(0)
         return invalid_json
+
+    @staticmethod
+    def format_list(items: list[str]) -> str:
+        """Convert a sequence of strings into a markdown-style bullet list."""
+        if not items:
+            raise RuntimeError(
+                "Parameter input to format_list did not match expected type"
+            )
+        return "\n".join(f"- {s}" for s in items)

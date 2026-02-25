@@ -7,12 +7,13 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application configuration settings"""
 
-    log_level: int = logging.DEBUG
+    log_level: int = logging.INFO
     server_host: str = "0.0.0.0"
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = None  # 10000  # MB
+    decree_eval_limit: int = 50
 
     # Model quantization settings
     enable_quantization: bool = False

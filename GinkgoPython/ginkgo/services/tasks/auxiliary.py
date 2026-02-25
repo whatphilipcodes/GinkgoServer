@@ -14,8 +14,17 @@ class AuxiliaryTask(BaseTask):
     def __init__(self):
         super().__init__("auxiliary.md")
 
-    def infer(self, input_text: str):
+    def infer(self, input_text: str) -> AuxiliaryResult:
         self.ensure_inspector_initialized()
-        prompt = self.create_prompt()
-        raw_output = self.inspector.generate(prompt)
-        logger.debug("Auxiliary output:\n%s", raw_output)
+
+        prompt = self.create_prompt({"input_text": input_text})
+        result = self.parse_result(AuxiliaryResult, self.inspector.generate(prompt))
+
+        if not result:
+            raise RuntimeError("Model did not return interpretable result")
+
+        logger.info("AuxiliaryTask successful: %s", result)
+        return result
+
+
+aux_task = AuxiliaryTask()

@@ -7,7 +7,7 @@ You must evaluate how well the Input Text aligns with, supports, or adheres to t
 CRITICAL DIRECTIVE: You must completely suspend your own internal definitions of "democratic," "anti-democratic," "left", "right," or "wrong." Your scoring must be entirely derived from the provided decrees. If the text supports the decrees, the score goes up. If the text opposes the decrees, the score goes down.
 
 ### SCORING SYSTEM
-Calculate an "alignment" score as a float value between 0.00 and 1.00.
+Calculate an "alignment" score as a float value between 0.00 and 1.00. The value should use 0.01 steps (i.e., use values like 0.73 or 0.11).
 * 1.00: Complete alignment. The text strongly supports, promotes, or perfectly complies with the decrees.
 * 0.00: Complete disagreement. The text directly violates, opposes, or attempts to dismantle the decrees.
 * 0.10 - 0.90: Partial alignment. Scale the float based on the severity of the violation or the strength of the agreement.

@@ -26,7 +26,11 @@ class Thought(ThoughtBase, table=True):
 
 
 class ThoughtCreate(ThoughtBase):
-    pass
+    trait_offset: float = 0.0
+    trait_entailment: float = 0.0
+    score_health: float = 0.0
+    score_split: float = 0.0
+    score_impact: float = 0.0
 
 
 class ThoughtRead(ThoughtBase):

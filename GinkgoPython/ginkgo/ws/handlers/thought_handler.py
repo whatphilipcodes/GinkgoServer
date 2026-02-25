@@ -4,8 +4,11 @@ from typing import Any
 from ginkgo.models.thought import ThoughtRead
 from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage, GinkgoMessageType
 from ginkgo.services.database import db_service
+from ginkgo.services.tasks.auxiliary import aux_task
+from ginkgo.services.tasks.decree import decree_task
 from ginkgo.services.tasks.gsod import gsod_task
 from ginkgo.services.tasks.validate import validate_task
+from ginkgo.utils.logger import get_logger
 from ginkgo.ws.commands import (
     AddThoughtCommand,
     DeleteThoughtCommand,
@@ -17,23 +20,42 @@ from ginkgo.ws.commands import (
 )
 from ginkgo.ws.connection_manager import manager
 
+logger = get_logger(__name__)
+
 
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
-    validate_future = asyncio.to_thread(validate_task.infer, cmd.text)
-    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
-    result, validate_result = await asyncio.gather(gsod_future, validate_future)
+    validate_result = await asyncio.to_thread(validate_task.infer, cmd.text)
 
-    attribute_class = result.attribute
-    trait = result.trait
+    if not validate_result.valid:
+        logger.info("Invalid Input. Discarding...")
+        record: ThoughtRead = db_service.add_thought(
+            text=cmd.text,
+            lang=validate_result.language,
+            source=cmd.source,
+            valid=False,
+        )
+    else:
+        gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
+        health_future = asyncio.to_thread(decree_task.infer, cmd.text)
+        aux_future = asyncio.to_thread(aux_task.infer, cmd.text)
+        gsod_result, decree_result, aux_result = await asyncio.gather(
+            gsod_future,
+            health_future,
+            aux_future,
+        )
 
-    record: ThoughtRead = db_service.add_thought(
-        text=cmd.text,
-        lang=validate_result.language,
-        source=cmd.source,
-        valid=validate_result.valid,
-        attribute_class=attribute_class,
-        trait=trait,
-    )
+        record: ThoughtRead = db_service.add_thought(
+            text=cmd.text,
+            lang=validate_result.language,
+            source=cmd.source,
+            valid=True,
+            attribute_class=gsod_result.attribute,
+            trait=gsod_result.trait,
+            trait_entailment=gsod_result.entailment,
+            score_health=decree_result.alignment,
+            score_split=aux_result.split,
+            score_impact=aux_result.impact,
+        )
 
     # to-do: better separation between valid and invalid
     if (
@@ -95,20 +117,40 @@ async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
 
 
 async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
-    validate_future = asyncio.to_thread(validate_task.infer, cmd.text)
-    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
-    result, validate_result = await asyncio.gather(gsod_future, validate_future)
+    validate_result = await asyncio.to_thread(validate_task.infer, cmd.text)
 
-    attribute_class = result.attribute
-    trait = result.trait
+    if not validate_result.valid:
+        logger.info("Invalid Input. Disgarded...")
+        record: ThoughtRead | None = db_service.update_thought(
+            cmd.record_id,
+            cmd.text,
+            valid=False,
+            trait_entailment=0.0,
+            score_health=0.0,
+            score_split=0.0,
+            score_impact=0.0,
+        )
+    else:
+        gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text)
+        health_future = asyncio.to_thread(decree_task.infer, cmd.text)
+        aux_future = asyncio.to_thread(aux_task.infer, cmd.text)
+        gsod_result, decree_result, aux_result = await asyncio.gather(
+            gsod_future,
+            health_future,
+            aux_future,
+        )
 
-    record: ThoughtRead | None = db_service.update_thought(
-        cmd.record_id,
-        cmd.text,
-        valid=validate_result.valid if validate_result else None,
-        attribute_class=attribute_class,
-        trait=trait,
-    )
+        record: ThoughtRead | None = db_service.update_thought(
+            cmd.record_id,
+            cmd.text,
+            valid=validate_result.valid,
+            attribute_class=gsod_result.attribute,
+            trait=gsod_result.trait,
+            trait_entailment=gsod_result.entailment,
+            score_health=decree_result.alignment,
+            score_split=aux_result.split,
+            score_impact=aux_result.impact,
+        )
 
     if record:
         return {

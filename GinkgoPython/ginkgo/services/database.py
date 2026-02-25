@@ -42,6 +42,11 @@ class DatabaseService:
         valid: bool = True,
         attribute_class=None,
         trait=None,
+        trait_offset: float | None = None,
+        trait_entailment: float | None = None,
+        score_health: float | None = None,
+        score_split: float | None = None,
+        score_impact: float | None = None,
     ) -> ThoughtRead:
         from ginkgo.models.enums import InputSource
 
@@ -54,6 +59,11 @@ class DatabaseService:
             valid=valid,
             attribute_class=attribute_class,
             trait=trait,
+            trait_offset=trait_offset if trait_offset is not None else 0.0,
+            trait_entailment=trait_entailment if trait_entailment is not None else 0.0,
+            score_health=score_health if score_health is not None else 0.0,
+            score_split=score_split if score_split is not None else 0.0,
+            score_impact=score_impact if score_impact is not None else 0.0,
         )
         crud = self.get_thought_crud()
         result = crud.add(create_obj)
