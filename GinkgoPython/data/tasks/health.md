@@ -30,5 +30,5 @@ ${decrees_input}
 [DECREES END]
 
 [INPUT TEXT BEGIN]
-${text_input}
+${input_text}
 [INPUT TEXT END]

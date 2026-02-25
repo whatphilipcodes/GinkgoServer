@@ -32,12 +32,21 @@ class BaseTask:
 
         return Template(content)
 
-    def create_prompt(self, template_substitutes: Mapping[str, object]) -> str:
-        instruction = self.task_template.safe_substitute(template_substitutes)
+    def create_prompt(
+        self, template_substitutes: Mapping[str, object] | None = None
+    ) -> str:
+        if template_substitutes:
+            instruction = self.task_template.safe_substitute(template_substitutes)
+        else:
+            instruction = self.task_template.template
+        if not instruction:
+            raise RuntimeError(
+                "Prompt creation failed: No Instruction could be derived from task template."
+            )
         prompt = inspect.cleandoc(
             f"<bos><start_of_turn>user\n{instruction.strip()}\n<end_of_turn>\n<start_of_turn>model"
         )
-        logger.critical("Raw model input:\n%s", prompt)  # debug
+        logger.debug("Raw model input:\n%s", prompt)
         return prompt
 
     def infer(self, input_text: str):

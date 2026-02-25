@@ -12,6 +12,7 @@ logger = get_logger(__name__)
 @dataclass
 class GSODResult:
     trait: GSODTrait | None
+    trait_entailment: float | None
     attribute: GSODAttribute | None
 
 
@@ -37,7 +38,7 @@ class GSODTask(BaseTask):
 
         prompt = self.create_prompt({"input_text": input_text})
         raw_output = self.inspector.generate(prompt)
-        logger.debug("GSOD raw model output:\n%s", raw_output)
+        logger.debug("GSOD output:\n%s", raw_output)
 
         if not raw_output:
             logger.warning("empty output from model for GSOD input")
