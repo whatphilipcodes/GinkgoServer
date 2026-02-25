@@ -1,19 +1,23 @@
 import json
-from dataclasses import dataclass
 
 from ginkgo.core.config import settings
 from ginkgo.models.enums import GSODAttribute, GSODTrait
 from ginkgo.services.tasks.base import BaseTask
 from ginkgo.utils.logger import get_logger
+from pydantic import BaseModel
 
 logger = get_logger(__name__)
 
 
-@dataclass
-class GSODResult:
+class GSODResult(BaseModel):
     trait: GSODTrait | None
-    trait_entailment: float | None
+    entailment: float
     attribute: GSODAttribute | None
+
+
+class GSODModelOutput(BaseModel):
+    trait: str
+    entailment: float
 
 
 class GSODTask(BaseTask):
@@ -37,53 +41,36 @@ class GSODTask(BaseTask):
         self.ensure_inspector_initialized()
 
         prompt = self.create_prompt({"input_text": input_text})
-        raw_output = self.inspector.generate(prompt)
-        logger.debug("GSOD output:\n%s", raw_output)
-
-        if not raw_output:
-            logger.warning("empty output from model for GSOD input")
-            return GSODResult(trait=None, attribute=None)
-
-        prediction = raw_output.strip()
-
-        token = prediction.split()[0].strip().upper().replace(" ", "_")
-        if token == "NONE":
-            logger.info("GSOD input classified as NONE")
-            return GSODResult(None, None)
-
-        trait_enum: GSODTrait | None = None
-        try:
-            trait_enum = GSODTrait[token]
-        except Exception:
-            try:
-                trait_enum = GSODTrait(token)
-            except Exception:
-                logger.warning(
-                    "GSOD prediction '%s' not found in GSODTrait", prediction
-                )
-                return GSODResult(None, None)
-
-        attribute_enum: GSODAttribute | None = None
-        label_entry = self.labels.get(trait_enum.value)
-        if label_entry:
-            attr_str = label_entry.get("attribute")
-            if attr_str:
-                try:
-                    attribute_enum = GSODAttribute[attr_str]
-                except Exception:
-                    try:
-                        attribute_enum = GSODAttribute(attr_str)
-                    except Exception:
-                        logger.warning(
-                            "GSOD attribute '%s' not found in GSODAttribute", attr_str
-                        )
-
-        logger.info(
-            "GSOD classification successful - Trait: %s, Attribute: %s",
-            trait_enum.value,
-            attribute_enum.value if attribute_enum else None,
+        intermediate = self.parse_result(
+            GSODModelOutput, self.inspector.generate(prompt)
         )
-        return GSODResult(trait_enum, attribute_enum)
+
+        result = GSODResult(trait=None, entailment=0.0, attribute=None)
+
+        if not intermediate:
+            return result
+
+        try:
+            trait_value = GSODTrait[intermediate.trait]
+        except KeyError:
+            trait_value = None
+
+        label_entry = self.labels.get(intermediate.trait)
+
+        attribute_value = (
+            label_entry.get("attribute")
+            if isinstance(label_entry, dict)
+            else getattr(label_entry, "attribute", None)
+        )
+
+        result = GSODResult(
+            trait=trait_value,
+            entailment=intermediate.entailment,
+            attribute=attribute_value,
+        )
+
+        logger.info("GSODTask successful: %s", result)
+        return result
 
 
 gsod_task = GSODTask()

@@ -124,7 +124,7 @@ class InspectorService:
     def generate(
         self,
         prompt_text: str,
-        max_new_tokens: int = 20,
+        max_new_tokens: int = 128,
         do_sample: bool = True,
     ) -> str:
         if self.model is None or self.tokenizer is None:

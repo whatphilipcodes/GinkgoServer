@@ -1,13 +1,18 @@
 import inspect
+import json
+import re
 from pathlib import Path
 from string import Template
-from typing import Mapping
+from typing import Mapping, Type, TypeVar
 
 from ginkgo.core.config import settings
 from ginkgo.services.inspector import inspector_service
 from ginkgo.utils.logger import get_logger
+from pydantic import BaseModel, ValidationError
 
 logger = get_logger(__name__)
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class BaseTask:
@@ -57,3 +62,54 @@ class BaseTask:
             raise RuntimeError(
                 "InspectorService not initialized; call initialize() on the inspector first."
             )
+
+    @staticmethod
+    def parse_result(model_type: Type[T], json_str: str) -> T | None:
+        logger.debug(f"Attempting to parse: {json_str}")
+        try:
+            return model_type.model_validate_json(json_str)
+        except (ValidationError, json.JSONDecodeError) as e:
+            extracted = BaseTask.extract_json(json_str)
+            if extracted and extracted != json_str:
+                try:
+                    return model_type.model_validate_json(extracted)
+                except ValidationError as e2:
+                    logger.warning(
+                        f"--- JSON Validation Failed for {model_type.__name__} (after extraction) ---"
+                    )
+                    for error in e2.errors():
+                        field_path = " -> ".join(str(p) for p in error["loc"])
+                        error_msg = error["msg"]
+                        input_provided = error.get("input", "N/A")
+
+                        logger.warning(f"Field: [{field_path}]")
+                        logger.warning(f"Error: {error_msg}")
+                        logger.warning(f"Input Provided: {input_provided}")
+                        logger.warning("-" * 30)
+                except json.JSONDecodeError:
+                    logger.warning("Error: Extracted content is not valid JSON syntax.")
+
+            if isinstance(e, ValidationError):
+                logger.warning(
+                    f"--- JSON Validation Failed for {model_type.__name__} ---"
+                )
+                for error in e.errors():
+                    field_path = " -> ".join(str(p) for p in error["loc"])
+                    error_msg = error["msg"]
+                    input_provided = error.get("input", "N/A")
+
+                    logger.warning(f"Field: [{field_path}]")
+                    logger.warning(f"Error: {error_msg}")
+                    logger.warning(f"Input Provided: {input_provided}")
+                    logger.warning("-" * 30)
+            else:
+                logger.warning("Error: The provided string is not valid JSON syntax.")
+
+        return None
+
+    @staticmethod
+    def extract_json(invalid_json: str) -> str:
+        match = re.search(r"\{.*\}", invalid_json, flags=re.DOTALL)
+        if match:
+            return match.group(0)
+        return invalid_json

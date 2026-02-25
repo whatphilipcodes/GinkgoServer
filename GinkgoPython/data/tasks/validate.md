@@ -12,16 +12,6 @@ If the text does NOT violate any of the above rules, you must classify it as val
 ### CRITERIA FOR "language"
 Identify the primary language the text is written in and output the full English name of that language. If the text is pure gibberish without a distinct language, output "Unknown".
 
-### OUTPUT FORMAT
-You must respond with ONLY a valid, parseable JSON object string. 
-CRITICAL: DO NOT wrap the JSON in Markdown code blocks. DO NOT use backticks (```). Output the raw curly braces and their contents directly.
-
-REQUIRED JSON STRUCTURE:
-{
-    "valid": <bool>,
-    "language": <string>
-}
-
 EXAMPLES:
 
 Input: "Bonjour, comment allez-vous aujourd'hui?"
@@ -46,3 +36,13 @@ FAILURE TO OMIT BACKTICKS WILL BREAK THE API. Output raw JSON starting strictly 
 [INPUT TEXT BEGIN]
 ${input_text}
 [INPUT TEXT END]
+
+### OUTPUT FORMAT
+You must respond with ONLY a valid, parseable JSON object string. 
+CRITICAL: DO NOT wrap the JSON in Markdown code blocks. DO NOT use backticks (```). Output the raw curly braces and their contents directly.
+
+REQUIRED JSON STRUCTURE:
+{
+    "valid": <bool>,
+    "language": <string>
+}

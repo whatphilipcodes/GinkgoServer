@@ -1,13 +1,11 @@
-from dataclasses import dataclass
-
 from ginkgo.services.tasks.base import BaseTask
 from ginkgo.utils.logger import get_logger
+from pydantic import BaseModel
 
 logger = get_logger(__name__)
 
 
-@dataclass
-class HealthResult:
+class HealthResult(BaseModel):
     trait: float
 
 
