@@ -9,6 +9,7 @@ from ginkgo.services.tasks.decree import decree_task
 from ginkgo.services.tasks.gsod import gsod_task
 from ginkgo.services.tasks.validate import validate_task
 from ginkgo.utils.logger import get_logger
+from ginkgo.utils.math import map_trait_offset
 from ginkgo.ws.commands import (
     AddThoughtCommand,
     DeleteThoughtCommand,
@@ -64,11 +65,12 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         and record.valid
         and record.attribute_class
     ):
+        trait_offset = map_trait_offset(record.trait) if record.trait else 0.0
         input_payload = GinkgoInput(
             id=record.id,
             text=record.text,
             attribute=record.attribute_class,
-            traitOffset=record.trait_offset,
+            traitOffset=trait_offset,
             traitEntailment=record.trait_entailment,
             scoreHealth=record.score_health,
             scoreSplit=record.score_split,
@@ -194,7 +196,6 @@ def serialize_thought(record: ThoughtRead) -> dict[str, Any]:
         if record.attribute_class
         else None,
         "trait": record.trait.value if record.trait else None,
-        "trait_offset": record.trait_offset,
         "trait_entailment": record.trait_entailment,
         "score_health": record.score_health,
         "score_split": record.score_split,

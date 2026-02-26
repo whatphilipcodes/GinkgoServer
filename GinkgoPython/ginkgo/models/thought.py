@@ -13,7 +13,6 @@ class Thought(ThoughtBase, table=True):
     __tablename__ = "thoughts"
 
     id: int | None = Field(default=None, primary_key=True)
-    trait_offset: float = Field(default=0.0, ge=0.0, le=1.0)
     trait_entailment: float = Field(default=0.0, ge=0.0, le=1.0)
     score_health: float = Field(default=0.0, ge=0.0, le=1.0)
     score_split: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -26,7 +25,6 @@ class Thought(ThoughtBase, table=True):
 
 
 class ThoughtCreate(ThoughtBase):
-    trait_offset: float = 0.0
     trait_entailment: float = 0.0
     score_health: float = 0.0
     score_split: float = 0.0
@@ -35,7 +33,6 @@ class ThoughtCreate(ThoughtBase):
 
 class ThoughtRead(ThoughtBase):
     id: int
-    trait_offset: float = 0.0
     trait_entailment: float = 0.0
     score_health: float = 0.0
     score_split: float = 0.0
