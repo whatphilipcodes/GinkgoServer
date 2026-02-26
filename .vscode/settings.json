@@ -7,5 +7,9 @@
       "source.organizeImports.ruff": "explicit"
     }
   },
-  "python.languageServer": "None"
+  "python.languageServer": "None",
+  "cSpell.words": [
+    "gsod",
+    "GSOD"
+  ]
 }

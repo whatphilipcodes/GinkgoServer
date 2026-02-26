@@ -1,14 +1,25 @@
+from typing import Union
+
 from pydantic import BaseModel, Field
 
+from ginkgo.models.enums import GinkgoMessageType, GSODAttribute
 
-class UEDataPayload(BaseModel):
-    ID: int = Field(ge=0)
-    PillarID: int = Field(ge=0, le=3)
-    PositionAlongsidePillar: float = Field(ge=0.0, le=1.0)
-    DistanceFromPillar: float = Field(ge=0.0, le=1.0)
-    InnerColour: float = Field(ge=0.0, le=1.0)
-    OuterColour: float = Field(ge=0.0, le=1.0)
-    SplitSize: float = Field(ge=0.0, le=1.0)
-    LeafSize: float = Field(ge=0.0, le=1.0)
-    RotationOffset: float = Field(ge=0.0, le=1.0)
-    V5: float = Field(ge=0.0, le=1.0)
+
+class GinkgoInput(BaseModel):
+    id: int = Field(ge=0)
+    text: str = ""
+    attribute: GSODAttribute
+    traitOffset: float = Field(ge=0.0, le=1.0)
+    traitEntailment: float = Field(ge=0.0, le=1.0)
+    scoreHealth: float = Field(ge=0.0, le=1.0)
+    scoreSplit: float = Field(ge=0.0, le=1.0)
+    scoreImpact: float = Field(ge=0.0, le=1.0)
+
+
+class GinkgoKeystroke(BaseModel):
+    key: str = ""
+
+
+class GinkgoMessage(BaseModel):
+    messageType: GinkgoMessageType
+    payloadJson: Union[GinkgoInput, GinkgoKeystroke]

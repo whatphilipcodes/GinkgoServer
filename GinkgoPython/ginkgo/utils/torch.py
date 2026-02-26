@@ -1,0 +1,38 @@
+import torch
+
+from ginkgo.core.config import settings
+from ginkgo.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+# unavailable on platform
+# def setup_cuda_environment():
+#     """Configure CUDA environment variables for optimal memory management."""
+#     # Enable expandable segments to reduce memory fragmentation
+#     if "PYTORCH_CUDA_ALLOC_CONF" not in os.environ:
+#         logger.info("Setting CUDA environment variables...")
+#         os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
+
+def limit_gpu_memory(device_index: int = 0):
+    """Limits the available VRAM that PyTorch can use based on the core config.
+    """
+    if not torch.cuda.is_available():
+        return
+
+    limit_in_mb = settings.gpu_memory_limit_mb
+    if limit_in_mb is None:
+        return
+    if limit_in_mb <= 0:
+        raise RuntimeError(
+            "No memory on GPU was allocated to PyTorch. Please adjust your configuration."
+        )
+
+    total_memory = torch.cuda.get_device_properties(device_index).total_memory
+    limit_bytes = limit_in_mb * 1024 * 1024
+    fraction = limit_bytes / total_memory
+
+    fraction = min(1.0, max(0.0, fraction))
+
+    if fraction < 0.99:
+        torch.cuda.set_per_process_memory_fraction(fraction, device_index)

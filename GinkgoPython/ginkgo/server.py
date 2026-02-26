@@ -3,14 +3,23 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from ginkgo.api import frontend_routes, test_ui, unreal_routes
+from ginkgo.api import frontend_routes, unreal_routes
 from ginkgo.core.config import settings
-from ginkgo.services.seed_service import sync_seeds
+from ginkgo.services.inspector import inspector_service
+from ginkgo.services.seed import sync_seeds
+from ginkgo.utils.logger import get_logger
+from ginkgo.utils.network import get_local_ip
+
+logger = get_logger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """Sync database seeds on startup."""
+    """Server spin-up"""
     sync_seeds()
+    await inspector_service.initialize()
+    local_ip = get_local_ip()
+    logger.critical(f"Launch successful! URL: http://{local_ip}:{settings.server_port}")
     yield
 
 
@@ -19,9 +28,6 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(frontend_routes.router)
 app.include_router(unreal_routes.router)
-
-if settings.enable_test_ui:
-    app.include_router(test_ui.router)
 
 if settings.frontend_dist.exists():
     app.mount(
@@ -33,7 +39,7 @@ if settings.frontend_dist.exists():
         "/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend"
     )
 else:
-    print(f"⚠️  Warning: Frontend build directory not found at {settings.frontend_dist}")
-    print(
-        f"   Run '{settings.frontend_build_command}' in {settings.frontend_dir} first."
+    logger.warning(f"Frontend build directory not found at {settings.frontend_dist}")
+    logger.warning(
+        f"Run '{settings.frontend_build_command}' in {settings.frontend_dir} first."
     )

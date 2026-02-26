@@ -1,19 +1,28 @@
 import json
-import random
+from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
-from ginkgo.schemas.frontend import Input, InputType
-from ginkgo.schemas.unreal import UEDataPayload
-from ginkgo.services import db_service
 from ginkgo.ws.commands import (
-    AddInputCommand,
-    DeleteInputCommand,
-    QueryInputCommand,
-    UpdateInputCommand,
+    AddDecreeCommand,
+    AddPromptCommand,
+    AddThoughtCommand,
+    DeleteDecreeCommand,
+    DeletePromptCommand,
+    DeleteThoughtCommand,
+    QueryAllThoughts,
+    QueryDecreeCommand,
+    QueryPromptCommand,
+    QueryRecentThoughts,
+    QueryThoughtCommand,
+    QueryThoughtsById,
+    UpdateDecreeCommand,
+    UpdatePromptCommand,
+    UpdateThoughtCommand,
 )
 from ginkgo.ws.connection_manager import manager
+from ginkgo.ws.handlers import decree_handler, prompt_handler, thought_handler
 
 router = APIRouter()
 
@@ -28,205 +37,14 @@ async def frontend_endpoint(websocket: WebSocket):
             try:
                 data = json.loads(raw_json)
                 action = data.get("action")
+                record_type = data.get("type")
 
-                if action == "add":
-                    cmd = AddInputCommand.model_validate_json(raw_json)
-                    record = db_service.add_input(
-                        text=cmd.text,
-                        input_type=cmd.type,
-                        lang=cmd.lang,
-                        source=cmd.source,
-                    )
+                response: dict[str, Any] | None = await dispatch_message(
+                    record_type, action, raw_json
+                )
 
-                    # Send to Unreal if this is a thought
-                    if (
-                        cmd.type == InputType.THOUGHT
-                        and "unreal" in manager.active_connections
-                    ):
-                        payload = UEDataPayload(
-                            ID=record.id,
-                            PillarID=random.randint(0, 3),
-                            PositionAlongsidePillar=random.uniform(0.0, 1.0),
-                            DistanceFromPillar=random.uniform(0.0, 1.0),
-                            InnerColour=random.uniform(0.0, 1.0),
-                            OuterColour=random.uniform(0.0, 1.0),
-                            SplitSize=random.uniform(0.0, 1.0),
-                            LeafSize=random.uniform(0.0, 1.0),
-                            RotationOffset=random.uniform(0.0, 1.0),
-                            V5=random.uniform(0.0, 1.0),
-                        )
-                        await manager.send_to(payload.model_dump_json(), "unreal")
-
-                    await websocket.send_json(
-                        {
-                            "status": "success",
-                            "action": "add",
-                            "record": {
-                                "id": record.id,
-                                "text": record.text,
-                                "type": record.type.value,
-                                "lang": record.lang.value,
-                                "source": record.source.value,
-                                "created_at": record.created_at.isoformat(),
-                                "updated_at": record.updated_at.isoformat(),
-                            },
-                        }
-                    )
-
-                elif action == "query":
-                    cmd = QueryInputCommand.model_validate_json(raw_json)
-
-                    if cmd.query_type == "all":
-                        records = db_service.get_all(
-                            limit=cmd.filters.get("limit", 100),
-                            offset=cmd.filters.get("offset", 0),
-                        )
-                    elif cmd.query_type == "by_type":
-                        input_type_str = cmd.filters.get("input_type", "thought")
-                        try:
-                            input_type = InputType(input_type_str)
-                            records = db_service.get_by_type(
-                                input_type,
-                                limit=cmd.filters.get("limit"),
-                            )
-                        except ValueError:
-                            await websocket.send_json(
-                                {
-                                    "status": "error",
-                                    "error": f"Invalid input_type: {input_type_str}",
-                                }
-                            )
-                            continue
-
-                    elif cmd.query_type == "recent":
-                        input_type_str = cmd.filters.get("input_type")
-                        try:
-                            input_type = (
-                                InputType(input_type_str) if input_type_str else None
-                            )
-                        except ValueError:
-                            await websocket.send_json(
-                                {
-                                    "status": "error",
-                                    "error": f"Invalid input_type: {input_type_str}",
-                                }
-                            )
-                            continue
-
-                        records = db_service.get_recent(
-                            hours=cmd.filters.get("hours", 24),
-                            input_type=input_type,
-                        )
-                    elif cmd.query_type == "by_id":
-                        record_id = cmd.filters.get("record_id")
-                        if not isinstance(record_id, int) or record_id <= 0:
-                            await websocket.send_json(
-                                {
-                                    "status": "error",
-                                    "error": "record_id filter must be a positive integer",
-                                }
-                            )
-                            continue
-                        record = db_service.get_by_id(record_id)
-                        records = [record] if record else []
-                    else:
-                        await websocket.send_json(
-                            {
-                                "status": "error",
-                                "error": f"Unknown query type: {cmd.query_type}",
-                            }
-                        )
-                        continue
-
-                    await websocket.send_json(
-                        {
-                            "status": "success",
-                            "action": "query",
-                            "query_type": cmd.query_type,
-                            "count": len(records),
-                            "records": [
-                                {
-                                    "id": r.id,
-                                    "text": r.text,
-                                    "type": r.type.value,
-                                    "lang": r.lang.value,
-                                    "source": r.source.value,
-                                    "created_at": r.created_at.isoformat(),
-                                    "updated_at": r.updated_at.isoformat(),
-                                }
-                                for r in records
-                            ],
-                        }
-                    )
-
-                elif action == "delete":
-                    cmd = DeleteInputCommand.model_validate_json(raw_json)
-                    success = db_service.delete(cmd.record_id)
-                    await websocket.send_json(
-                        {
-                            "status": "success" if success else "error",
-                            "action": "delete",
-                            "record_id": cmd.record_id,
-                            "deleted": success,
-                        }
-                    )
-
-                elif action == "update":
-                    cmd = UpdateInputCommand.model_validate_json(raw_json)
-                    record = db_service.update_text(cmd.record_id, cmd.text)
-                    if record:
-                        await websocket.send_json(
-                            {
-                                "status": "success",
-                                "action": "update",
-                                "record": {
-                                    "id": record.id,
-                                    "text": record.text,
-                                    "type": record.type.value,
-                                    "lang": record.lang.value,
-                                    "source": record.source.value,
-                                    "created_at": record.created_at.isoformat(),
-                                    "updated_at": record.updated_at.isoformat(),
-                                },
-                            }
-                        )
-                    else:
-                        await websocket.send_json(
-                            {
-                                "status": "error",
-                                "action": "update",
-                                "error": f"Record {cmd.record_id} not found",
-                            }
-                        )
-
-                elif action is None:
-                    validated_input = Input.model_validate_json(raw_json)
-                    record = db_service.add_input(
-                        text=validated_input.text,
-                        input_type=validated_input.type,
-                        lang=validated_input.lang,
-                        source=validated_input.source,
-                    )
-                    await websocket.send_json(
-                        {
-                            "status": "success",
-                            "action": "add",
-                            "record": {
-                                "id": record.id,
-                                "text": record.text,
-                                "type": record.type.value,
-                                "lang": record.lang.value,
-                                "source": record.source.value,
-                                "created_at": record.created_at.isoformat(),
-                                "updated_at": record.updated_at.isoformat(),
-                            },
-                        }
-                    )
-
-                else:
-                    await websocket.send_json(
-                        {"status": "error", "error": f"Unknown action: {action}"}
-                    )
+                if response:
+                    await websocket.send_json(response)
 
             except ValidationError as e:
                 await websocket.send_json(
@@ -234,6 +52,81 @@ async def frontend_endpoint(websocket: WebSocket):
                 )
             except json.JSONDecodeError:
                 await websocket.send_json({"status": "error", "error": "Invalid JSON"})
+            except Exception as e:
+                await websocket.send_json(
+                    {"status": "error", "error": f"Internal error: {str(e)}"}
+                )
 
     except WebSocketDisconnect:
         manager.disconnect("frontend")
+
+
+async def dispatch_message(
+    record_type: str, action: str, raw_json: str
+) -> dict[str, Any] | None:
+
+    thought_query_adapter: TypeAdapter[QueryThoughtCommand] = TypeAdapter(
+        QueryThoughtCommand
+    )
+    prompt_query_adapter: TypeAdapter[QueryPromptCommand] = TypeAdapter(
+        QueryPromptCommand
+    )
+    decree_query_adapter: TypeAdapter[QueryDecreeCommand] = TypeAdapter(
+        QueryDecreeCommand
+    )
+
+    if record_type == "thought":
+        if action == "add":
+            cmd: AddThoughtCommand = AddThoughtCommand.model_validate_json(raw_json)
+            return await thought_handler.handle_add_thought(cmd)
+        elif action == "query":
+            cmd: QueryAllThoughts | QueryRecentThoughts | QueryThoughtsById = (
+                thought_query_adapter.validate_json(raw_json)
+            )
+            return await thought_handler.handle_query_thought(cmd)
+        elif action == "update":
+            cmd: UpdateThoughtCommand = UpdateThoughtCommand.model_validate_json(
+                raw_json
+            )
+            return await thought_handler.handle_update_thought(cmd)
+        elif action == "delete":
+            cmd: DeleteThoughtCommand = DeleteThoughtCommand.model_validate_json(
+                raw_json
+            )
+            return await thought_handler.handle_delete_thought(cmd)
+
+    elif record_type == "prompt":
+        if action == "add":
+            cmd: AddPromptCommand = AddPromptCommand.model_validate_json(raw_json)
+            return await prompt_handler.handle_add_prompt(cmd)
+        elif action == "query":
+            cmd: QueryPromptCommand = prompt_query_adapter.validate_json(raw_json)
+            return await prompt_handler.handle_query_prompt(cmd)
+        elif action == "update":
+            cmd: UpdatePromptCommand = UpdatePromptCommand.model_validate_json(raw_json)
+            return await prompt_handler.handle_update_prompt(cmd)
+        elif action == "delete":
+            cmd: DeletePromptCommand = DeletePromptCommand.model_validate_json(raw_json)
+            return await prompt_handler.handle_delete_prompt(cmd)
+
+    elif record_type == "decree":
+        if action == "add":
+            cmd: AddDecreeCommand = AddDecreeCommand.model_validate_json(raw_json)
+            return await decree_handler.handle_add_decree(cmd)
+        elif action == "query":
+            cmd: QueryDecreeCommand = decree_query_adapter.validate_json(raw_json)
+            return await decree_handler.handle_query_decree(cmd)
+        elif action == "update":
+            cmd: UpdateDecreeCommand = UpdateDecreeCommand.model_validate_json(raw_json)
+            return await decree_handler.handle_update_decree(cmd)
+        elif action == "delete":
+            cmd: DeleteDecreeCommand = DeleteDecreeCommand.model_validate_json(raw_json)
+            return await decree_handler.handle_delete_decree(cmd)
+
+    else:
+        return {
+            "status": "error",
+            "error": f"Unknown record type: {record_type}",
+        }
+
+    return None

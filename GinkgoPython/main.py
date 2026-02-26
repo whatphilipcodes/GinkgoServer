@@ -1,31 +1,24 @@
-import socket
 import subprocess
 import sys
 
 import uvicorn
 from ginkgo.core.config import settings
+from ginkgo.utils.logger import get_logger, setup_logging
 
-
-def get_local_ip() -> str:
-    """Get the local IP address of the machine"""
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
-    except Exception:
-        return "unable to determine"
+setup_logging()
+logger = get_logger(__name__)
 
 
 def build_frontend():
     """Build the frontend using pnpm"""
     if not settings.frontend_dir.exists():
-        print(
+        logger.error(
             f"Frontend directory not found at {settings.frontend_dir}. Is the submodule cloned correctly?"
         )
         sys.exit(1)
 
-    print("Building frontend...")
-    print(f"Working directory: {settings.frontend_dir}")
+    logger.info("Building frontend...")
+    logger.info(f"Working directory: {settings.frontend_dir}")
     try:
         result = subprocess.run(
             settings.frontend_build_command,
@@ -36,33 +29,32 @@ def build_frontend():
             encoding="utf-8",
             shell=True,
         )
-        print("Frontend build completed successfully")
-        print(result.stdout)
+        logger.info("Frontend build completed successfully")
+        if result.stdout:
+            logger.debug(result.stdout)
     except subprocess.CalledProcessError as e:
-        print(f"Frontend build failed: {e}")
-        print(e.stderr)
+        logger.error(f"Frontend build failed: {e}")
+        if e.stderr:
+            logger.error(e.stderr)
         sys.exit(1)
     except FileNotFoundError:
-        print(
-            "Error: pnpm not found. Please install pnpm first (refer to: https://github.com/whatphilipcodes/GinkgoFrontend/blob/main/README.md)."
+        logger.error(
+            "pnpm not found. Please install pnpm first (refer to: https://github.com/whatphilipcodes/GinkgoFrontend/blob/main/README.md)."
         )
         sys.exit(1)
 
 
 def main():
+    logger.critical("Launching GinkgoServer... (This may take a moment)")
     build_frontend()
-
-    local_ip = get_local_ip()
-    print(f"Starting server on {settings.server_host}:{settings.server_port}")
-    print("Frontend URLs:")
-    print(f"Local: http://localhost:{settings.server_port}")
-    print(f"Network: http://{local_ip}:{settings.server_port}")
+    logger.info(f"[host:port] {settings.server_host}:{settings.server_port}")
 
     uvicorn.run(
         "ginkgo.server:app",
         host=settings.server_host,
         port=settings.server_port,
         reload=settings.server_reload,
+        log_config=None,
     )
 
 

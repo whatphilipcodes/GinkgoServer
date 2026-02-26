@@ -6,11 +6,14 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "accelerate>=1.12.0",
+    "bitsandbytes>=0.49.2",
     "fastapi>=0.129.0",
+    "langcodes>=3.5.1",
+    "language-data>=1.4.0",
     "pydantic-settings>=2.0.0",
     "sqlmodel>=0.0.16",
     "torch>=2.10.0",
-    # "torchvision>=0.25.0",
+    "torchvision>=0.25.0",
     "transformers>=5.2.0",
     "uvicorn[standard]>=0.41.0",
 ]

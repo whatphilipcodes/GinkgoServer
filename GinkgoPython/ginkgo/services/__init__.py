@@ -1,3 +1,0 @@
-from ginkgo.services.database_service import DatabaseService, db_service
-
-__all__ = ["DatabaseService", "db_service"]
