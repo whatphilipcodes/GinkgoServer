@@ -1,7 +1,9 @@
+import asyncio
 from typing import Any
 
 from ginkgo.models.decree import DecreeRead
 from ginkgo.services.database import db_service
+from ginkgo.services.tasks.validate import validate_task
 from ginkgo.ws.commands import (
     AddDecreeCommand,
     DeleteDecreeCommand,
@@ -14,6 +16,16 @@ from ginkgo.ws.commands import (
 
 
 async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
+    validate_result = await asyncio.to_thread(validate_task.infer, cmd.text)
+
+    if not validate_result.valid:
+        return {
+            "status": "error",
+            "action": "add",
+            "type": "decree",
+            "error": "Input rejected by validation",
+        }
+
     record: DecreeRead = db_service.add_decree(
         text=cmd.text,
         lang=cmd.lang,
