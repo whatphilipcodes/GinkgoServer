@@ -2,7 +2,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Discriminator, Field, field_validator
 
-from ginkgo.models.enums import InputSource
+from ginkgo.models.enums import ContextFrontend, InputSource
 
 
 class AllFilterPayload(BaseModel):
@@ -107,6 +107,15 @@ class DeleteThoughtCommand(BaseModel):
         if v <= 0:
             raise ValueError(f"record_id must be positive, got {v}")
         return v
+
+
+class SendKeystrokeCommand(BaseModel):
+    """Command to forward a keystroke event"""
+
+    action: Literal["send"] = "send"
+    type: Literal["keystroke"] = "keystroke"
+    key: str
+    context: ContextFrontend
 
 
 class AddPromptCommand(TextInputCommand):
@@ -286,4 +295,5 @@ WebSocketCommand = (
     | QueryDecreesById
     | UpdateDecreeCommand
     | DeleteDecreeCommand
+    | SendKeystrokeCommand
 )
