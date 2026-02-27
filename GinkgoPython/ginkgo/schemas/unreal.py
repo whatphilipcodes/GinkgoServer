@@ -2,7 +2,7 @@ from typing import Union
 
 from pydantic import BaseModel, Field
 
-from ginkgo.models.enums import GinkgoMessageType, GSODAttribute
+from ginkgo.models.enums import ContextFrontend, GinkgoMessageType, GSODAttribute
 
 
 class GinkgoInput(BaseModel):
@@ -18,6 +18,7 @@ class GinkgoInput(BaseModel):
 
 class GinkgoKeystroke(BaseModel):
     key: str = ""
+    context: ContextFrontend
 
 
 class GinkgoMessage(BaseModel):

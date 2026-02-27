@@ -17,12 +17,18 @@ from ginkgo.ws.commands import (
     QueryRecentThoughts,
     QueryThoughtCommand,
     QueryThoughtsById,
+    SendKeystrokeCommand,
     UpdateDecreeCommand,
     UpdatePromptCommand,
     UpdateThoughtCommand,
 )
 from ginkgo.ws.connection_manager import manager
-from ginkgo.ws.handlers import decree_handler, prompt_handler, thought_handler
+from ginkgo.ws.handlers import (
+    decree_handler,
+    key_handler,
+    prompt_handler,
+    thought_handler,
+)
 
 router = APIRouter()
 
@@ -122,6 +128,13 @@ async def dispatch_message(
         elif action == "delete":
             cmd: DeleteDecreeCommand = DeleteDecreeCommand.model_validate_json(raw_json)
             return await decree_handler.handle_delete_decree(cmd)
+
+    elif record_type == "keystroke":
+        if action == "send":
+            cmd: SendKeystrokeCommand = SendKeystrokeCommand.model_validate_json(
+                raw_json
+            )
+            return await key_handler.handle_keystroke(cmd)
 
     else:
         return {

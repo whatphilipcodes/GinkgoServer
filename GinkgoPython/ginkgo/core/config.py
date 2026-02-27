@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = None  # 10000  # MB
     decree_eval_limit: int = 32
+    send_keystrokes: bool = True
 
     # Model quantization settings
     enable_quantization: bool = False

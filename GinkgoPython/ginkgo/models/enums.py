@@ -6,6 +6,12 @@ class InputSource(str, Enum):
     AUDIENCE = "audience"
 
 
+class ContextFrontend(str, Enum):
+    THOUGHT = "thought"
+    PROMPT = "prompt"
+    DECREE = "decree"
+
+
 class GSODAttribute(str, Enum):
     REPRESENTATION = "REPRESENTATION"
     RIGHTS = "RIGHTS"

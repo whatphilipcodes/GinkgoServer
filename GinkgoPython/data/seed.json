@@ -1,96 +1,96 @@
 [
   {
-    "text": "Which rights feel under threat today?",
+    "text": "When does an election start to feel unfair to you?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Welche Rechte fühlen sich heute bedroht an?",
+    "text": "Wann beginnt sich eine Wahl für dich unfair anzufühlen?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "When is security used to limit freedom?",
+    "text": "Should be easy or hard for new political parties to get into parliament?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Wann wird Sicherheit genutzt, um Freiheit einzuschränken?",
+    "text": "Sollten neue Parteien leichter oder schwerer ins Parlament kommen?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "What role do political parties play in a democracy?",
+    "text": "In politics, should decisions be faster or more tightly checked?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Welche Rolle spielen politische Parteien in einer Demokratie?",
+    "text": "Sollten Entscheidungen in der Politik schneller oder strenger geprüft werden?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "Are human rights universal?",
+    "text": "Should everyone have an equal say, even if they are uninformed?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Sind Menschenrechte universell?",
+    "text": "Sollte jeder das gleiche Mitspracherecht haben, auch wenn er nicht informiert ist?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "How often should elections take place?",
+    "text": "Should elected officials represent all citizens?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Wie oft sollten Wahlen stattfinden?",
+    "text": "Sollten gewählte Amtsträger alle Bürger vertreten?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "What other public offices should be popularly elected?",
+    "text": "Who do you trust more: local or national politicians?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Welche weiteren öffentlichen Ämter sollten direkt gewählt werden?",
+    "text": "Wem vertrauen Sie mehr: lokalen oder nationalen Politikern?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "Do voters have any power between elections?",
+    "text": "What would you change about how laws are enforced?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Haben Wählende zwischen Wahlen überhaupt Einfluss?",
+    "text": "Was würden Sie an der Durchsetzung von Gesetzen ändern??",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
   },
   {
-    "text": "How can we improve political participation?",
+    "text": "What kind of safety net would make society feel fairer to you?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Wie können wir politische Teilhabe verbessern?",
+    "text": "Welche Art von Sicherheitsnetz würde die Gesellschaft für Sie gerechter machen?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
@@ -120,13 +120,95 @@
     "source": "seed"
   },
   {
-    "text": "What are the main challenges facing democracy today?",
+    "text": "What would make political participation easier for more people?",
     "type": "prompt",
     "lang": "en",
     "source": "seed"
   },
   {
-    "text": "Was sind heute die größten Herausforderungen für die Demokratie?",
+    "text": "Was würde die politische Teilhabe für mehr Menschen erleichtern?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },
+    {
+    "text": "How independent from politics should courts be?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Wie unabhängig von der Politik sollten Gerichte sein?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },
+    {
+    "text": "What should happen if a popular leader breaks the law?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Was sollte passieren, wenn ein beliebter Politiker gegen das Gesetz verstößt?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },  {
+    "text": "How transparent should politicians be about decisions and finances?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Wie transparent sollten Politiker in Bezug auf Entscheidungen und Finanzen sein?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },  {
+    "text": "What makes a neighbourhood feel safe?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Was macht ein Viertel sicher?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },
+   {
+    "text": "How big a role should activist groups or citizen movements play in shaping policy?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Wie groß sollte die Rolle von Aktivistengruppen oder Bürgerbewegungen bei der Gestaltung der Politik sein?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },
+     {
+    "text": "Which forms of participation actually make a difference?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Welche Formen der Beteiligung bewirken tatsächlich etwas?",
+    "type": "prompt",
+    "lang": "de",
+    "source": "seed"
+  },
+       {
+    "text": "Should voting be mandatory?",
+    "type": "prompt",
+    "lang": "en",
+    "source": "seed"
+  },
+  {
+    "text": "Sollte die Wahlpflicht eingeführt werden?",
     "type": "prompt",
     "lang": "de",
     "source": "seed"
