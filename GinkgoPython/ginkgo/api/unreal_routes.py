@@ -11,7 +11,6 @@ async def unreal_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            # Keep connection alive, data comes from frontend thoughts
             await websocket.receive_text()
 
     except WebSocketDisconnect:

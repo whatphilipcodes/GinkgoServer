@@ -88,9 +88,9 @@ class InspectorService:
                 bnb_4bit_quant_type=settings.bnb_4bit_quant_type,
                 bnb_4bit_use_double_quant=settings.bnb_4bit_use_double_quant,
             )
-            model_kwargs["quantization_config"] = quantization_config
+            model_kwargs["quantization_config"] = quantization_config  # ty:ignore[invalid-assignment]
         else:
-            model_kwargs["dtype"] = torch.bfloat16
+            model_kwargs["dtype"] = torch.bfloat16  # ty:ignore[invalid-assignment]
 
         try:
             self.model = AutoModelForCausalLM.from_pretrained(
