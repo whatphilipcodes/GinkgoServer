@@ -46,6 +46,15 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         aux_future,
     )
 
+    if not gsod_result:
+        logger.info("Input could not be classified. Rejected before insert.")
+        return {
+            "status": "error",
+            "action": "add",
+            "type": "thought",
+            "error": "Input rejected because class missing.",
+        }
+
     record: ThoughtRead = db_service.add_thought(
         text=cmd.text,
         lang=validate_result.language,
@@ -59,12 +68,7 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         score_impact=aux_result.impact,
     )
 
-    # to-do: better separation between valid and invalid
-    if (
-        "unreal" in manager.active_connections
-        and record.valid
-        and record.attribute_class
-    ):
+    if "unreal" in manager.active_connections and record.attribute_class:
         trait_offset = map_trait_offset(record.trait) if record.trait else 0.0
         input_payload = GinkgoInput(
             id=record.id,

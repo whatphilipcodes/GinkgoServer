@@ -45,3 +45,4 @@ class GSODTrait(str, Enum):
 class GinkgoMessageType(str, Enum):
     INPUT = "INPUT"
     KEYSTROKE = "KEYSTROKE"
+    INIT = "INIT"

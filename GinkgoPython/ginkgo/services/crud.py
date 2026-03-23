@@ -36,6 +36,12 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
 
     def get_all(self, limit: Optional[int] = None, offset: int = 0) -> list[ReadT]:
         stmt = select(self.model)
+        if limit:
+            order_field = getattr(self.model, "created_at", None) or getattr(
+                self.model, "id", None
+            )
+            if order_field is not None:
+                stmt = stmt.order_by(order_field.desc())
         if offset:
             stmt = stmt.offset(offset)
         if limit:

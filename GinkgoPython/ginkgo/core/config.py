@@ -7,16 +7,20 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application configuration settings"""
 
+    # Main
+    query_init_entry_limit: int = 200
+    decree_eval_limit: int = 32
+    send_keystrokes: bool = True
     log_level: int = logging.INFO
+
+    # Misc
     server_host: str = "0.0.0.0"
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
     gpu_memory_limit_mb: int | None = None  # 10000  # MB
-    decree_eval_limit: int = 32
-    send_keystrokes: bool = True
 
-    # Model quantization settings
+    # Model quantization
     enable_quantization: bool = False
     quantization_bits: int = 4
     bnb_4bit_compute_dtype: str = "bfloat16"
@@ -50,8 +54,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
-        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:

@@ -1,6 +1,9 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
+from ginkgo.models.enums import GinkgoMessageType
+from ginkgo.schemas.unreal import GinkgoMessage
 from ginkgo.ws.connection_manager import manager
+from ginkgo.ws.handlers.init_handler import handle_init
 
 router = APIRouter()
 
@@ -11,7 +14,10 @@ async def unreal_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            await websocket.receive_text()
+            text = await websocket.receive_text()
+            msg = GinkgoMessage.model_validate_json(text)
+            if msg.messageType == GinkgoMessageType.INIT:
+                await handle_init()
 
     except WebSocketDisconnect:
         manager.disconnect("unreal")

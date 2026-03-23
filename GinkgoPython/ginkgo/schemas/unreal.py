@@ -1,5 +1,3 @@
-from typing import Union
-
 from pydantic import BaseModel, Field
 
 from ginkgo.models.enums import ContextFrontend, GinkgoMessageType, GSODAttribute
@@ -16,6 +14,10 @@ class GinkgoInput(BaseModel):
     scoreImpact: float = Field(ge=0.0, le=1.0)
 
 
+class GinkgoInputList(BaseModel):
+    entries: list[GinkgoInput]
+
+
 class GinkgoKeystroke(BaseModel):
     key: str = ""
     context: ContextFrontend
@@ -23,4 +25,4 @@ class GinkgoKeystroke(BaseModel):
 
 class GinkgoMessage(BaseModel):
     messageType: GinkgoMessageType
-    payloadJson: Union[GinkgoInput, GinkgoKeystroke]
+    payloadJson: GinkgoInput | GinkgoInputList | GinkgoKeystroke
