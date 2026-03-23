@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
+    cpu_inference: bool = False
     enable_quantization: bool = True
 
     frontend_build_command: str = "pnpm build"

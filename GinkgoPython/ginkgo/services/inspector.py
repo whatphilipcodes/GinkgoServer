@@ -55,14 +55,16 @@ class InspectorService:
             )
 
     def _load_model_sync(self):
-        if not torch.cuda.is_available():
+        use_cpu = settings.cpu_inference
+
+        if not use_cpu and not torch.cuda.is_available():
             error_msg = (
                 "CUDA is not available. This application requires a CUDA-enabled GPU to run. "
                 "Please ensure you have:\n"
                 "  1. A compatible NVIDIA GPU installed\n"
                 "  2. NVIDIA CUDA Toolkit installed\n"
                 "  3. Compatible NVIDIA drivers installed\n"
-                "The application cannot proceed without GPU support."
+                "Alternatively, enable cpu_inference to run on CPU."
             )
             logger.error(error_msg)
             raise RuntimeError(error_msg)
@@ -73,19 +75,26 @@ class InspectorService:
         logger.info(
             f"Device: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}"
         )
+        logger.info(f"CPU inference enabled: {settings.cpu_inference}")
         logger.info(f"Quantization enabled: {settings.enable_quantization}")
         logger.info("Quantization profile: 4-bit NF4")
 
         quantization_config = None
         model_kwargs = {
-            "device_map": "cuda",
+            "device_map": "cpu" if use_cpu else "cuda",
             "local_files_only": True,
             "low_cpu_mem_usage": True,
         }
 
         model_kwargs["config"] = self._load_gemma_config(local_path)
 
-        if settings.enable_quantization:
+        should_quantize = settings.enable_quantization and not use_cpu
+        if settings.enable_quantization and use_cpu:
+            logger.warning(
+                "cpu_inference=True detected; disabling quantization and loading raw CPU model."
+            )
+
+        if should_quantize:
             quantization_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_compute_dtype=QUANT_4BIT_COMPUTE_DTYPE,
@@ -94,7 +103,7 @@ class InspectorService:
             )
             model_kwargs["quantization_config"] = quantization_config  # ty:ignore[invalid-assignment]
         else:
-            model_kwargs["torch_dtype"] = torch.bfloat16  # ty:ignore[invalid-assignment]
+            model_kwargs["torch_dtype"] = torch.float32 if use_cpu else torch.bfloat16  # ty:ignore[invalid-assignment]
 
         try:
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -108,7 +117,7 @@ class InspectorService:
         if self.model is None:
             raise RuntimeError("Model loaded but is None")
 
-        if settings.enable_quantization:
+        if should_quantize:
             is_4bit = bool(getattr(self.model, "is_loaded_in_4bit", False))
             if not is_4bit:
                 raise RuntimeError(
@@ -137,7 +146,7 @@ class InspectorService:
         except Exception:
             logger.warning("Could not compute model memory footprint")
 
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and not use_cpu:
             allocated_mb = torch.cuda.memory_allocated(0) / (1024 * 1024)
             reserved_mb = torch.cuda.memory_reserved(0) / (1024 * 1024)
             logger.info(
@@ -173,7 +182,7 @@ class InspectorService:
                 "pad_token_id": self.tokenizer.eos_token_id,
             }
 
-            if settings.enable_quantization:
+            if settings.enable_quantization and not settings.cpu_inference:
                 generate_kwargs["cache_implementation"] = "quantized"
 
             try:
