@@ -18,14 +18,7 @@ class Settings(BaseSettings):
     server_port: int = 8000
     server_reload: bool = False
     database_echo: bool = False
-    gpu_memory_limit_mb: int | None = None  # 10000  # MB
-
-    # Model quantization
-    enable_quantization: bool = False
-    quantization_bits: int = 4
-    bnb_4bit_compute_dtype: str = "bfloat16"
-    bnb_4bit_quant_type: str = "nf4"
-    bnb_4bit_use_double_quant: bool = True
+    enable_quantization: bool = True
 
     frontend_build_command: str = "pnpm build"
 
@@ -54,8 +47,8 @@ class Settings(BaseSettings):
     @property
     def model_path(self) -> Path:
         """Path to the local LLM weights"""
-        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
-        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
+        return self.project_root / "GinkgoPython" / "weights" / "gemma-3-4b-it"
+        # return self.project_root / "GinkgoPython" / "weights" / "gemma-3-1b-it"
 
     @property
     def database_path(self) -> Path:
