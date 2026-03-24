@@ -16,3 +16,4 @@ wheels/
 # Downloaded Models
 /weights/*
 !/weights/.gitkeep
+/sandbox/models/*
