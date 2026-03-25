@@ -34,9 +34,11 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
         record = self.session.scalars(stmt).first()
         return self.read_schema.model_validate(record) if record else None  # type: ignore
 
-    def get_all(self, limit: Optional[int] = None, offset: int = 0) -> list[ReadT]:
+    def get_all(
+        self, limit: Optional[int] = None, offset: int = 0, recent: bool = False
+    ) -> list[ReadT]:
         stmt = select(self.model)
-        if limit:
+        if recent:
             order_field = getattr(self.model, "created_at", None) or getattr(
                 self.model, "id", None
             )

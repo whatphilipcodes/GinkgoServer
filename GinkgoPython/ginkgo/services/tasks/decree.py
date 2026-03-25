@@ -14,9 +14,9 @@ class DecreeResult(BaseModel):
 
 class DecreeTask(BaseTask):
     def __init__(self):
-        super().__init__("health.md")
+        super().__init__("decree.md")
 
-    def infer(self, input_text: str) -> DecreeResult:
+    def infer(self, input_user: str, input_prompt: str) -> DecreeResult:
         self.ensure_inspector_initialized()
         limit = settings.decree_eval_limit
 
@@ -33,7 +33,11 @@ class DecreeTask(BaseTask):
             raise RuntimeError("No decrees found in database!")
 
         prompt = self.create_prompt(
-            {"decrees": self.format_list(decrees), "input_text": input_text}
+            {
+                "decrees": self.format_list(decrees),
+                "input_prompt": input_prompt,
+                "input_user": input_user,
+            }
         )
         result = self.parse_result(DecreeResult, self.inspector.generate(prompt))
 

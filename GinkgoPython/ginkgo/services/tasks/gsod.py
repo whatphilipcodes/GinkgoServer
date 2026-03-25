@@ -37,10 +37,12 @@ class GSODTask(BaseTask):
         with open(labels_path, "r", encoding="utf-8") as f:
             self.labels = json.load(f)
 
-    def infer(self, input_text: str) -> GSODResult:
+    def infer(self, input_user: str, input_prompt: str) -> GSODResult:
         self.ensure_inspector_initialized()
 
-        prompt = self.create_prompt({"input_text": input_text})
+        prompt = self.create_prompt(
+            {"input_prompt": input_prompt, "input_user": input_user}
+        )
         intermediate = self.parse_result(
             GSODModelOutput, self.inspector.generate(prompt)
         )

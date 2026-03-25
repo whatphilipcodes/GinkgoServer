@@ -75,10 +75,10 @@ class DatabaseService:
         return result
 
     def get_all_thoughts(
-        self, limit: int | None = None, offset: int = 0
+        self, limit: int | None = None, offset: int = 0, recent: bool = False
     ) -> list[ThoughtRead]:
         crud = self.get_thought_crud()
-        result = crud.get_all(limit=limit, offset=offset)
+        result = crud.get_all(limit=limit, offset=offset, recent=recent)
         crud.session.close()
         return result
 
@@ -162,10 +162,10 @@ class DatabaseService:
         return result
 
     def get_all_prompts(
-        self, limit: int | None = None, offset: int = 0
+        self, limit: int | None = None, offset: int = 0, recent: bool = False
     ) -> list[PromptRead]:
         crud = self.get_prompt_crud()
-        result = crud.get_all(limit=limit, offset=offset)
+        result = crud.get_all(limit=limit, offset=offset, recent=recent)
         crud.session.close()
         return result
 
@@ -237,10 +237,10 @@ class DatabaseService:
         return result
 
     def get_all_decrees(
-        self, limit: int | None = None, offset: int = 0
+        self, limit: int | None = None, offset: int = 0, recent: bool = False
     ) -> list[DecreeRead]:
         crud = self.get_decree_crud()
-        result = crud.get_all(limit=limit, offset=offset)
+        result = crud.get_all(limit=limit, offset=offset, recent=recent)
         crud.session.close()
         return result
 

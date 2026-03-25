@@ -2,515 +2,517 @@
   {
     "text": "When does an election start to feel unfair to you?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wann beginnt sich eine Wahl für dich unfair anzufühlen?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "Should be easy or hard for new political parties to get into parliament?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Sollten neue Parteien leichter oder schwerer ins Parlament kommen?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "In politics, should decisions be faster or more tightly checked?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Sollten Entscheidungen in der Politik schneller oder strenger geprüft werden?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "Should everyone have an equal say, even if they are uninformed?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Sollte jeder das gleiche Mitspracherecht haben, auch wenn er nicht informiert ist?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "Should elected officials represent all citizens?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Sollten gewählte Amtsträger alle Bürger vertreten?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "Who do you trust more: local or national politicians?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wem vertrauen Sie mehr: lokalen oder nationalen Politikern?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "What would you change about how laws are enforced?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Was würden Sie an der Durchsetzung von Gesetzen ändern??",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "What kind of safety net would make society feel fairer to you?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Welche Art von Sicherheitsnetz würde die Gesellschaft für Sie gerechter machen?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "What are the limits of free speech?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wo liegen die Grenzen der Meinungsfreiheit?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "How can we better protect minority rights?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wie können wir Minderheitenrechte besser schützen?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "What would make political participation easier for more people?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Was würde die politische Teilhabe für mehr Menschen erleichtern?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
-    {
+  {
     "text": "How independent from politics should courts be?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wie unabhängig von der Politik sollten Gerichte sein?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
-    {
+  {
     "text": "What should happen if a popular leader breaks the law?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Was sollte passieren, wenn ein beliebter Politiker gegen das Gesetz verstößt?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
-  },  {
+  },
+  {
     "text": "How transparent should politicians be about decisions and finances?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wie transparent sollten Politiker in Bezug auf Entscheidungen und Finanzen sein?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
-  },  {
-    "text": "What makes a neighbourhood feel safe?",
+  },
+  {
+    "text": "What makes a neighborhood feel safe?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Was macht ein Viertel sicher?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
-   {
+  {
     "text": "How big a role should activist groups or citizen movements play in shaping policy?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Wie groß sollte die Rolle von Aktivistengruppen oder Bürgerbewegungen bei der Gestaltung der Politik sein?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
-     {
+  {
     "text": "Which forms of participation actually make a difference?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Welche Formen der Beteiligung bewirken tatsächlich etwas?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
-       {
+  {
     "text": "Should voting be mandatory?",
     "type": "prompt",
-    "lang": "en",
+    "lang": "eng",
     "source": "seed"
   },
   {
     "text": "Sollte die Wahlpflicht eingeführt werden?",
     "type": "prompt",
-    "lang": "de",
+    "lang": "deu",
     "source": "seed"
   },
   {
     "text": "The state shall implement Proportional Representation to ensure legislative bodies accurately reflect the diverse ideological and demographic makeup of the citizenry.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "A constitutionally independent Judiciary shall hold the absolute authority to nullify any executive action that infringes upon fundamental minority rights.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Public institutions must mandate inclusive deliberative assemblies where minority representatives possess a formal right of consultation over targeted policies.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Universal suffrage shall be protected as an inviolable right, with automatic voter registration for all citizens upon reaching the age of maturity.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The freedom of the press shall be absolute, prohibiting government censorship or the intimidation of journalists and whistleblowers.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Term limits shall be strictly enforced for all executive and legislative offices to prevent the consolidation of dynastic or permanent power.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "All campaign financing must be transparent and publicly disclosed in real-time to prevent the undue influence of private capital on public policy.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The right to peaceful assembly and protest shall be guaranteed without the requirement of state-issued permits or prior restraint.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Civic education regarding democratic processes and human rights shall be a mandatory component of the national curriculum for all students.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Local municipalities shall be granted significant autonomy to manage regional affairs, ensuring governance remains close to the people.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "All government data not pertaining to immediate national security shall be open-source and accessible to the public by default.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The drawing of electoral districts shall be performed by independent, non-partisan commissions to eliminate the practice of gerrymandering.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Whistleblower protection acts shall be established to shield employees who report corruption within both public and private sectors.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The right to a speedy and public trial by an impartial jury shall be maintained for all criminal and civil litigations.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "No citizen shall be deprived of life, liberty, or property without due process of law and the right to legal counsel.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Political parties must adhere to democratic internal structures, including the open election of their leadership and candidates.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The military shall remain strictly under civilian control and is prohibited from intervening in domestic political disputes.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Access to high-speed internet shall be recognized as a fundamental utility to ensure equal participation in the digital democratic sphere.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Referendums on major constitutional changes shall be required to ensure direct popular consent for the foundations of governance.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall provide equal protection under the law regardless of race, gender, religion, or socioeconomic status.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Public officials shall be subject to regular ethics audits and must divest from assets that present a conflict of interest.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The right to privacy against unreasonable searches and electronic surveillance shall be upheld as a cornerstone of individual liberty.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Labor unions and collective bargaining shall be protected to ensure the democratic voice of the worker in the national economy.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Electoral cycles shall be fixed and predictable, preventing sitting governments from manipulating election dates for political advantage.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Language rights for linguistic minorities shall be respected in all legal and administrative proceedings.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Environmental protection shall be a constitutional mandate to preserve the rights of future generations to a habitable planet.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall maintain a strict separation of church and state to guarantee religious freedom for all and secularism in law.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Administrative decisions must be accompanied by written justifications and be subject to judicial review.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The right to petition the government for a redress of grievances shall be protected and must receive a formal response.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Lobbying activities must be strictly regulated and recorded in a public registry to maintain the integrity of the legislative process.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Public broadcasting shall be funded independently to provide unbiased information without government interference.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall ensure equitable access to quality healthcare, viewing a healthy citizenry as essential for robust democratic participation.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Provisions for the impeachment or recall of elected officials shall be clearly defined for cases of gross misconduct.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Equal pay for equal work shall be enforced to ensure economic fairness and gender equality within the workforce.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The secrecy of the ballot shall be absolute, ensuring no citizen can be coerced or intimidated regarding their vote.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Indigenous populations shall have the right to self-determination and the protection of their ancestral lands.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall provide legal aid to those who cannot afford representation, ensuring justice is not a privilege of the wealthy.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "National census data shall be updated regularly to ensure accurate representation and fair allocation of public resources.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Political asylum shall be granted to those fleeing persecution, reflecting the democratic commitment to universal human rights.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The use of emergency powers by the executive shall be time-limited and require immediate legislative ratification.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The right to strike and engage in peaceful industrial action shall be recognized as a fundamental democratic liberty.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall actively combat disinformation through the promotion of media literacy and the support of fact-checking initiatives.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Citizens' assemblies may be convened to provide recommendations on complex ethical or long-term policy issues.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "All children shall have the right to a safe environment and protection from exploitation and abuse.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Public procurement and contracts shall be awarded through transparent, competitive bidding processes to prevent cronyism.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall recognize the right to personal identity and the freedom of self-expression in all its forms.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Monopolies and trusts shall be regulated to ensure a competitive market that allows for economic social mobility.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "Taxation shall be progressive, ensuring that the burden of public services is shared fairly based on the ability to pay.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The state shall facilitate the reintegration of formerly incarcerated individuals to ensure their return to full democratic participation.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   },
   {
     "text": "The constitution shall be the supreme law of the land, and all public officials must swear an oath to uphold it above all else.",
     "type": "decree",
-    "lang": "en",
-    "source": "gemini"
+    "lang": "eng",
+    "source": "seed"
   }
 ]

@@ -77,7 +77,8 @@ class InspectorService:
         )
         logger.info(f"CPU inference enabled: {settings.cpu_inference}")
         logger.info(f"Quantization enabled: {settings.enable_quantization}")
-        logger.info("Quantization profile: 4-bit NF4")
+        if settings.enable_quantization:
+            logger.info("Quantization profile: 4-bit NF4")
 
         quantization_config = None
         model_kwargs = {

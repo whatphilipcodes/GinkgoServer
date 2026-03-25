@@ -3,7 +3,9 @@ from typing import Any
 
 from ginkgo.models.prompt import PromptRead
 from ginkgo.services.database import db_service
-from ginkgo.services.tasks.validate import validate_task
+from ginkgo.services.tasks.augment import augment_task
+from ginkgo.services.tasks.filter import filter_task
+from ginkgo.utils.logger import get_logger
 from ginkgo.ws.commands import (
     AddPromptCommand,
     DeletePromptCommand,
@@ -14,11 +16,13 @@ from ginkgo.ws.commands import (
     UpdatePromptCommand,
 )
 
+logger = get_logger(__name__)
+
 
 async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
-    validate_result = await asyncio.to_thread(validate_task.infer, cmd.text)
-
-    if not validate_result.valid:
+    logger.info("Inferring user input: Prompt: %s", cmd.text)
+    filter = await asyncio.to_thread(filter_task.infer, cmd.text)
+    if not filter.valid:
         return {
             "status": "error",
             "action": "add",
@@ -26,9 +30,11 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
             "error": "Input rejected by validation",
         }
 
+    augment = await asyncio.to_thread(augment_task.infer, cmd.text)
+
     record: PromptRead = db_service.add_prompt(
         text=cmd.text,
-        lang=cmd.lang,
+        lang=augment.language,
         source=cmd.source,
     )
 
@@ -45,6 +51,7 @@ async def handle_query_prompt(cmd: QueryPromptCommand) -> dict[str, Any]:
         records: list[PromptRead] = db_service.get_all_prompts(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
+            recent=cmd.filters.recent,
         )
     elif isinstance(cmd, QueryRecentPrompts):
         records: list[PromptRead] = db_service.get_recent_prompts(

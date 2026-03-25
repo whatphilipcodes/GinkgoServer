@@ -5,28 +5,27 @@ from pydantic import BaseModel
 logger = get_logger(__name__)
 
 
-class AuxiliaryResult(BaseModel):
-    split: float
-    impact: float
+class CoherencyResult(BaseModel):
+    coherent: bool
 
 
-class AuxiliaryTask(BaseTask):
-    def __init__(self):
-        super().__init__("auxiliary.md")
+class CoherencyTask(BaseTask):
+    def __init__(self) -> None:
+        super().__init__("coherency.md")
 
-    def infer(self, input_user: str, input_prompt: str) -> AuxiliaryResult:
+    def infer(self, input_user: str, input_prompt: str) -> CoherencyResult:
         self.ensure_inspector_initialized()
 
         prompt = self.create_prompt(
             {"input_prompt": input_prompt, "input_user": input_user}
         )
-        result = self.parse_result(AuxiliaryResult, self.inspector.generate(prompt))
+        result = self.parse_result(CoherencyResult, self.inspector.generate(prompt))
 
         if not result:
             raise RuntimeError("Model did not return interpretable result")
 
-        logger.info("AuxiliaryTask successful: %s", result)
+        logger.info("CoherencyTask successful: %s", result)
         return result
 
 
-aux_task = AuxiliaryTask()
+coherency_task = CoherencyTask()

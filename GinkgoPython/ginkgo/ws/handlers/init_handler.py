@@ -18,7 +18,10 @@ async def handle_init():
         logger.info(
             "Initialization request received. Restoring inputs from database..."
         )
-        records = db_service.get_all_thoughts(settings.query_init_entry_limit)
+        records = db_service.get_all_thoughts(
+            limit=settings.query_init_entry_limit,
+            recent=True,
+        )
         inputs = []
         for entry in records:
             if not entry.attribute_class:

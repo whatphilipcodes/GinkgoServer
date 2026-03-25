@@ -16,18 +16,16 @@ async def handle_keystroke(cmd: SendKeystrokeCommand) -> dict[str, Any]:
     keystroke = GinkgoKeystroke(key=cmd.key, context=cmd.context)
     forwarded = False
 
-    if settings.send_keystrokes and "unreal" in manager.active_connections:
-        message = GinkgoMessage(
-            messageType=GinkgoMessageType.KEYSTROKE,
-            payloadJson=keystroke,
-        )
-        await manager.send_to(message.model_dump_json(), "unreal")
-        forwarded = True
-    else:
-        if not settings.send_keystrokes:
-            logger.info("Keystroke forwarding disabled via settings.send_keystrokes")
-        elif "unreal" not in manager.active_connections:
+    if settings.send_keystrokes:
+        if "unreal" not in manager.active_connections:
             logger.info("Keystroke not forwarded; no active 'unreal' websocket")
+        else:
+            message = GinkgoMessage(
+                messageType=GinkgoMessageType.KEYSTROKE,
+                payloadJson=keystroke,
+            )
+            await manager.send_to(message.model_dump_json(), "unreal")
+            forwarded = True
 
     return {
         "status": "success",

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     # Main
     query_init_entry_limit: int = 200
     decree_eval_limit: int = 32
-    send_keystrokes: bool = True
+    send_keystrokes: bool = False
     log_level: int = logging.INFO
 
     # Misc

@@ -54,7 +54,7 @@ class BaseTask:
         logger.debug("Raw model input:\n%s", prompt)
         return prompt
 
-    def infer(self, input_text: str):
+    def infer(self, input_user: str, input_prompt: str) -> T:
         raise NotImplementedError()
 
     def ensure_inspector_initialized(self) -> None:
