@@ -13,8 +13,7 @@ class TextInput(SQLModel):
 
 class Timestamped(SQLModel):
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        nullable=False,
+        default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
     modified_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
