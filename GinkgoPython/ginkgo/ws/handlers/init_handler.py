@@ -7,7 +7,6 @@ from ginkgo.schemas.unreal import (
 )
 from ginkgo.services.database import db_service
 from ginkgo.utils.logger import get_logger
-from ginkgo.utils.math import map_trait_offset
 from ginkgo.ws.connection_manager import manager
 
 logger = get_logger(__name__)
@@ -26,19 +25,7 @@ async def handle_init():
         for entry in records:
             if not entry.attribute_class:
                 continue
-            trait_offset = map_trait_offset(entry.trait) if entry.trait else 0.0
-            inputs.append(
-                GinkgoInput(
-                    id=entry.id,
-                    text=entry.text,
-                    attribute=entry.attribute_class,
-                    traitOffset=trait_offset,
-                    traitEntailment=entry.trait_entailment,
-                    scoreHealth=entry.score_health,
-                    scoreSplit=entry.score_split,
-                    scoreImpact=entry.score_impact,
-                )
-            )
+            inputs.append(GinkgoInput.from_thought(entry))
 
         msg = GinkgoMessage(
             messageType=GinkgoMessageType.INIT,

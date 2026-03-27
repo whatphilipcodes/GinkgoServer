@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any
 
+from ginkgo.models.enums import InputSource
 from ginkgo.models.thought import ThoughtRead
 from ginkgo.schemas.unreal import GinkgoInput, GinkgoMessage, GinkgoMessageType
 from ginkgo.services.database import db_service
@@ -10,14 +11,13 @@ from ginkgo.services.tasks.decree import decree_task
 from ginkgo.services.tasks.filter import filter_task
 from ginkgo.services.tasks.gsod import gsod_task
 from ginkgo.utils.logger import get_logger
-from ginkgo.utils.math import map_trait_offset
 from ginkgo.ws.commands import (
     AddThoughtCommand,
-    DeleteThoughtCommand,
-    QueryAllThoughts,
-    QueryRecentThoughts,
-    QueryThoughtCommand,
-    QueryThoughtsById,
+    DeleteCommand,
+    QueryAll,
+    QueryById,
+    QueryCommand,
+    QueryRecent,
     UpdateThoughtCommand,
 )
 from ginkgo.ws.connection_manager import manager
@@ -28,8 +28,8 @@ logger = get_logger(__name__)
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
     logger.info("Inferring user input: Thought: %s", cmd.text)
 
-    filter = await asyncio.to_thread(filter_task.infer, cmd.text)
-    if not filter.valid:
+    filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
+    if not filter_result.valid:
         logger.info("Invalid input. Rejected before insert.")
         return {
             "status": "error",
@@ -59,10 +59,10 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         }
 
     record: ThoughtRead = db_service.add_thought(
-        prompt_id=0,  # to-do: get from db
+        prompt_id=cmd.prompt_id,
         text=cmd.text,
         lang=augment_result.language,
-        source=cmd.source,
+        source=InputSource.AUDIENCE,
         attribute_class=gsod_result.attribute,
         trait=gsod_result.trait,
         trait_entailment=gsod_result.entailment,
@@ -72,17 +72,7 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
     )
 
     if "unreal" in manager.active_connections and record.attribute_class:
-        trait_offset = map_trait_offset(record.trait) if record.trait else 0.0
-        input_payload = GinkgoInput(
-            id=record.id,
-            text=record.text,
-            attribute=record.attribute_class,
-            traitOffset=trait_offset,
-            traitEntailment=record.trait_entailment if record.trait_entailment else 0.0,
-            scoreHealth=record.score_health if record.score_health else 0.0,
-            scoreSplit=record.score_split if record.score_split else 0.0,
-            scoreImpact=record.score_impact if record.score_impact else 0.0,
-        )
+        input_payload = GinkgoInput.from_thought(record)
         message = GinkgoMessage(
             messageType=GinkgoMessageType.INPUT,
             payloadJson=input_payload,
@@ -97,18 +87,18 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
     }
 
 
-async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
-    if isinstance(cmd, QueryAllThoughts):
+async def handle_query_thought(cmd: QueryCommand) -> dict[str, Any]:
+    if isinstance(cmd, QueryAll):
         records: list[ThoughtRead] = db_service.get_all_thoughts(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
             recent=cmd.filters.recent,
         )
-    elif isinstance(cmd, QueryRecentThoughts):
+    elif isinstance(cmd, QueryRecent):
         records: list[ThoughtRead] = db_service.get_recent_thoughts(
             hours=cmd.filters.hours,
         )
-    elif isinstance(cmd, QueryThoughtsById):
+    elif isinstance(cmd, QueryById):
         record: ThoughtRead | None = db_service.get_thought_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
@@ -130,8 +120,8 @@ async def handle_query_thought(cmd: QueryThoughtCommand) -> dict[str, Any]:
 async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
     logger.info("Inferring user input: Thought: %s", cmd.text)
 
-    filter = await asyncio.to_thread(filter_task.infer, cmd.text)
-    if not filter.valid:
+    filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
+    if not filter_result.valid:
         logger.info("Invalid input. Rejected before insert.")
         return {
             "status": "error",
@@ -153,7 +143,7 @@ async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
 
         record: ThoughtRead | None = db_service.update_thought(
             cmd.record_id,
-            prompt_id=0,  # to-do: get from db
+            prompt_id=cmd.prompt_id,
             text=cmd.text,
             lang=augment_result.language,
             attribute_class=gsod_result.attribute,
@@ -180,7 +170,7 @@ async def handle_update_thought(cmd: UpdateThoughtCommand) -> dict[str, Any]:
         }
 
 
-async def handle_delete_thought(cmd: DeleteThoughtCommand) -> dict[str, Any]:
+async def handle_delete_thought(cmd: DeleteCommand) -> dict[str, Any]:
     success: bool = db_service.delete_thought(cmd.record_id)
     return {
         "status": "success" if success else "error",

@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any
 
+from ginkgo.models.enums import InputSource
 from ginkgo.models.prompt import PromptRead
 from ginkgo.services.database import db_service
 from ginkgo.services.tasks.augment import augment_task
@@ -8,11 +9,11 @@ from ginkgo.services.tasks.filter import filter_task
 from ginkgo.utils.logger import get_logger
 from ginkgo.ws.commands import (
     AddPromptCommand,
-    DeletePromptCommand,
-    QueryAllPrompts,
-    QueryPromptCommand,
-    QueryPromptsById,
-    QueryRecentPrompts,
+    DeleteCommand,
+    QueryAll,
+    QueryById,
+    QueryCommand,
+    QueryRecent,
     UpdatePromptCommand,
 )
 
@@ -21,8 +22,8 @@ logger = get_logger(__name__)
 
 async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
     logger.info("Inferring user input: Prompt: %s", cmd.text)
-    filter = await asyncio.to_thread(filter_task.infer, cmd.text)
-    if not filter.valid:
+    filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
+    if not filter_result.valid:
         return {
             "status": "error",
             "action": "add",
@@ -35,7 +36,7 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
     record: PromptRead = db_service.add_prompt(
         text=cmd.text,
         lang=augment.language,
-        source=cmd.source,
+        source=InputSource.AUDIENCE,
     )
 
     return {
@@ -46,18 +47,18 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
     }
 
 
-async def handle_query_prompt(cmd: QueryPromptCommand) -> dict[str, Any]:
-    if isinstance(cmd, QueryAllPrompts):
+async def handle_query_prompt(cmd: QueryCommand) -> dict[str, Any]:
+    if isinstance(cmd, QueryAll):
         records: list[PromptRead] = db_service.get_all_prompts(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
             recent=cmd.filters.recent,
         )
-    elif isinstance(cmd, QueryRecentPrompts):
+    elif isinstance(cmd, QueryRecent):
         records: list[PromptRead] = db_service.get_recent_prompts(
             hours=cmd.filters.hours,
         )
-    elif isinstance(cmd, QueryPromptsById):
+    elif isinstance(cmd, QueryById):
         record: PromptRead | None = db_service.get_prompt_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
@@ -98,7 +99,7 @@ async def handle_update_prompt(cmd: UpdatePromptCommand) -> dict[str, Any]:
         }
 
 
-async def handle_delete_prompt(cmd: DeletePromptCommand) -> dict[str, Any]:
+async def handle_delete_prompt(cmd: DeleteCommand) -> dict[str, Any]:
     success: bool = db_service.delete_prompt(cmd.record_id)
     return {
         "status": "success" if success else "error",

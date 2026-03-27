@@ -2,17 +2,18 @@ import asyncio
 from typing import Any
 
 from ginkgo.models.decree import DecreeRead
+from ginkgo.models.enums import InputSource
 from ginkgo.services.database import db_service
 from ginkgo.services.tasks.augment import augment_task
 from ginkgo.services.tasks.filter import filter_task
 from ginkgo.utils.logger import get_logger
 from ginkgo.ws.commands import (
     AddDecreeCommand,
-    DeleteDecreeCommand,
-    QueryAllDecrees,
-    QueryDecreeCommand,
-    QueryDecreesById,
-    QueryRecentDecrees,
+    DeleteCommand,
+    QueryAll,
+    QueryById,
+    QueryCommand,
+    QueryRecent,
     UpdateDecreeCommand,
 )
 
@@ -21,8 +22,8 @@ logger = get_logger(__name__)
 
 async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
     logger.info("Inferring user input: Decree: %s", cmd.text)
-    filter = await asyncio.to_thread(filter_task.infer, cmd.text)
-    if not filter.valid:
+    filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
+    if not filter_result.valid:
         return {
             "status": "error",
             "action": "add",
@@ -35,7 +36,7 @@ async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
     record: DecreeRead = db_service.add_decree(
         text=cmd.text,
         lang=augment.language,
-        source=cmd.source,
+        source=InputSource.AUDIENCE,
     )
 
     return {
@@ -46,18 +47,18 @@ async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
     }
 
 
-async def handle_query_decree(cmd: QueryDecreeCommand) -> dict[str, Any]:
-    if isinstance(cmd, QueryAllDecrees):
+async def handle_query_decree(cmd: QueryCommand) -> dict[str, Any]:
+    if isinstance(cmd, QueryAll):
         records: list[DecreeRead] = db_service.get_all_decrees(
             limit=cmd.filters.limit,
             offset=cmd.filters.offset,
             recent=cmd.filters.recent,
         )
-    elif isinstance(cmd, QueryRecentDecrees):
+    elif isinstance(cmd, QueryRecent):
         records: list[DecreeRead] = db_service.get_recent_decrees(
             hours=cmd.filters.hours,
         )
-    elif isinstance(cmd, QueryDecreesById):
+    elif isinstance(cmd, QueryById):
         record: DecreeRead | None = db_service.get_decree_by_id(cmd.filters.record_id)
         records = [record] if record else []
     else:
@@ -98,7 +99,7 @@ async def handle_update_decree(cmd: UpdateDecreeCommand) -> dict[str, Any]:
         }
 
 
-async def handle_delete_decree(cmd: DeleteDecreeCommand) -> dict[str, Any]:
+async def handle_delete_decree(cmd: DeleteCommand) -> dict[str, Any]:
     success: bool = db_service.delete_decree(cmd.record_id)
     return {
         "status": "success" if success else "error",

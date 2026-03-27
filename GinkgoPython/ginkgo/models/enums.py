@@ -17,6 +17,7 @@ class GSODAttribute(str, Enum):
     RIGHTS = "RIGHTS"
     RULE_OF_LAW = "RULE_OF_LAW"
     PARTICIPATION = "PARTICIPATION"
+    INVALID = "INVALID"
 
 
 class GSODTrait(str, Enum):

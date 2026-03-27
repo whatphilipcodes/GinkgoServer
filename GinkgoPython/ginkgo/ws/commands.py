@@ -2,7 +2,9 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Discriminator, Field, field_validator
 
-from ginkgo.models.enums import ContextFrontend, InputSource
+from ginkgo.models.enums import ContextFrontend
+
+EntityType = Literal["thought", "prompt", "decree"]
 
 
 class AllFilterPayload(BaseModel):
@@ -25,57 +27,8 @@ class ByIdFilterPayload(BaseModel):
     record_id: int = Field(ge=1)
 
 
-class TextInputCommand(BaseModel):
-    text: str
-    lang: str
-    source: InputSource = InputSource.AUDIENCE
-
-
-class AddThoughtCommand(TextInputCommand):
-    action: Literal["add"] = "add"
-    type: Literal["thought"] = "thought"
-
-
-class QueryAllThoughts(BaseModel):
-    """Query all thoughts with pagination"""
-
-    action: Literal["query"] = "query"
-    type: Literal["thought"] = "thought"
-    query_type: Literal["all"]
-    filters: AllFilterPayload
-
-
-class QueryRecentThoughts(BaseModel):
-    """Query recent thoughts"""
-
-    action: Literal["query"] = "query"
-    type: Literal["thought"] = "thought"
-    query_type: Literal["recent"]
-    filters: RecentFilterPayload
-
-
-class QueryThoughtsById(BaseModel):
-    """Query a thought by ID"""
-
-    action: Literal["query"] = "query"
-    type: Literal["thought"] = "thought"
-    query_type: Literal["by_id"]
-    filters: ByIdFilterPayload
-
-
-QueryThoughtCommand = Annotated[
-    Union[QueryAllThoughts, QueryRecentThoughts, QueryThoughtsById],
-    Discriminator("query_type"),
-]
-
-
-class UpdateThoughtCommand(BaseModel):
-    """Command to update a thought's text"""
-
-    action: Literal["update"] = "update"
-    type: Literal["thought"] = "thought"
+class ValidatedRecordId(BaseModel):
     record_id: int
-    text: str
 
     @field_validator("record_id")
     @classmethod
@@ -84,6 +37,10 @@ class UpdateThoughtCommand(BaseModel):
         if v <= 0:
             raise ValueError(f"record_id must be positive, got {v}")
         return v
+
+
+class ValidatedText(BaseModel):
+    text: str
 
     @field_validator("text")
     @classmethod
@@ -94,20 +51,77 @@ class UpdateThoughtCommand(BaseModel):
         return v.strip()
 
 
-class DeleteThoughtCommand(BaseModel):
-    """Command to delete a thought"""
+class BaseQuery(BaseModel):
+    action: Literal["query"] = "query"
+    type: EntityType
+
+
+class QueryAll(BaseQuery):
+    """Query all records with pagination"""
+
+    query_type: Literal["all"] = "all"
+    filters: AllFilterPayload
+
+
+class QueryRecent(BaseQuery):
+    """Query recent records"""
+
+    query_type: Literal["recent"] = "recent"
+    filters: RecentFilterPayload
+
+
+class QueryById(BaseQuery):
+    """Query a record by ID"""
+
+    query_type: Literal["by_id"] = "by_id"
+    filters: ByIdFilterPayload
+
+
+QueryCommand = Annotated[
+    Union[QueryAll, QueryRecent, QueryById],
+    Discriminator("query_type"),
+]
+
+
+class BaseAdd(ValidatedText):
+    action: Literal["add"] = "add"
+
+
+class AddThoughtCommand(BaseAdd):
+    type: Literal["thought"] = "thought"
+    prompt_id: int
+
+
+class AddPromptCommand(BaseAdd):
+    type: Literal["prompt"] = "prompt"
+
+
+class AddDecreeCommand(BaseAdd):
+    type: Literal["decree"] = "decree"
+
+
+class BaseUpdate(ValidatedText, ValidatedRecordId):
+    action: Literal["update"] = "update"
+
+
+class UpdateThoughtCommand(BaseUpdate):
+    type: Literal["thought"] = "thought"
+    prompt_id: int
+
+
+class UpdatePromptCommand(BaseUpdate):
+    type: Literal["prompt"] = "prompt"
+
+
+class UpdateDecreeCommand(BaseUpdate):
+    type: Literal["decree"] = "decree"
+
+
+class DeleteCommand(ValidatedRecordId):
+    """Command to delete a generic record"""
 
     action: Literal["delete"] = "delete"
-    type: Literal["thought"] = "thought"
-    record_id: int
-
-    @field_validator("record_id")
-    @classmethod
-    def validate_record_id(cls, v: int) -> int:
-        """Validate record_id is positive"""
-        if v <= 0:
-            raise ValueError(f"record_id must be positive, got {v}")
-        return v
+    type: EntityType
 
 
 class SendKeystrokeCommand(BaseModel):
@@ -119,182 +133,14 @@ class SendKeystrokeCommand(BaseModel):
     context: ContextFrontend
 
 
-class AddPromptCommand(TextInputCommand):
-    action: Literal["add"] = "add"
-    type: Literal["prompt"] = "prompt"
-
-
-class QueryAllPrompts(BaseModel):
-    """Query all prompts with pagination"""
-
-    action: Literal["query"] = "query"
-    type: Literal["prompt"] = "prompt"
-    query_type: Literal["all"]
-    filters: AllFilterPayload
-
-
-class QueryRecentPrompts(BaseModel):
-    """Query recent prompts"""
-
-    action: Literal["query"] = "query"
-    type: Literal["prompt"] = "prompt"
-    query_type: Literal["recent"]
-    filters: RecentFilterPayload
-
-
-class QueryPromptsById(BaseModel):
-    """Query a prompt by ID"""
-
-    action: Literal["query"] = "query"
-    type: Literal["prompt"] = "prompt"
-    query_type: Literal["by_id"]
-    filters: ByIdFilterPayload
-
-
-QueryPromptCommand = Annotated[
-    Union[QueryAllPrompts, QueryRecentPrompts, QueryPromptsById],
-    Discriminator("query_type"),
-]
-
-
-class UpdatePromptCommand(BaseModel):
-    """Command to update a prompt's text"""
-
-    action: Literal["update"] = "update"
-    type: Literal["prompt"] = "prompt"
-    record_id: int
-    text: str
-
-    @field_validator("record_id")
-    @classmethod
-    def validate_record_id(cls, v: int) -> int:
-        """Validate record_id is positive"""
-        if v <= 0:
-            raise ValueError(f"record_id must be positive, got {v}")
-        return v
-
-    @field_validator("text")
-    @classmethod
-    def validate_text(cls, v: str) -> str:
-        """Validate text is not empty"""
-        if not v or not v.strip():
-            raise ValueError("text cannot be empty")
-        return v.strip()
-
-
-class DeletePromptCommand(BaseModel):
-    """Command to delete a prompt"""
-
-    action: Literal["delete"] = "delete"
-    type: Literal["prompt"] = "prompt"
-    record_id: int
-
-    @field_validator("record_id")
-    @classmethod
-    def validate_record_id(cls, v: int) -> int:
-        """Validate record_id is positive"""
-        if v <= 0:
-            raise ValueError(f"record_id must be positive, got {v}")
-        return v
-
-
-class AddDecreeCommand(TextInputCommand):
-    action: Literal["add"] = "add"
-    type: Literal["decree"] = "decree"
-
-
-class QueryAllDecrees(BaseModel):
-    """Query all decrees with pagination"""
-
-    action: Literal["query"] = "query"
-    type: Literal["decree"] = "decree"
-    query_type: Literal["all"]
-    filters: AllFilterPayload
-
-
-class QueryRecentDecrees(BaseModel):
-    """Query recent decrees"""
-
-    action: Literal["query"] = "query"
-    type: Literal["decree"] = "decree"
-    query_type: Literal["recent"]
-    filters: RecentFilterPayload
-
-
-class QueryDecreesById(BaseModel):
-    """Query a decree by ID"""
-
-    action: Literal["query"] = "query"
-    type: Literal["decree"] = "decree"
-    query_type: Literal["by_id"]
-    filters: ByIdFilterPayload
-
-
-QueryDecreeCommand = Annotated[
-    Union[QueryAllDecrees, QueryRecentDecrees, QueryDecreesById],
-    Discriminator("query_type"),
-]
-
-
-class UpdateDecreeCommand(BaseModel):
-    """Command to update a decree's text"""
-
-    action: Literal["update"] = "update"
-    type: Literal["decree"] = "decree"
-    record_id: int
-    text: str
-
-    @field_validator("record_id")
-    @classmethod
-    def validate_record_id(cls, v: int) -> int:
-        """Validate record_id is positive"""
-        if v <= 0:
-            raise ValueError(f"record_id must be positive, got {v}")
-        return v
-
-    @field_validator("text")
-    @classmethod
-    def validate_text(cls, v: str) -> str:
-        """Validate text is not empty"""
-        if not v or not v.strip():
-            raise ValueError("text cannot be empty")
-        return v.strip()
-
-
-class DeleteDecreeCommand(BaseModel):
-    """Command to delete a decree"""
-
-    action: Literal["delete"] = "delete"
-    type: Literal["decree"] = "decree"
-    record_id: int
-
-    @field_validator("record_id")
-    @classmethod
-    def validate_record_id(cls, v: int) -> int:
-        """Validate record_id is positive"""
-        if v <= 0:
-            raise ValueError(f"record_id must be positive, got {v}")
-        return v
-
-
 WebSocketCommand = (
     AddThoughtCommand
-    | QueryAllThoughts
-    | QueryRecentThoughts
-    | QueryThoughtsById
-    | UpdateThoughtCommand
-    | DeleteThoughtCommand
     | AddPromptCommand
-    | QueryAllPrompts
-    | QueryRecentPrompts
-    | QueryPromptsById
-    | UpdatePromptCommand
-    | DeletePromptCommand
     | AddDecreeCommand
-    | QueryAllDecrees
-    | QueryRecentDecrees
-    | QueryDecreesById
+    | UpdateThoughtCommand
+    | UpdatePromptCommand
     | UpdateDecreeCommand
-    | DeleteDecreeCommand
+    | DeleteCommand
+    | QueryCommand
     | SendKeystrokeCommand
 )
