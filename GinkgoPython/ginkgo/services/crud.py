@@ -5,8 +5,8 @@ from sqlalchemy import func
 from sqlmodel import Session, SQLModel, select
 
 T = TypeVar("T", bound=SQLModel)
-CreateT = TypeVar("CreateT")
-ReadT = TypeVar("ReadT")
+CreateT = TypeVar("CreateT", bound=SQLModel)
+ReadT = TypeVar("ReadT", bound=SQLModel)
 
 
 class BaseCRUD(Generic[T, CreateT, ReadT]):
@@ -27,12 +27,16 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
         self.session.add(db_obj)
         self.session.commit()
         self.session.refresh(db_obj)
-        return self.read_schema.model_validate(db_obj)  # type: ignore
+        return self.read_schema.model_validate(db_obj, from_attributes=True)
 
     def get_by_id(self, record_id: int) -> Optional[ReadT]:
         stmt = select(self.model).where(self.model.id == record_id)  # type: ignore
         record = self.session.scalars(stmt).first()
-        return self.read_schema.model_validate(record) if record else None  # type: ignore
+        return (
+            self.read_schema.model_validate(record, from_attributes=True)
+            if record
+            else None
+        )
 
     def get_all(
         self, limit: Optional[int] = None, offset: int = 0, recent: bool = False
@@ -49,13 +53,17 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
         if limit:
             stmt = stmt.limit(limit)
         records = self.session.scalars(stmt).all()
-        return [self.read_schema.model_validate(r) for r in records]  # type: ignore
+        return [
+            self.read_schema.model_validate(r, from_attributes=True) for r in records
+        ]
 
     def get_recent(self, hours: int = 24) -> list[ReadT]:
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
         stmt = select(self.model).where(self.model.created_at >= cutoff_time)  # type: ignore
         records = self.session.scalars(stmt).all()
-        return [self.read_schema.model_validate(r) for r in records]  # type: ignore
+        return [
+            self.read_schema.model_validate(r, from_attributes=True) for r in records
+        ]
 
     def get_by_field(self, field_name: str, field_value) -> list[ReadT]:
         field = getattr(self.model, field_name, None)
@@ -63,7 +71,9 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
             return []
         stmt = select(self.model).where(field == field_value)
         records = self.session.scalars(stmt).all()
-        return [self.read_schema.model_validate(r) for r in records]  # type: ignore
+        return [
+            self.read_schema.model_validate(r, from_attributes=True) for r in records
+        ]
 
     def update(self, record_id: int, update_data: dict) -> Optional[ReadT]:
         record = self.session.get(self.model, record_id)
@@ -73,7 +83,7 @@ class BaseCRUD(Generic[T, CreateT, ReadT]):
                     setattr(record, key, value)
             self.session.commit()
             self.session.refresh(record)
-            return self.read_schema.model_validate(record)  # type: ignore
+            return self.read_schema.model_validate(record, from_attributes=True)
         return None
 
     def delete(self, record_id: int) -> bool:

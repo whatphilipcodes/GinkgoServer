@@ -5,11 +5,13 @@ from sqlmodel import Field, SQLModel
 from ginkgo.models.enums import InputSource
 
 
-class TextInputBase(SQLModel):
+class TextInput(SQLModel):
     text: str
-    valid: bool = True
-    lang: str | None = None
-    source: InputSource = InputSource.AUDIENCE
+    lang: str
+    source: InputSource
+
+
+class Timestamped(SQLModel):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
@@ -19,3 +21,7 @@ class TextInputBase(SQLModel):
         sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)},
         nullable=False,
     )
+
+
+class TextInputBase(TextInput, Timestamped):
+    pass

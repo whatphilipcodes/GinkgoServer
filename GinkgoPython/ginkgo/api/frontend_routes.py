@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.encoders import jsonable_encoder
 from pydantic import TypeAdapter, ValidationError
 
 from ginkgo.ws.commands import (
@@ -50,7 +51,7 @@ async def frontend_endpoint(websocket: WebSocket):
                 )
 
                 if response:
-                    await websocket.send_json(response)
+                    await websocket.send_json(jsonable_encoder(response))
 
             except ValidationError as e:
                 await websocket.send_json(

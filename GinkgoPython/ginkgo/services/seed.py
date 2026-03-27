@@ -61,13 +61,7 @@ def sync_seeds():
         seed_type = s["type"]
         lang = s["lang"]
 
-        if seed_type == "thought":
-            db_service.add_thought(
-                text=s["text"],
-                lang=lang,
-                source=InputSource.SEED,
-            )
-        elif seed_type == "prompt":
+        if seed_type == "prompt":
             db_service.add_prompt(
                 text=s["text"],
                 lang=lang,

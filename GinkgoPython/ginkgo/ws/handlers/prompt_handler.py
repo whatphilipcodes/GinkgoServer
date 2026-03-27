@@ -27,7 +27,7 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
             "status": "error",
             "action": "add",
             "type": "prompt",
-            "error": "Input rejected by validation",
+            "error": "Input rejected by content filter",
         }
 
     augment = await asyncio.to_thread(augment_task.infer, cmd.text)
@@ -42,7 +42,7 @@ async def handle_add_prompt(cmd: AddPromptCommand) -> dict[str, Any]:
         "status": "success",
         "action": "add",
         "type": "prompt",
-        "record": serialize_prompt(record),
+        "record": record,
     }
 
 
@@ -72,7 +72,7 @@ async def handle_query_prompt(cmd: QueryPromptCommand) -> dict[str, Any]:
         "type": "prompt",
         "query_type": cmd.query_type,
         "count": len(records),
-        "records": [serialize_prompt(r) for r in records],
+        "records": [r for r in records],
     }
 
 
@@ -87,7 +87,7 @@ async def handle_update_prompt(cmd: UpdatePromptCommand) -> dict[str, Any]:
             "status": "success",
             "action": "update",
             "type": "prompt",
-            "record": serialize_prompt(record),
+            "record": record,
         }
     else:
         return {
@@ -106,17 +106,4 @@ async def handle_delete_prompt(cmd: DeletePromptCommand) -> dict[str, Any]:
         "type": "prompt",
         "record_id": cmd.record_id,
         "deleted": success,
-    }
-
-
-def serialize_prompt(record: PromptRead) -> dict[str, Any]:
-    return {
-        "id": record.id,
-        "text": record.text,
-        "type": "prompt",
-        "valid": record.valid,
-        "lang": record.lang if record.lang else None,
-        "source": record.source.value,
-        "created_at": record.created_at.isoformat(),
-        "modified_at": record.modified_at.isoformat(),
     }

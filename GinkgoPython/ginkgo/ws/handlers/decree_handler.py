@@ -27,7 +27,7 @@ async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
             "status": "error",
             "action": "add",
             "type": "decree",
-            "error": "Input rejected by validation",
+            "error": "Input rejected by content filter",
         }
 
     augment = await asyncio.to_thread(augment_task.infer, cmd.text)
@@ -42,7 +42,7 @@ async def handle_add_decree(cmd: AddDecreeCommand) -> dict[str, Any]:
         "status": "success",
         "action": "add",
         "type": "decree",
-        "record": serialize_decree(record),
+        "record": record,
     }
 
 
@@ -72,7 +72,7 @@ async def handle_query_decree(cmd: QueryDecreeCommand) -> dict[str, Any]:
         "type": "decree",
         "query_type": cmd.query_type,
         "count": len(records),
-        "records": [serialize_decree(r) for r in records],
+        "records": [r for r in records],
     }
 
 
@@ -87,7 +87,7 @@ async def handle_update_decree(cmd: UpdateDecreeCommand) -> dict[str, Any]:
             "status": "success",
             "action": "update",
             "type": "decree",
-            "record": serialize_decree(record),
+            "record": record,
         }
     else:
         return {
@@ -106,17 +106,4 @@ async def handle_delete_decree(cmd: DeleteDecreeCommand) -> dict[str, Any]:
         "type": "decree",
         "record_id": cmd.record_id,
         "deleted": success,
-    }
-
-
-def serialize_decree(record: DecreeRead) -> dict[str, Any]:
-    return {
-        "id": record.id,
-        "text": record.text,
-        "type": "decree",
-        "valid": record.valid,
-        "lang": record.lang if record.lang else None,
-        "source": record.source.value,
-        "created_at": record.created_at.isoformat(),
-        "modified_at": record.modified_at.isoformat(),
     }

@@ -1,9 +1,10 @@
 from sqlmodel import Session, create_engine
 
 from ginkgo.core.config import settings
-from ginkgo.models.decree import Decree, DecreeCreate, DecreeRead
-from ginkgo.models.prompt import Prompt, PromptCreate, PromptRead
-from ginkgo.models.thought import Thought, ThoughtCreate, ThoughtRead
+from ginkgo.models.decree import Decree, DecreeCreate, DecreeRead, DecreeUpdate
+from ginkgo.models.enums import GSODAttribute, GSODTrait, InputSource
+from ginkgo.models.prompt import Prompt, PromptCreate, PromptRead, PromptUpdate
+from ginkgo.models.thought import Thought, ThoughtCreate, ThoughtRead, ThoughtUpdate
 from ginkgo.services.crud import BaseCRUD
 
 
@@ -36,32 +37,28 @@ class DatabaseService:
 
     def add_thought(
         self,
+        prompt_id: int,
         text: str,
-        lang,
-        source=None,
-        valid: bool = True,
-        attribute_class=None,
-        trait=None,
+        lang: str,
+        source: InputSource = InputSource.AUDIENCE,
+        attribute_class: GSODAttribute | None = None,
+        trait: GSODTrait | None = None,
         trait_entailment: float | None = None,
         score_health: float | None = None,
         score_split: float | None = None,
         score_impact: float | None = None,
     ) -> ThoughtRead:
-        from ginkgo.models.enums import InputSource
-
-        if source is None:
-            source = InputSource.AUDIENCE
         create_obj = ThoughtCreate(
+            prompt_id=prompt_id,
             text=text,
             lang=lang,
             source=source,
-            valid=valid,
             attribute_class=attribute_class,
             trait=trait,
-            trait_entailment=trait_entailment if trait_entailment is not None else 0.0,
-            score_health=score_health if score_health is not None else 0.0,
-            score_split=score_split if score_split is not None else 0.0,
-            score_impact=score_impact if score_impact is not None else 0.0,
+            trait_entailment=trait_entailment,
+            score_health=score_health,
+            score_split=score_split,
+            score_impact=score_impact,
         )
         crud = self.get_thought_crud()
         result = crud.add(create_obj)
@@ -91,25 +88,29 @@ class DatabaseService:
     def update_thought(
         self,
         record_id: int,
-        new_text: str,
-        valid: bool | None = None,
-        attribute_class=None,
-        trait=None,
+        prompt_id: int | None,
+        text: str | None,
+        lang: str | None,
+        source: InputSource | None = None,
+        attribute_class: GSODAttribute | None = None,
+        trait: GSODTrait | None = None,
         trait_entailment: float | None = None,
         score_health: float | None = None,
         score_split: float | None = None,
         score_impact: float | None = None,
     ) -> ThoughtRead | None:
-        update_data = {
-            "text": new_text,
-            "valid": valid,
-            "attribute_class": attribute_class,
-            "trait": trait,
-            "trait_entailment": trait_entailment,
-            "score_health": score_health,
-            "score_split": score_split,
-            "score_impact": score_impact,
-        }
+        update_data = ThoughtUpdate(
+            prompt_id=prompt_id,
+            text=text,
+            lang=lang,
+            source=source,
+            attribute_class=attribute_class,
+            trait=trait,
+            trait_entailment=trait_entailment,
+            score_health=score_health,
+            score_split=score_split,
+            score_impact=score_impact,
+        ).model_dump(exclude_none=True)
         crud = self.get_thought_crud()
         result = crud.update(record_id, update_data)
         crud.session.close()
@@ -136,19 +137,13 @@ class DatabaseService:
     def add_prompt(
         self,
         text: str,
-        lang,
-        source=None,
-        valid: bool = True,
+        lang: str,
+        source: InputSource = InputSource.AUDIENCE,
     ) -> PromptRead:
-        from ginkgo.models.enums import InputSource
-
-        if source is None:
-            source = InputSource.AUDIENCE
         create_obj = PromptCreate(
             text=text,
             lang=lang,
             source=source,
-            valid=valid,
         )
         crud = self.get_prompt_crud()
         result = crud.add(create_obj)
@@ -178,13 +173,13 @@ class DatabaseService:
     def update_prompt(
         self,
         record_id: int,
-        new_text: str,
-        valid: bool | None = None,
+        text: str | None = None,
+        lang: str | None = None,
+        source: InputSource | None = None,
     ) -> PromptRead | None:
-        update_data = {
-            "text": new_text,
-            "valid": valid,
-        }
+        update_data = PromptUpdate(text=text, lang=lang, source=source).model_dump(
+            exclude_none=True
+        )
         crud = self.get_prompt_crud()
         result = crud.update(record_id, update_data)
         crud.session.close()
@@ -211,19 +206,13 @@ class DatabaseService:
     def add_decree(
         self,
         text: str,
-        lang,
-        source=None,
-        valid: bool = True,
+        lang: str,
+        source: InputSource = InputSource.AUDIENCE,
     ) -> DecreeRead:
-        from ginkgo.models.enums import InputSource
-
-        if source is None:
-            source = InputSource.AUDIENCE
         create_obj = DecreeCreate(
             text=text,
             lang=lang,
             source=source,
-            valid=valid,
         )
         crud = self.get_decree_crud()
         result = crud.add(create_obj)
@@ -253,13 +242,13 @@ class DatabaseService:
     def update_decree(
         self,
         record_id: int,
-        new_text: str,
-        valid: bool | None = None,
+        text: str | None = None,
+        lang: str | None = None,
+        source: InputSource | None = None,
     ) -> DecreeRead | None:
-        update_data = {
-            "text": new_text,
-            "valid": valid,
-        }
+        update_data = DecreeUpdate(text=text, lang=lang, source=source).model_dump(
+            exclude_none=True
+        )
         crud = self.get_decree_crud()
         result = crud.update(record_id, update_data)
         crud.session.close()

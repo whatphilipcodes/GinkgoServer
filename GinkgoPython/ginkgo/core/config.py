@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     server_reload: bool = False
     database_echo: bool = False
     cpu_inference: bool = False
-    enable_quantization: bool = True
+    enable_quantization: bool = False
 
     frontend_build_command: str = "pnpm build"
 
