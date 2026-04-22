@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     # Main
     query_init_entry_limit: int = 200
     decree_eval_limit: int = 32
-    send_keystrokes: bool = False
+    send_keystrokes: bool = True
     log_level: int = logging.INFO
+    websocket_keepalive_interval: int = 45
 
     # Misc
     server_host: str = "0.0.0.0"

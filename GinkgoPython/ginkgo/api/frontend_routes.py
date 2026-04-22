@@ -1,3 +1,4 @@
+import asyncio
 import json
 from typing import Any
 
@@ -5,6 +6,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from pydantic import TypeAdapter, ValidationError
 
+from ginkgo.core.config import settings
 from ginkgo.ws.commands import (
     AddDecreeCommand,
     AddPromptCommand,
@@ -27,15 +29,43 @@ from ginkgo.ws.handlers import (
 router = APIRouter()
 
 
+async def keepalive_task(websocket: WebSocket):
+    """Send periodic ping frames to keep WebSocket connection alive.
+
+    This prevents Windows asyncio IOCP proactor timeout (~90 seconds)
+    by sending a ping frame every KEEPALIVE_INTERVAL seconds.
+    """
+    try:
+        while True:
+            await asyncio.sleep(settings.websocket_keepalive_interval)
+            try:
+                # Send a ping frame using the underlying websockets connection
+                await websocket.send_json({"type": "ping"})
+            except Exception:
+                # If we can't send, the connection is likely closed
+                break
+    except asyncio.CancelledError:
+        pass
+
+
 @router.websocket("/ws/frontend")
 async def frontend_endpoint(websocket: WebSocket):
     await manager.connect("frontend", websocket)
+    keepalive = None
     try:
+        # Start the keepalive task
+        keepalive = asyncio.create_task(keepalive_task(websocket))
+
         while True:
             raw_json = await websocket.receive_text()
 
             try:
                 data = json.loads(raw_json)
+
+                # Ignore ping messages from keepalive task
+                if data.get("type") == "ping":
+                    continue
+
                 action = data.get("action")
                 record_type = data.get("type")
 
@@ -59,6 +89,14 @@ async def frontend_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         manager.disconnect("frontend")
+    finally:
+        # Clean up keepalive task
+        if keepalive:
+            keepalive.cancel()
+            try:
+                await keepalive
+            except asyncio.CancelledError:
+                pass
 
 
 async def dispatch_message(
