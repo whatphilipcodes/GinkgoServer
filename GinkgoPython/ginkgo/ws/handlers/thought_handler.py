@@ -26,7 +26,19 @@ logger = get_logger(__name__)
 
 
 async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
-    logger.info("Inferring user input: Thought: %s", cmd.text)
+
+    prompt = db_service.get_prompt_by_id(cmd.prompt_id)
+
+    if not prompt:
+        logger.info("Prompt is missing.")
+        return {
+            "status": "error",
+            "action": "add",
+            "type": "thought",
+            "error": "Input rejected because prompt missing.",
+        }
+
+    logger.info(f"Inferring user input: Prompt: {prompt.text} Thought: {cmd.text}")
 
     filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
     if not filter_result.valid:
@@ -39,9 +51,9 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
         }
 
     augment_future = asyncio.to_thread(augment_task.infer, cmd.text)
-    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text, "prompt missing")
-    health_future = asyncio.to_thread(decree_task.infer, cmd.text, "prompt missing")
-    aux_future = asyncio.to_thread(aux_task.infer, cmd.text, "prompt missing")
+    gsod_future = asyncio.to_thread(gsod_task.infer, cmd.text, prompt.text)
+    health_future = asyncio.to_thread(decree_task.infer, cmd.text, prompt.text)
+    aux_future = asyncio.to_thread(aux_task.infer, cmd.text, prompt.text)
     augment_result, gsod_result, decree_result, aux_result = await asyncio.gather(
         augment_future,
         gsod_future,
