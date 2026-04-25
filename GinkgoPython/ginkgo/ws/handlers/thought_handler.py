@@ -38,7 +38,9 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
             "error": "Input rejected because prompt missing.",
         }
 
-    logger.info(f"Inferring user input: Prompt: {prompt.text} Thought: {cmd.text}")
+    logger.info("Inferring user input")
+    logger.info(f"Prompt: {prompt.text}")
+    logger.info(f"Thought: {cmd.text}")
 
     filter_result = await asyncio.to_thread(filter_task.infer, cmd.text)
     if not filter_result.valid:
@@ -90,6 +92,8 @@ async def handle_add_thought(cmd: AddThoughtCommand) -> dict[str, Any]:
             payloadJson=input_payload,
         )
         await manager.send_to(message.model_dump_json(), "unreal")
+
+    logger.info("Cycle complete " + "=" * 128 + "\n")
 
     return {
         "status": "success",
